@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Project Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4cc9f0;
+            --success-color: #4cc9a0;
+            --warning-color: #f72585;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        
+        .welcome-card {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 16px;
+            padding: 2.5rem;
+            color: white;
+            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.2);
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .welcome-card::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 0;
+        }
+        
+        .welcome-card::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            left: -80px;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            z-index: 0;
+        }
+        
+        .welcome-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .welcome-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .welcome-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+        
+        .action-card {
+            background-color: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .action-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+            background-color: rgba(67, 97, 238, 0.1);
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        
+        .action-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--dark-color);
+        }
+        
+        .action-description {
+            color: #6c757d;
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+        
+        .btn-custom {
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: 8px;
+            padding: 0.8rem 2rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-custom:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn-custom-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            border-radius: 8px;
+            padding: 0.8rem 2rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-custom-outline:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        .stats-container {
+            background-color: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-top: 2rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: #6c757d;
+            font-weight: 500;
+        }
+        
+        .navbar-custom {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 1rem 2rem;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .navbar-brand i {
+            font-size: 1.5rem;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            color: #495057;
+            margin: 0 0.5rem;
+            transition: color 0.3s;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary-color);
+        }
+        
+        .nav-link.active {
+            color: var(--primary-color);
+        }
+        
+        .footer {
+            background-color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            text-align: center;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-code-square"></i>
+                Python Project Manager
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/projects">Projects</a>
+                    </li>
+                    <% if (user) { %>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/auth/logout">
+                                <i class="bi bi-box-arrow-right"></i> Logout
+                            </a>
+                        </li>
+                    <% } else { %>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/auth/login">
+                                <i class="bi bi-box-arrow-in-right"></i> Login
+                            </a>
+                        </li>
+                    <% } %>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="dashboard-container">
+        <% if (user) { %>
+            <!-- Welcome Section -->
+            <div class="welcome-card">
+                <div class="welcome-content">
+                    <h1 class="welcome-title">Welcome back, <%= user.username %>!</h1>
+                    <p class="welcome-subtitle">Manage your Python projects with ease. Deploy, monitor, and control everything from one place.</p>
+                    <a href="/projects" class="btn btn-light btn-lg">
+                        <i class="bi bi-folder"></i> View All Projects
+                    </a>
+                </div>
+            </div>
+
+            <!-- Action Cards -->
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="action-card">
+                        <div class="action-icon">
+                            <i class="bi bi-cloud-upload"></i>
+                        </div>
+                        <h3 class="action-title">Upload Project</h3>
+                        <p class="action-description">Upload your Python projects as ZIP files and get them running in seconds.</p>
+                        <a href="/projects" class="btn btn-custom w-100">
+                            <i class="bi bi-upload"></i> Upload Now
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="action-card">
+                        <div class="action-icon">
+                            <i class="bi bi-terminal"></i>
+                        </div>
+                        <h3 class="action-title">Monitor Console</h3>
+                        <p class="action-description">View real-time logs and monitor the performance of your Python applications.</p>
+                        <a href="/projects" class="btn btn-custom w-100">
+                            <i class="bi bi-display"></i> View Consoles
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="action-card">
+                        <div class="action-icon">
+                            <i class="bi bi-globe"></i>
+                        </div>
+                        <h3 class="action-title">Manage Domains</h3>
+                        <p class="action-description">Automatically create and manage subdomains for all your projects.</p>
+                        <a href="/projects" class="btn btn-custom w-100">
+                            <i class="bi bi-globe2"></i> Manage Domains
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Section -->
+            <div class="stats-container">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="stat-item">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Total Projects</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-item">
+                            <div class="stat-value">2</div>
+                            <div class="stat-label">Active Projects</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-item">
+                            <div class="stat-value">1</div>
+                            <div class="stat-label">Running Projects</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% } else { %>
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="action-card text-center">
+                        <div class="action-icon mx-auto">
+                            <i class="bi bi-person-lock"></i>
+                        </div>
+                        <h3 class="action-title">Please Log In</h3>
+                        <p class="action-description">You need to log in to access the Python Project Manager.</p>
+                        <a href="/auth/login" class="btn btn-custom w-100">
+                            <i class="bi bi-box-arrow-in-right"></i> Login
+                        </a>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p class="mb-0">© 2025 Python Project Manager. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

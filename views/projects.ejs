@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Manager - Projects</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body { 
+            background-color: #f4f6f9; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .project-card { 
+            transition: transform 0.3s; 
+            margin-bottom: 20px;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .project-card:hover { 
+            transform: scale(1.02); 
+        }
+        .card-header {
+            font-weight: 600;
+        }
+        .btn-icon {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .project-status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+        }
+        .status-active {
+            background-color: #28a745;
+            box-shadow: 0 0 5px #28a745;
+        }
+        .status-inactive {
+            background-color: #6c757d;
+        }
+        .status-running {
+            background-color: #17a2b8;
+            box-shadow: 0 0 5px #17a2b8;
+        }
+        .main-header {
+            background: linear-gradient(135deg, #0d6efd, #0a58ca);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .upload-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .projects-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-10 offset-md-1">
+                <div class="main-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <h2 class="mb-0"><i class="bi bi-code-square"></i> Python Project Manager</h2>
+                        <p class="mb-0 text-light">Manage, deploy and monitor your Python projects</p>
+                    </div>
+                    <a href="/auth/logout" class="btn btn-light btn-icon">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </a>
+                </div>
+                
+                <div class="upload-section">
+                        <h4><i class="bi bi-cloud-upload"></i> Upload New Project</h4>
+                        <form action="/projects/upload" method="POST" enctype="multipart/form-data">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="lastName" class="form-label">Last Name</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                        <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Enter last name" required>
+                                    </div>
+                                    <small class="text-muted">Will be used for subdomain: lastname.csshub.uk</small>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="projectFile" class="form-label">Project Zip File</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-file-earmark-zip"></i></span>
+                                        <input type="file" class="form-control" id="projectFile" name="projectFile" accept=".zip" required>
+                                    </div>
+                                    <small class="text-muted">Zip file containing your Python project</small>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Project Status</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="status" id="activeStatus" value="Active" checked>
+                                    <label class="form-check-label" for="activeStatus">Active</label>
+                                    <small class="text-muted ms-2">Project will be deployed and started automatically</small>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="status" id="inactiveStatus" value="Inactive">
+                                    <label class="form-check-label" for="inactiveStatus">Inactive</label>
+                                    <small class="text-muted ms-2">Project will be uploaded but not deployed</small>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-icon">
+                                <i class="bi bi-upload"></i> Upload Project
+                            </button>
+                        </form>
+                </div>
+
+                <div class="projects-section">
+                    <h4 class="mb-4"><i class="bi bi-folder"></i> Existing Projects</h4>
+                        <div class="row">
+                            <% projects.forEach(project => { %>
+                                <div class="col-md-6 mb-4">
+                                    <div class="card project-card h-100">
+                                        <div class="position-relative">
+                                            <div class="card-header <%= project.status === 'Active' ? 'bg-primary' : 'bg-secondary' %> text-white">
+                                                <h5 class="mb-0"><%= project.name %></h5>
+                                            </div>
+                                            <div class="project-status <%= project.status === 'Active' ? 'status-active' : 'status-inactive' %> <%= project.isRunning ? 'status-running' : '' %>"></div>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <span class="badge <%= project.status === 'Active' ? 'bg-success' : 'bg-secondary' %>">Status: <%= project.status %></span>
+                                                    <% if (project.isRunning) { %>
+                                                        <span class="badge bg-info">Running</span>
+                                                    <% } else { %>
+                                                        <span class="badge bg-secondary">Stopped</span>
+                                                    <% } %>
+                                                </div>
+                                                
+                                                <% if (project.subdomain) { %>
+                                                    <div class="mb-2">
+                                                        <i class="bi bi-globe2 me-2 text-primary"></i>
+                                                        <a href="http://<%= project.subdomain %>" target="_blank" class="text-decoration-none">
+                                                            <%= project.subdomain %> <i class="bi bi-box-arrow-up-right"></i>
+                                                        </a>
+                                                    </div>
+                                                <% } %>
+                                                
+                                                <% if (project.port) { %>
+                                                    <div class="mb-2">
+                                                        <i class="bi bi-hdd-network me-2 text-secondary"></i>
+                                                        Port: <%= project.port %>
+                                                    </div>
+                                                <% } %>
+                                                
+                                                <% if (project.mainPythonFile) { %>
+                                                    <div class="mb-2">
+                                                        <i class="bi bi-file-earmark-code me-2 text-success"></i>
+                                                        <%= project.mainPythonFile %>
+                                                    </div>
+                                                <% } %>
+                                                
+                                                <% if (project.createdAt) { %>
+                                                    <div class="mb-2">
+                                                        <i class="bi bi-calendar3 me-2 text-muted"></i>
+                                                        <%= new Date(project.createdAt).toLocaleDateString() %>
+                                                    </div>
+                                                <% } %>
+                                            </div>
+                                            
+                                            <div class="d-flex flex-wrap gap-2 mt-3">
+                                                <% if (project.isRunning) { %>
+                                                    <form action="/projects/stop/<%= project.name %>" method="POST">
+                                                        <button type="submit" class="btn btn-sm btn-warning btn-icon">
+                                                            <i class="bi bi-stop-circle"></i> Stop
+                                                        </button>
+                                                    </form>
+                                                <% } else { %>
+                                                    <form action="/projects/start/<%= project.name %>" method="POST">
+                                                        <button type="submit" class="btn btn-sm btn-success btn-icon">
+                                                            <i class="bi bi-play-circle"></i> Start
+                                                        </button>
+                                                    </form>
+                                                <% } %>
+                                                
+                                                <a href="/projects/logs/<%= project.name %>" class="btn btn-sm btn-info btn-icon">
+                                                    <i class="bi bi-terminal"></i> Console
+                                                </a>
+                                                
+                                                <form action="/projects/toggle-status/<%= project.name %>" method="POST">
+                                                    <input type="hidden" name="status" value="<%= project.status === 'Active' ? 'Inactive' : 'Active' %>">
+                                                    <button type="submit" class="btn btn-sm <%= project.status === 'Active' ? 'btn-outline-secondary' : 'btn-outline-success' %> btn-icon">
+                                                        <i class="bi <%= project.status === 'Active' ? 'bi-toggle-off' : 'bi-toggle-on' %>"></i>
+                                                        <%= project.status === 'Active' ? 'Deactivate' : 'Activate' %>
+                                                    </button>
+                                                </form>
+                                                
+                                                <form action="/projects/delete/<%= project.name %>" method="POST" onsubmit="return confirm('Are you sure you want to delete this project?');" class="ms-auto">
+                                                    <button type="submit" class="btn btn-sm btn-danger btn-icon">
+                                                        <i class="bi bi-trash"></i> Delete
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Add file name display for file input
+        document.getElementById('projectFile').addEventListener('change', function(e) {
+            const fileName = e.target.files[0]?.name || 'No file chosen';
+            const fileInfo = document.createElement('div');
+            fileInfo.className = 'mt-2 text-muted';
+            fileInfo.innerHTML = `<i class="bi bi-file-earmark-zip"></i> ${fileName}`;
+            
+            // Remove previous file info if exists
+            const prevFileInfo = this.parentElement.querySelector('div');
+            if (prevFileInfo) {
+                prevFileInfo.remove();
+            }
+            
+            this.parentElement.appendChild(fileInfo);
+        });
+    </script>
+</body>
+</html>

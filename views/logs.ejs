@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Logs - <%= project.name %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body { 
+            background-color: #f4f6f9; 
+        }
+        .console {
+            background-color: #1e1e1e;
+            color: #f8f8f8;
+            font-family: 'Courier New', monospace;
+            height: 500px;
+            overflow-y: auto;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .log-stdout {
+            color: #a8ff60;
+        }
+        .log-stderr {
+            color: #ff6b6b;
+        }
+        .log-system {
+            color: #58b2dc;
+            font-style: italic;
+        }
+        .timestamp {
+            color: #888;
+            font-size: 0.8em;
+            margin-right: 10px;
+        }
+        .project-info {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .status-badge {
+            font-size: 1rem;
+        }
+        .auto-refresh {
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Project Console: <%= project.name %></h2>
+            <div>
+                <a href="/projects" class="btn btn-outline-primary me-2">
+                    <i class="bi bi-arrow-left"></i> Back to Projects
+                </a>
+                <a href="/auth/logout" class="btn btn-outline-danger">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                </a>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="project-info">
+                    <h4 class="mb-3">Project Information</h4>
+                    <div class="mb-2">
+                        <strong>Status:</strong> 
+                        <span class="badge <%= project.isRunning ? 'bg-success' : 'bg-secondary' %> status-badge">
+                            <%= project.isRunning ? 'Running' : 'Stopped' %>
+                        </span>
+                    </div>
+                    <div class="mb-2">
+                        <strong>Port:</strong> <%= project.port %>
+                    </div>
+                    <div class="mb-2">
+                        <strong>Subdomain:</strong> 
+                        <a href="http://<%= project.subdomain %>" target="_blank" class="text-decoration-none">
+                            <%= project.subdomain %> <i class="bi bi-box-arrow-up-right"></i>
+                        </a>
+                    </div>
+                    <div class="mb-2">
+                        <strong>Main File:</strong> <%= project.mainPythonFile || 'Not detected' %>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Requirements:</strong> 
+                        <% if (project.requirementsInstalled) { %>
+                            <span class="badge bg-success">Installed</span>
+                        <% } else { %>
+                            <span class="badge bg-secondary">Not Found</span>
+                        <% } %>
+                    </div>
+                    
+                    <!-- Pip Install Command Form -->
+                    <div class="mb-3">
+                        <strong>Install Packages:</strong>
+                        <div class="input-group mt-2">
+                            <input type="text" id="pipCommand" class="form-control" placeholder="pip install package-name" value="pip install ">
+                            <button class="btn btn-primary" type="button" id="runPipCommand">
+                                <i class="bi bi-terminal"></i> Run
+                            </button>
+                        </div>
+                        <small class="text-muted">Only pip install commands are allowed for security reasons</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong>Created:</strong> <%= new Date(project.createdAt).toLocaleString() %>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <% if (project.isRunning) { %>
+                            <form action="/projects/stop/<%= project.name %>" method="POST">
+                                <button type="submit" class="btn btn-danger w-100">
+                                    <i class="bi bi-stop-circle"></i> Stop Project
+                                </button>
+                            </form>
+                        <% } else { %>
+                            <form action="/projects/start/<%= project.name %>" method="POST">
+                                <button type="submit" class="btn btn-success w-100">
+                                    <i class="bi bi-play-circle"></i> Start Project
+                                </button>
+                            </form>
+                        <% } %>
+                    </div>
+                    
+                    <div class="form-check auto-refresh">
+                        <input class="form-check-input" type="checkbox" id="autoRefresh" checked>
+                        <label class="form-check-label" for="autoRefresh">
+                            Auto-refresh logs (every 5 seconds)
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Console Output</h5>
+                        <button class="btn btn-sm btn-outline-light" id="clearLogs">
+                            <i class="bi bi-trash"></i> Clear
+                        </button>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="console" id="console">
+                            <% if (project.logs && project.logs.length > 0) { %>
+                                <% project.logs.forEach(log => { %>
+                                    <div class="log-entry log-<%= log.type %>">
+                                        <span class="timestamp"><%= new Date(log.timestamp).toLocaleTimeString() %></span>
+                                        <span class="message"><%= log.message %></span>
+                                    </div>
+                                <% }); %>
+                            <% } else { %>
+                                <div class="log-entry log-system">
+                                    <span class="message">No logs available. Start the project to see console output.</span>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+                
+                <% if (project.requirementsInstalled && project.installationLog) { %>
+                    <div class="card mt-4">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0">Requirements Installation Log</h5>
+                        </div>
+                        <div class="card-body">
+                            <pre class="bg-light p-3" style="max-height: 200px; overflow-y: auto;"><%= project.installationLog %></pre>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Scroll to bottom of console
+            const console = document.getElementById('console');
+            console.scrollTop = console.scrollHeight;
+            
+            // Auto-refresh functionality
+            const autoRefreshCheckbox = document.getElementById('autoRefresh');
+            let refreshInterval;
+            
+            function startAutoRefresh() {
+                if (autoRefreshCheckbox.checked) {
+                    refreshInterval = setInterval(() => {
+                        window.location.reload();
+                    }, 5000);
+                }
+            }
+            
+            function stopAutoRefresh() {
+                clearInterval(refreshInterval);
+            }
+            
+            autoRefreshCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    startAutoRefresh();
+                } else {
+                    stopAutoRefresh();
+                }
+            });
+            
+            // Start auto-refresh if checkbox is checked
+            if (autoRefreshCheckbox.checked) {
+                startAutoRefresh();
+            }
+            
+            // Clear logs button
+            document.getElementById('clearLogs').addEventListener('click', function() {
+                const console = document.getElementById('console');
+                console.innerHTML = '<div class="log-entry log-system"><span class="message">Logs cleared by user.</span></div>';
+            });
+            
+            // Run pip command
+            document.getElementById('runPipCommand').addEventListener('click', function() {
+                // Temporarily stop auto-refresh
+                if (refreshInterval) {
+                    clearInterval(refreshInterval);
+                }
+                
+                const command = document.getElementById('pipCommand').value.trim();
+                if (!command) return;
+                
+                // Disable button and show loading state
+                const button = this;
+                const originalText = button.innerHTML;
+                button.disabled = true;
+                button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Running...';
+                
+                // Add a temporary log entry
+                const tempLogEntry = document.createElement('div');
+                tempLogEntry.className = 'log-entry log-system';
+                tempLogEntry.innerHTML = `<span class="timestamp">${new Date().toLocaleTimeString()}</span><span class="message">Running command: ${command}...</span>`;
+                console.appendChild(tempLogEntry);
+                console.scrollTop = console.scrollHeight;
+                
+                // Send the command to the server
+                fetch(`/projects/run-command/<%= project.name %>`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ command: command }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Remove temporary log entry
+                    console.removeChild(tempLogEntry);
+                    
+                    // Add the result to the console
+                    const logEntry = document.createElement('div');
+                    logEntry.className = `log-entry log-${data.success ? 'stdout' : 'stderr'}`;
+                    logEntry.innerHTML = `
+                        <span class="timestamp">${new Date().toLocaleTimeString()}</span>
+                        <span class="message">Command: ${command}\n${data.output}</span>
+                    `;
+                    console.appendChild(logEntry);
+                    console.scrollTop = console.scrollHeight;
+                    
+                    // Reset button
+                    button.disabled = false;
+                    button.innerHTML = originalText;
+                    
+                    // Restart auto-refresh if it was enabled
+                    if (autoRefreshCheckbox.checked) {
+                        startAutoRefresh();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    
+                    // Add error to console
+                    const errorEntry = document.createElement('div');
+                    errorEntry.className = 'log-entry log-stderr';
+                    errorEntry.innerHTML = `
+                        <span class="timestamp">${new Date().toLocaleTimeString()}</span>
+                        <span class="message">Error running command: ${error.message || 'Unknown error'}</span>
+                    `;
+                    console.appendChild(errorEntry);
+                    console.scrollTop = console.scrollHeight;
+                    
+                    // Reset button
+                    button.disabled = false;
+                    button.innerHTML = originalText;
+                    
+                    // Restart auto-refresh if it was enabled
+                    if (autoRefreshCheckbox.checked) {
+                        startAutoRefresh();
+                    }
+                });
+            });
+            
+            // Allow Enter key to submit pip command
+            document.getElementById('pipCommand').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    document.getElementById('runPipCommand').click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
