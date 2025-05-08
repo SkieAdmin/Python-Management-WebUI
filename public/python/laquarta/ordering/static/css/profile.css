@@ -1,0 +1,293 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+     font-family: 'Courier New', monospace; /* Receipt-like font */
+}
+
+/* Body and Background */
+body {
+    background-image: url('/static/images/james.jpg');
+       backdrop-filter: blur(5px);
+    background-size: cover;  /* Adjusts the image to cover the entire background */
+    min-height: 100vh;
+    color: indianred;
+}
+
+/* Container Layout */
+.container {
+    display: flex;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+/* Sidebar (unchanged) */
+.sidebar {
+   background: linear-gradient(175deg, white,transparent );
+    color: #fff;
+    width: 400px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    box-shadow: 0 10px 25px rgba(0, 0, 3,4.1);
+}
+
+.sidebar header {
+    margin-bottom: 20px;
+}
+
+.header-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sidebar img {
+    width: 100px;
+    height: 90px;
+    border-radius: 50%;
+}
+
+.sidebar h2 {
+    font-size: 1.6rem;
+    color: black;
+}
+
+.back-btn {
+    color: white;
+    background-color:black;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin-top: 30px;
+    display: inline-block;
+    text-align: center;
+    transition: background-color 0.3s;
+    font-weight: bolder;
+}
+
+.back-btn:hover {
+    background-color: red;
+}
+
+/* Main Content Styling */
+.main-content {
+    flex-grow: 1;
+    padding: 50px;
+    margin: 40px;
+    background-color: #ffffffd9;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.8s ease;
+}
+
+.main-content h2 {
+    font-size: 2rem;
+    color: #2C3E50;
+    border-bottom: 2px solid red;
+    padding-bottom: 10px;
+    margin-bottom: 30px;
+}
+
+/* Profile Info Styling */
+.profile-info {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.profile-info p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    padding: 12px 16px;
+    background: linear-gradient(250deg, black,black );
+    border-left: 5px solid white;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+    font-weight: bold;
+}
+
+.profile-info p:hover {
+     background: linear-gradient(175deg,red,red );
+     color: black;
+}
+
+.profile-info strong {
+    display: inline-block;
+    width: 160px;
+    color: white;
+}
+
+/* Fade In Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        position: relative;
+        padding: 15px;
+    }
+
+    .main-content {
+        padding: 20px;
+        margin: 20px;
+    }
+
+    .header-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .sidebar h2 {
+        font-size: 1.4rem;
+        margin-top: 10px;
+
+    }
+
+    .profile-info p {
+        font-size: 1rem;
+    }
+
+    .back-btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+.sidebar h3{
+    color: black;
+}
+.edit-btn {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 10px 20px;
+    background-color: black;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    text-align: center;
+    transition: background-color 0.3s ease;
+    font-weight: bolder;
+}
+
+.edit-btn:hover {
+    background-color: red;
+}
+/* profile.css */
+
+
+
+
+h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: black;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+form p {
+    margin-bottom: 20px;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+    color: black;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid black;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+button.edit-btn {
+    background-color: black;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-top: 15px;
+}
+
+button.edit-btn:hover {
+    background-color: green;
+}
+
+a.back-btn {
+    display: inline-block;
+    text-align: center;
+    background-color: black;
+    color: white;
+    padding: 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 16px;
+    margin-top: 10px;
+    transition: background 0.3s;
+}
+
+a.back-btn:hover {
+    background-color: red;
+}
+/* Profile Section with Text and Image aligned to the right */
+
+.main-content {
+    max-width: 600px;
+    margin: 0px auto;
+    background: linear-gradient(175deg, white,transparent );
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 5.1);
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.header-container h2 {
+    font-size: 24px;
+    color: black;
+    font-weight: 600;
+}
+
+.header-container img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+}

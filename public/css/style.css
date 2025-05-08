@@ -1,0 +1,90 @@
+/* Custom styles for Python Management WebUI */
+
+/* General styles */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+}
+
+/* Card hover effects */
+.project-card {
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0,0,0,0.125);
+  height: 100%;
+}
+
+.project-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  border-color: #007bff;
+}
+
+/* Status indicators */
+.running-indicator {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+/* Log styles */
+.log-entry {
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+}
+
+.log-entry:last-child {
+  border-bottom: none;
+}
+
+.log-entry pre {
+  margin-top: 4px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Terminal-like log output */
+#logOutput {
+  background-color: #1e1e1e;
+  color: #f0f0f0;
+  border-radius: 0 0 4px 4px;
+  font-family: 'Consolas', 'Courier New', monospace;
+  line-height: 1.5;
+}
+
+/* Command output */
+#commandOutput pre {
+  background-color: #1e1e1e;
+  color: #f0f0f0;
+  border-radius: 4px;
+  padding: 10px;
+  font-family: 'Consolas', 'Courier New', monospace;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* Custom navbar */
+.navbar-brand {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .card-title {
+    font-size: 1.25rem;
+  }
+  
+  .project-actions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .project-actions .btn {
+    margin-bottom: 5px;
+  }
+}

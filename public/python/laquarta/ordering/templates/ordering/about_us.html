@@ -1,0 +1,107 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | Jaimes Lechon Bayug</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #121212;
+            color: white;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 36px;
+            color: red; /* Gold color for title */
+        }
+        h2 {
+            color: #FF4500; /* Orange-red color for subtitles */
+            margin-top: 20px;
+        }
+        p {
+            line-height: 1.6;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .mission {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .team {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .team-member {
+            flex: 1 1 30%;
+            margin: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .team-member img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>About Us</h1>
+        <p>Welcome to Jaimes Lechon Bayug! We are dedicated to providing the best lechon in Iligan City. Our commitment to quality and customer satisfaction has made us a favorite among locals and visitors alike.</p>
+        
+        <h2>Our Mission</h2>
+        <div class="mission">
+            <p>To serve delicious, quality food that brings people together and creates memorable experiences.</p>
+        </div>
+
+        <h2>Our Story</h2>
+        <p>Marc, his grandfather's lechon recipe was originally and solely made for their family until other people tasted Sir Jaime's delightful lechon recipe and requested for him to make one for them. He started as a home-service “mang-leletchon” and later on established Jaime's Lechon Bayug in the 80s.</p>
+
+        <h2>Meet the Team</h2>
+        <div class="team">
+            <div class="team-member">
+                <img src="{% static 'images/jimmy.jpg' %}"alt="Team Member 1">
+                <h3>Jimmy Luo Abitago</h3>
+                <p>Owner</p>
+            </div>
+            <div class="team-member">
+                 <img src="{% static 'images/marc.jpg' %}" alt="Team Member 2">
+                <h3>Marc James Abitago</h3>
+                <p>Co-Founder & Manager</p>
+            </div>
+            <div class="team-member">
+                <img src="{% static 'images/maam.jpg' %}" alt="Team Member 3">
+                <h3>Jay-Anne Kristi Mauricio Pame </h3>
+                <p>Admin</p>
+            </div>
+        </div>
+
+        <h2>Why Choose Us?</h2>
+        <p>At Jaimes Lechon Bayug, we pride ourselves on using only the freshest ingredients, traditional cooking methods, and a commitment to customer satisfaction. Our lechon is prepared with love and care, ensuring every bite is a delight.</p>
+        
+        <h2>Contact Us</h2>
+        <p>If you have any questions or would like to make a reservation, feel free to <a href="{% url 'contact_us' %}" style="color:red; text-decoration: underline;">contact us</a>.</p>
+    </div>
+
+</body>
+</html>

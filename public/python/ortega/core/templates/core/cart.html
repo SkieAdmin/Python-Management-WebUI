@@ -1,0 +1,438 @@
+{% extends 'core/customer_base.html' %}
+{% load static %}
+
+{% block title %}Your Shopping Cart{% endblock %}
+{% block page_title %}Your Shopping Cart ({{ total_items|default:"0" }} items){% endblock %}
+
+{% block extra_css %}
+<style>
+    .cart-table {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--threads-border);
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
+    
+    .cart-table th {
+        background-color: rgba(255, 255, 255, 0.05);
+        color: var(--threads-text);
+        font-weight: 600;
+        text-align: left;
+        padding: 15px;
+        font-size: 0.9rem;
+    }
+    
+    .cart-table td {
+        padding: 15px;
+        border-top: 1px solid var(--threads-border);
+        color: var(--threads-secondary-text);
+        font-size: 0.9rem;
+    }
+    
+    .cart-table tr:hover td {
+        background-color: rgba(255, 255, 255, 0.02);
+    }
+    
+    .product-display {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .product-display img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+    
+    .product-name {
+        font-weight: 500;
+        color: var(--threads-text);
+    }
+    
+    .quantity-control {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .quantity-control input {
+        width: 50px;
+        padding: 5px;
+        text-align: center;
+        background-color: rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--threads-border);
+        border-radius: 4px;
+        color: var(--threads-text);
+    }
+    
+    .quantity-control button {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--threads-border);
+        border-radius: 4px;
+        color: var(--threads-secondary-text);
+        cursor: pointer;
+        transition: var(--threads-transition);
+    }
+    
+    .quantity-control button:hover {
+        background-color: var(--threads-hover);
+        color: var(--threads-text);
+    }
+    
+    .remove-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background-color: rgba(231, 76, 60, 0.2);
+        border: 1px solid rgba(231, 76, 60, 0.3);
+        border-radius: 20px;
+        color: var(--threads-danger);
+        cursor: pointer;
+        font-size: 0.8rem;
+        transition: var(--threads-transition);
+    }
+    
+    .remove-btn:hover {
+        background-color: rgba(231, 76, 60, 0.3);
+    }
+    
+    .cart-summary {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--threads-border);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--threads-border);
+        color: var(--threads-secondary-text);
+    }
+    
+    .summary-row.total {
+        border-bottom: none;
+        padding-top: 15px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: var(--threads-text);
+    }
+    
+    .button-container {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+    }
+    
+    .button {
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: var(--threads-transition);
+    }
+    
+    .button-secondary {
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--threads-border);
+        color: var(--threads-secondary-text);
+    }
+    
+    .button-secondary:hover {
+        background-color: var(--threads-hover);
+        color: var(--threads-text);
+    }
+    
+    .button-primary {
+        background-color: var(--secondary-color);
+        color: black;
+    }
+    
+    .button-primary:hover {
+        background-color: #d35400;
+        transform: translateY(-2px);
+    }
+    
+    .empty-cart {
+        text-align: center;
+        padding: 50px 20px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--threads-border);
+        border-radius: 12px;
+    }
+    
+    .empty-cart i {
+        font-size: 3rem;
+        color: var(--threads-secondary-text);
+        margin-bottom: 20px;
+    }
+    
+    .empty-cart h2 {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+        color: var(--threads-text);
+    }
+    
+    .empty-cart p {
+        color: var(--threads-secondary-text);
+        max-width: 500px;
+        margin: 0 auto 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    {% if cart_items %}
+        <table class="cart-table">
+            <thead>
+                <tr>
+                    <th style="width: 40px;">
+                        <input type="checkbox" id="select-all" class="cart-checkbox" checked>
+                    </th>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                <tr data-item-id="{{ item.id }}" data-price="{{ item.get_total_price }}" class="cart-item-row">
+                    <td>
+                        <input type="checkbox" name="selected_items" value="{{ item.id }}" class="cart-checkbox item-checkbox" checked>
+                    </td>
+                    <td>
+                        <div class="product-display">
+                            {% if item.product.image %}
+                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                            {% else %}
+                                <img src="{% static 'images/placeholder.jpg' %}" alt="{{ item.product.name }}">
+                            {% endif %}
+                            <span class="product-name">{{ item.product.name }}</span>
+                        </div>
+                    </td>
+                    <td>₱{{ item.product.price }}</td>
+                    <td>
+                        <form method="post" action="{% url 'update_cart_item' item.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="update">
+                            <div class="quantity-control">
+                                <button type="button" onclick="decrementQuantity(this, '{{ item.id }}')">-</button>
+                                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock_quantity }}">
+                                <button type="button" onclick="incrementQuantity(this, parseInt('{{ item.product.stock_quantity }}'), '{{ item.id }}')">+</button>
+                            </div>
+                        </form>
+                    </td>
+                    <td>₱{{ item.get_total_price }}</td>
+                    <td>
+                        <form method="post" action="{% url 'update_cart_item' item.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="remove">
+                            <button type="submit" class="remove-btn">
+                                <i class="fas fa-trash"></i> Remove
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="cart-summary">
+            <div class="summary-row">
+                <span>Subtotal:</span>
+                <span id="subtotal">₱{{ total_price }}</span>
+            </div>
+            <div class="summary-row">
+                <span>Shipping:</span>
+                <span>Free</span>
+            </div>
+            <div class="summary-row total">
+                <span>Total:</span>
+                <span id="total-price">₱{{ total_price }}</span>
+            </div>
+            <div class="summary-row" id="selected-items-count">
+                <span>Selected Items:</span>
+                <span id="selected-count">{{ cart_items|length }}</span>
+            </div>
+        </div>
+
+        <div class="button-container">
+            <a href="{% url 'customer_dashboard' %}" class="button button-secondary">
+                <i class="fas fa-arrow-left"></i> Continue Shopping
+            </a>
+            <form id="checkout-form" action="{% url 'checkout_view' %}" method="get">
+                <div id="selected-items-inputs"></div>
+                <button type="submit" class="button button-secondary">
+                    <i class="fas fa-shopping-bag"></i> Proceed to Checkout
+                </button>
+            </form>
+        </div>
+    {% else %}
+        <div class="empty-cart">
+            <i class="fas fa-shopping-cart"></i>
+            <h2>Your cart is empty</h2>
+            <p>Looks like you haven't added any products to your cart yet.</p>
+            <a href="{% url 'customer_dashboard' %}" class="button button-primary">
+                <i class="fas fa-shopping-basket"></i> Start Shopping
+            </a>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+<style>
+    .cart-checkbox {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        accent-color: #2ecc71;
+    }
+    #select-all {
+        width: 20px;
+        height: 20px;
+        accent-color: #2ecc71;
+        border: 2px solid #2ecc71;
+    }
+    #checkout-form {
+        display: inline-block;
+        flex: 1;
+    }
+    #checkout-form button {
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        color: var(--threads-success);
+        font-family: inherit;
+        font-size: inherit;
+        font-weight: 500;
+        padding: 12px 20px;
+    }
+</style>
+<script>
+    // Handle checkboxes and update totals
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectAllCheckbox = document.getElementById('select-all');
+        const itemCheckboxes = document.querySelectorAll('.item-checkbox');
+        const subtotalElement = document.getElementById('subtotal');
+        const totalPriceElement = document.getElementById('total-price');
+        const selectedCountElement = document.getElementById('selected-count');
+        const checkoutForm = document.getElementById('checkout-form');
+        const selectedItemsInputs = document.getElementById('selected-items-inputs');
+        
+        // Function to update totals based on selected items
+        function updateTotals() {
+            let selectedTotal = 0;
+            let selectedCount = 0;
+            const selectedItems = [];
+            
+            // Clear previous hidden inputs
+            selectedItemsInputs.innerHTML = '';
+            
+            // Calculate total for selected items
+            itemCheckboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    const row = checkbox.closest('tr');
+                    const itemId = row.dataset.itemId;
+                    const itemPrice = parseFloat(row.dataset.price);
+                    
+                    selectedTotal += itemPrice;
+                    selectedCount++;
+                    selectedItems.push(itemId);
+                    
+                    // Add hidden input for selected item
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'selected_items';
+                    hiddenInput.value = itemId;
+                    selectedItemsInputs.appendChild(hiddenInput);
+                }
+            });
+            
+            // Update displayed totals
+            subtotalElement.textContent = '₱' + selectedTotal.toFixed(2);
+            totalPriceElement.textContent = '₱' + selectedTotal.toFixed(2);
+            selectedCountElement.textContent = selectedCount;
+        }
+        
+        // Handle select all checkbox
+        if (selectAllCheckbox) {
+            selectAllCheckbox.addEventListener('change', function() {
+                itemCheckboxes.forEach(checkbox => {
+                    checkbox.checked = selectAllCheckbox.checked;
+                });
+                updateTotals();
+            });
+        }
+        
+        // Handle individual item checkboxes
+        itemCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                // Update select all checkbox
+                const allChecked = Array.from(itemCheckboxes).every(cb => cb.checked);
+                if (selectAllCheckbox) {
+                    selectAllCheckbox.checked = allChecked;
+                }
+                updateTotals();
+            });
+        });
+        
+        // Initial update of totals
+        updateTotals();
+    });
+    
+    // AJAX quantity update for cart
+    function updateCartQuantity(form, itemId) {
+        const input = form.querySelector('input[name="quantity"]');
+        const quantity = input.value;
+        const csrfToken = form.querySelector('input[name="csrfmiddlewaretoken"]').value;
+        fetch(`/cart/update/${itemId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': csrfToken
+            },
+            body: `quantity=${quantity}&action=update`
+        })
+        .then(response => response.ok ? location.reload() : alert('Failed to update cart.'));
+    }
+
+    function incrementQuantity(button, maxStock, itemId) {
+        const form = button.closest('form');
+        const input = form.querySelector('input[name="quantity"]');
+        let currentValue = parseInt(input.value);
+        if (currentValue < maxStock) {
+            input.value = currentValue + 1;
+            updateCartQuantity(form, itemId);
+        }
+    }
+
+    function decrementQuantity(button, itemId) {
+        const form = button.closest('form');
+        const input = form.querySelector('input[name="quantity"]');
+        let currentValue = parseInt(input.value);
+        if (currentValue > 1) {
+            input.value = currentValue - 1;
+            updateCartQuantity(form, itemId);
+        }
+    }
+</script>
+{% endblock %}

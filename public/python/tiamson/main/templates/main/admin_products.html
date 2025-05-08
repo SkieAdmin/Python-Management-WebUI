@@ -1,0 +1,38 @@
+{% extends 'main/admin_base.html' %}
+
+{% block content %}
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+    <h1 style="font-size: 1.75rem; font-weight: 600; color: #2d3748;">Products</h1>
+    <a class="btn" href="{% url 'admin_product_create' %}">+ New Product</a>
+  </div>
+
+  <div style="background: #fff; padding: 1.5rem; border-radius: 0.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Price</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in products %}
+          <tr>
+            <td>{{ p.id }}</td>
+            <td>{{ p.name }}</td>
+            <td>₱{{ p.price }}</td>
+            <td>
+              <a href="{% url 'admin_product_edit' p.id %}" style="margin-right: 0.75rem; color: #3b82f6; font-weight: 500;">
+                Edit
+              </a>
+              <a href="{% url 'admin_product_delete' p.id %}" style="color: #e53e3e; font-weight: 500;">
+                Delete
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

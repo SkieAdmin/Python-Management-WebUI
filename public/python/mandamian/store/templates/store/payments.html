@@ -1,0 +1,89 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Payments Management - Lourgie Sari-Sari Store{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2 style="color: #87ceeb; margin-bottom: 1rem;">Payments Management</h2>
+    
+    <div style="margin-bottom: 1rem;">
+        <label for="statusFilter">Filter by Status:</label>
+        <select id="statusFilter" onchange="filterPayments(this.value)">
+            <option value="all">All</option>
+            <option value="WAITING">Waiting</option>
+            <option value="APPROVED">Approved</option>
+            <option value="REJECTED">Rejected</option>
+        </select>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Customer</th>
+                <th>Amount</th>
+                <th>Reference ID</th>
+                <th>Status</th>
+                <th>Receipt</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for payment in payments %}
+            <tr class="payment-row" data-status="{{ payment.status }}">
+                <td>{{ payment.created_at|date:"M d, Y H:i" }}</td>
+                <td>{{ payment.transaction.user.username }}</td>
+                <td>₱{{ payment.amount }}</td>
+                <td>{{ payment.reference_id }}</td>
+                <td>
+                    {% if payment.status == 'WAITING' %}
+                        <span style="color: #f0ad4e;">⌛ Waiting</span>
+                    {% elif payment.status == 'APPROVED' %}
+                        <span style="color: #5cb85c;">✓ Approved</span>
+                    {% else %}
+                        <span style="color: #d9534f;">✗ Rejected</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if payment.receipt_image %}
+                        <a href="{{ payment.receipt_image.url }}" target="_blank" class="btn">View Receipt</a>
+                    {% else %}
+                        No receipt
+                    {% endif %}
+                </td>
+                <td>
+                    {% if payment.status == 'WAITING' %}
+                        <button class="btn" style="background-color: #5cb85c;" onclick="updatePaymentStatus('{{ payment.id }}', 'APPROVED')">Approve</button>
+                        <button class="btn" style="background-color: #d9534f;" onclick="updatePaymentStatus('{{ payment.id }}', 'REJECTED')">Reject</button>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7">No payments found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function filterPayments(status) {
+    const rows = document.querySelectorAll('.payment-row');
+    rows.forEach(row => {
+        if (status === 'all' || row.dataset.status === status) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+function updatePaymentStatus(paymentId, status) {
+    if (confirm(`Are you sure you want to ${status.toLowerCase()} this payment?`)) {
+        // We'll implement this in the next step
+        alert('Payment status update functionality coming soon!');
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,294 @@
+{% extends 'base.html' %}
+
+{% block title %}Notifications{% endblock %}
+
+{% block extra_css %}
+<style>
+    .notification-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+    
+    .notification-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .notification-title {
+        margin: 0;
+        color: var(--primary-color);
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .notification-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        overflow: hidden;
+    }
+    
+    .notification-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1.5rem;
+    }
+    
+    .notification-table th {
+        text-align: left;
+        padding: 1rem;
+        background-color: #f5f5f5;
+        border-bottom: 2px solid var(--border);
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+    
+    .notification-table td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+        vertical-align: middle;
+    }
+    
+    .notification-table tr:last-child td {
+        border-bottom: none;
+    }
+    
+    .notification-table tbody tr {
+        transition: all 0.2s ease;
+    }
+    
+    .notification-table tbody tr:hover {
+        background-color: #f9f9f9;
+    }
+    
+    .notification-unread {
+        background-color: #f5f5f5;
+        font-weight: 600;
+    }
+    
+    .notification-date {
+        white-space: nowrap;
+        color: var(--text-dark);
+        font-family: monospace;
+        font-size: 0.9rem;
+    }
+    
+    .notification-type {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+    
+    .notification-type-order {
+        color: #1976d2;
+    }
+    
+    .notification-type-payment {
+        color: #2e7d32;
+    }
+    
+    .notification-type-system {
+        color: #d32f2f;
+    }
+    
+    .notification-message {
+        color: var(--text-dark);
+        line-height: 1.5;
+    }
+    
+    .notification-status {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-align: center;
+        white-space: nowrap;
+    }
+    
+    .status-read {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+    }
+    
+    .status-unread {
+        background-color: #e3f2fd;
+        color: #1976d2;
+    }
+    
+    .btn-mark-read {
+        background-color: #e3f2fd;
+        color: #1976d2;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+    
+    .btn-mark-read:hover {
+        background-color: #bbdefb;
+        transform: translateY(-2px);
+    }
+    
+    .btn-mark-all {
+        background-color: white;
+        color: var(--primary-color);
+        border: 1px solid var(--primary-color);
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+    
+    .btn-mark-all:hover {
+        background-color: var(--primary-color);
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    .empty-notification {
+        text-align: center;
+        padding: 3rem 2rem;
+    }
+    
+    .empty-notification-icon {
+        font-size: 4rem;
+        color: #e0e0e0;
+        margin-bottom: 1.5rem;
+    }
+    
+    .empty-notification-message {
+        font-size: 1.2rem;
+        color: var(--text-dark);
+        margin-bottom: 1rem;
+    }
+    
+    .empty-notification-submessage {
+        color: var(--text-muted);
+        margin-bottom: 2rem;
+    }
+    
+    @media (max-width: 768px) {
+        .notification-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .notification-card {
+            padding: 1.5rem;
+        }
+        
+        .notification-table {
+            display: block;
+            overflow-x: auto;
+        }
+        
+        .notification-date, .notification-status, .notification-type {
+            white-space: nowrap;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="notification-container">
+    <div class="notification-header">
+        <h1 class="notification-title">
+            <i class="fas fa-bell"></i> Notifications
+        </h1>
+        <div>
+            {% if notifications %}
+                <a href="{% url 'mark_all_notifications_as_read' %}" class="btn-mark-all">
+                    <i class="fas fa-check-double"></i> Mark All as Read
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="notification-card">
+        {% if notifications %}
+            <table class="notification-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Message</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for notification in notifications %}
+                        <tr class="{% if not notification.is_read %}notification-unread{% endif %}">
+                            <td class="notification-date">{{ notification.created_at|date:"M d, Y H:i" }}</td>
+                            <td>
+                                <span class="notification-type {% if 'order' in notification.notification_type %}notification-type-order{% elif 'payment' in notification.notification_type %}notification-type-payment{% else %}notification-type-system{% endif %}">
+                                    {% if 'order' in notification.notification_type %}
+                                        <i class="fas fa-shopping-cart"></i>
+                                    {% elif 'payment' in notification.notification_type %}
+                                        <i class="fas fa-credit-card"></i>
+                                    {% else %}
+                                        <i class="fas fa-bell"></i>
+                                    {% endif %}
+                                    {{ notification.get_notification_type_display }}
+                                </span>
+                            </td>
+                            <td class="notification-message">{{ notification.message }}</td>
+                            <td>
+                                <span class="notification-status {% if notification.is_read %}status-read{% else %}status-unread{% endif %}">
+                                    {% if notification.is_read %}
+                                        <i class="fas fa-check"></i> Read
+                                    {% else %}
+                                        <i class="fas fa-circle"></i> Unread
+                                    {% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                {% if not notification.is_read %}
+                                    <a href="{% url 'mark_notification_as_read' notification.id %}" class="btn-mark-read">
+                                        <i class="fas fa-check"></i> Mark as Read
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="empty-notification">
+                <div class="empty-notification-icon">
+                    <i class="fas fa-bell-slash"></i>
+                </div>
+                <p class="empty-notification-message">You have no notifications</p>
+                <p class="empty-notification-submessage">We'll notify you when there are updates to your orders or payments</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

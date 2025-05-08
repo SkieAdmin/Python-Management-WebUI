@@ -44,7 +44,15 @@ if (!fs.existsSync(projectsDir)) {
 // Configure multer for file upload
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, projectsDir);
+    // Extract to public/python/(last_name)/ directory
+    const extractDir = path.join(__dirname, '..', 'public', 'python', req.body.lastName);
+    
+    // Create directory if it doesn't exist
+    if (!fs.existsSync(extractDir)) {
+      fs.mkdirSync(extractDir, { recursive: true });
+    }
+    
+    cb(null, extractDir);
   },
   filename: (req, file, cb) => {
     cb(null, `${req.body.lastName}-${Date.now()}${path.extname(file.originalname)}`);
@@ -96,9 +104,10 @@ router.post('/upload', upload.single('projectFile'), async (req, res) => {
     const projectName = req.body.lastName;
     const status = req.body.status || 'Active';
     const port = 3000 + Math.floor(Math.random() * 1000); // Random port between 3000-3999
+    const customManagePyPath = req.body.managePyPath || ''; // Get custom manage.py path if provided
     
-    // Create project directory
-    const projectDir = path.join(projectsDir, projectName);
+    // Create project directory - now in public/python/(last_name)/
+    const projectDir = path.join(__dirname, '..', 'public', 'python', projectName);
     if (!fs.existsSync(projectDir)) {
       fs.mkdirSync(projectDir, { recursive: true });
     }
@@ -262,6 +271,7 @@ router.post('/upload', upload.single('projectFile'), async (req, res) => {
       mainPythonFile: mainPythonFile,
       isDjango: isDjango,
       djangoProjectDir: isDjango ? djangoProjectDir : null,
+      customManagePyPath: customManagePyPath, // Store custom manage.py path
       status: status,
       port: port,
       createdAt: new Date().toISOString(),
@@ -663,55 +673,86 @@ function startPythonProject(projectName, projectDir, mainPythonFile, port) {
     
     // Special handling for Django projects
     if (metadata.isDjango && metadata.mainPythonFile === 'manage.py') {
-      workingDir = metadata.djangoProjectDir || projectDir;
-      
-      // Double-check that manage.py exists in the working directory
-      const managePyPath = path.join(workingDir, 'manage.py');
-      if (!fs.existsSync(managePyPath)) {
-        console.error(`Error: manage.py not found at ${managePyPath}`);
+      // First check if a custom manage.py path was provided
+      if (metadata.customManagePyPath && metadata.customManagePyPath.trim() !== '') {
+        // Use the custom path provided by the user
+        const customPath = metadata.customManagePyPath.trim();
+        console.log(`Using custom manage.py path: ${customPath}`);
         
-        // Try to find manage.py anywhere in the project directory
-        const findManagePy = (dir, depth = 0, maxDepth = 3) => {
-          if (depth > maxDepth) return null;
-          
-          const files = fs.readdirSync(dir);
-          
-          // Check if manage.py exists in this directory
-          if (files.includes('manage.py')) {
-            return dir;
-          }
-          
-          // Check subdirectories
-          for (const file of files) {
-            const filePath = path.join(dir, file);
-            if (fs.statSync(filePath).isDirectory()) {
-              const result = findManagePy(filePath, depth + 1, maxDepth);
-              if (result) return result;
-            }
-          }
-          
-          return null;
-        };
-        
-        const foundDir = findManagePy(projectDir);
-        if (foundDir) {
-          console.log(`Found manage.py in ${foundDir}`);
-          workingDir = foundDir;
-          
-          // Update metadata for future runs
-          const metadataPath = path.join(projectsDir, `${metadata.name}.json`);
-          if (fs.existsSync(metadataPath)) {
-            const updatedMetadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
-            updatedMetadata.djangoProjectDir = foundDir;
-            fs.writeFileSync(metadataPath, JSON.stringify(updatedMetadata, null, 2));
-          }
+        // Determine if this is an absolute path or relative path
+        let managePyFullPath;
+        if (path.isAbsolute(customPath)) {
+          managePyFullPath = customPath;
         } else {
-          console.error('Could not find manage.py anywhere in the project directory');
+          // Relative to project directory
+          managePyFullPath = path.join(projectDir, customPath);
         }
+        
+        // Check if the file exists at the specified path
+        if (fs.existsSync(managePyFullPath)) {
+          console.log(`Custom manage.py found at: ${managePyFullPath}`);
+          // Extract the directory part of the path
+          workingDir = path.dirname(managePyFullPath);
+          cmd = `${pythonCmd} "${managePyFullPath}" runserver 0.0.0.0:${port}`;
+        } else {
+          console.error(`Error: Custom manage.py not found at ${managePyFullPath}`);
+          // Fall back to automatic detection
+          workingDir = metadata.djangoProjectDir || projectDir;
+        }
+      } else {
+        // No custom path, use automatic detection
+        workingDir = metadata.djangoProjectDir || projectDir;
+        
+        // Double-check that manage.py exists in the working directory
+        const managePyPath = path.join(workingDir, 'manage.py');
+        if (!fs.existsSync(managePyPath)) {
+          console.error(`Error: manage.py not found at ${managePyPath}`);
+          
+          // Try to find manage.py anywhere in the project directory
+          const findManagePy = (dir, depth = 0, maxDepth = 3) => {
+            if (depth > maxDepth) return null;
+            
+            const files = fs.readdirSync(dir);
+            
+            // Check if manage.py exists in this directory
+            if (files.includes('manage.py')) {
+              return dir;
+            }
+            
+            // Check subdirectories
+            for (const file of files) {
+              const filePath = path.join(dir, file);
+              if (fs.statSync(filePath).isDirectory()) {
+                const result = findManagePy(filePath, depth + 1, maxDepth);
+                if (result) return result;
+              }
+            }
+            
+            return null;
+          };
+          
+          const foundDir = findManagePy(projectDir);
+          if (foundDir) {
+            console.log(`Found manage.py in ${foundDir}`);
+            workingDir = foundDir;
+            
+            // Update metadata for future runs
+            const metadataPath = path.join(projectsDir, `${metadata.name}.json`);
+            if (fs.existsSync(metadataPath)) {
+              const updatedMetadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+              updatedMetadata.djangoProjectDir = foundDir;
+              fs.writeFileSync(metadataPath, JSON.stringify(updatedMetadata, null, 2));
+            }
+          } else {
+            console.error('Could not find manage.py anywhere in the project directory');
+          }
+        }
+        
+        cmd = `${pythonCmd} "${path.join(workingDir, 'manage.py')}" runserver 0.0.0.0:${port}`;
       }
       
-      cmd = `${pythonCmd} "${path.join(workingDir, 'manage.py')}" runserver 0.0.0.0:${port}`;
       console.log(`Starting Django project on port ${port} in directory ${workingDir}`);
+
     } else {
       cmd = `${pythonCmd} "${path.join(projectDir, mainPythonFile)}"`;
     }
@@ -931,6 +972,28 @@ router.post('/stop/:projectName', async (req, res) => {
   } catch (error) {
     console.error('Error stopping project:', error);
     res.status(500).render('error', { message: 'Error stopping project' });
+  }
+});
+
+// Logs route - display project logs
+router.get('/logs/:projectName', async (req, res) => {
+  try {
+    const { projectName } = req.params;
+    const metadataPath = path.join(projectsDir, `${projectName}.json`);
+    
+    if (fs.existsSync(metadataPath)) {
+      const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+      
+      // Ensure logs array exists
+      metadata.logs = metadata.logs || [];
+      
+      res.render('logs', { project: metadata });
+    } else {
+      res.status(404).render('error', { message: 'Project not found' });
+    }
+  } catch (error) {
+    console.error('Error displaying logs:', error);
+    res.status(500).render('error', { message: 'Error displaying logs' });
   }
 });
 

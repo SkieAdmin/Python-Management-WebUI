@@ -1,0 +1,388 @@
+{% extends 'base.html' %}
+
+{% block title %}Update Order Status{% endblock %}
+
+{% block extra_css %}
+<style>
+    .order-update-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+    
+    .order-update-card {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .order-update-header {
+        margin-bottom: 2rem;
+        position: relative;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .order-update-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin: 0;
+        font-family: 'Playfair Display', serif;
+    }
+    
+    .order-id {
+        font-family: monospace;
+        font-weight: 600;
+        background-color: #f5f5f5;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        color: var(--primary-color);
+    }
+    
+    .order-details {
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .order-detail-row {
+        display: flex;
+        margin-bottom: 0.8rem;
+        align-items: baseline;
+    }
+    
+    .order-detail-row:last-child {
+        margin-bottom: 0;
+    }
+    
+    .order-detail-label {
+        font-weight: 600;
+        color: var(--text-dark);
+        width: 160px;
+        flex-shrink: 0;
+    }
+    
+    .order-detail-value {
+        color: var(--text-dark);
+        flex: 1;
+    }
+    
+    .order-amount {
+        font-weight: 600;
+        color: #2e7d32;
+    }
+    
+    .order-status {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-align: center;
+    }
+    
+    .status-pending {
+        background-color: #fff8e1;
+        color: #f57c00;
+    }
+    
+    .status-accepted {
+        background-color: #e3f2fd;
+        color: #1976d2;
+    }
+    
+    .status-preparing {
+        background-color: #f3e5f5;
+        color: #9c27b0;
+    }
+    
+    .status-ready {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+    }
+    
+    .status-completed {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+    }
+    
+    .status-rejected, .status-cancelled {
+        background-color: #ffebee;
+        color: #d32f2f;
+    }
+    
+    .payment-status {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-align: center;
+    }
+    
+    .payment-unpaid {
+        background-color: #ffebee;
+        color: #d32f2f;
+    }
+    
+    .payment-processing {
+        background-color: #fff8e1;
+        color: #f57c00;
+    }
+    
+    .payment-paid {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+        outline: none;
+    }
+    
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    
+    .btn-update {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-update:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+    }
+    
+    .btn-cancel {
+        background-color: white;
+        color: var(--text-dark);
+        border: 1px solid var(--border);
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+    
+    .btn-cancel:hover {
+        background-color: #f5f5f5;
+        transform: translateY(-2px);
+    }
+    
+    .form-error {
+        color: #d32f2f;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+    }
+    
+    .status-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+    
+    .status-option {
+        padding: 0.4rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 1px solid var(--border);
+    }
+    
+    .status-option:hover {
+        transform: translateY(-2px);
+    }
+    
+    @media (max-width: 768px) {
+        .order-update-card {
+            padding: 1.5rem;
+        }
+        
+        .form-actions {
+            flex-direction: column;
+        }
+        
+        .order-detail-row {
+            flex-direction: column;
+        }
+        
+        .order-detail-label {
+            width: 100%;
+            margin-bottom: 0.3rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="order-update-container">
+    <div class="order-update-card">
+        <div class="order-update-header">
+            <h2 class="order-update-title">Update Order <span class="order-id">#{{ order.id }}</span> Status</h2>
+        </div>
+        
+        <div class="order-details">
+            <div class="order-detail-row">
+                <div class="order-detail-label">Customer:</div>
+                <div class="order-detail-value">{{ order.customer.user.get_full_name|default:order.customer.user.username }}</div>
+            </div>
+            
+            <div class="order-detail-row">
+                <div class="order-detail-label">Order Date:</div>
+                <div class="order-detail-value">{{ order.order_date|date:"M d, Y H:i" }}</div>
+            </div>
+            
+            <div class="order-detail-row">
+                <div class="order-detail-label">Total Amount:</div>
+                <div class="order-detail-value order-amount">${{ order.total_amount }}</div>
+            </div>
+            
+            <div class="order-detail-row">
+                <div class="order-detail-label">Current Status:</div>
+                <div class="order-detail-value">
+                    <span class="order-status status-{{ order.status }}">
+                        {{ order.get_status_display }}
+                    </span>
+                </div>
+            </div>
+            
+            <div class="order-detail-row">
+                <div class="order-detail-label">Payment Status:</div>
+                <div class="order-detail-value">
+                    <span class="payment-status payment-{{ order.payment_status }}">
+                        {{ order.get_payment_status_display }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <form method="post" id="updateStatusForm">
+            {% csrf_token %}
+            
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="form-error">
+                            {{ field.errors }}
+                        </div>
+                    {% endif %}
+                    
+                    {% if field.name == 'status' %}
+                        <div class="status-options">
+                            <div class="status-option status-pending" data-value="pending">Pending</div>
+                            <div class="status-option status-accepted" data-value="accepted">Accepted</div>
+                            <div class="status-option status-preparing" data-value="preparing">Preparing</div>
+                            <div class="status-option status-ready" data-value="ready">Ready</div>
+                            <div class="status-option status-completed" data-value="completed">Completed</div>
+                            <div class="status-option status-cancelled" data-value="cancelled">Cancelled</div>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            
+            <div class="form-actions">
+                <button type="submit" class="btn-update">
+                    <i class="fas fa-save"></i> Update Status
+                </button>
+                <a href="{% url 'order_detail' order.id %}" class="btn-cancel">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Quick status selection
+        const statusOptions = document.querySelectorAll('.status-option');
+        const statusSelect = document.querySelector('select[name="status"]');
+        
+        if (statusOptions.length > 0 && statusSelect) {
+            // Highlight the current status
+            const currentStatus = statusSelect.value;
+            statusOptions.forEach(option => {
+                if (option.getAttribute('data-value') === currentStatus) {
+                    option.style.borderColor = 'var(--primary-color)';
+                    option.style.borderWidth = '2px';
+                }
+            });
+            
+            // Add click handlers for status options
+            statusOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const value = this.getAttribute('data-value');
+                    statusSelect.value = value;
+                    
+                    // Update visual selection
+                    statusOptions.forEach(opt => {
+                        opt.style.borderColor = 'var(--border)';
+                        opt.style.borderWidth = '1px';
+                    });
+                    this.style.borderColor = 'var(--primary-color)';
+                    this.style.borderWidth = '2px';
+                });
+            });
+        }
+        
+        // Add focus effects to form controls
+        const formControls = document.querySelectorAll('.form-control');
+        formControls.forEach(control => {
+            control.addEventListener('focus', function() {
+                this.closest('.form-group').style.transform = 'translateX(5px)';
+                this.closest('.form-group').style.transition = 'transform 0.3s ease';
+            });
+            
+            control.addEventListener('blur', function() {
+                this.closest('.form-group').style.transform = 'translateX(0)';
+            });
+        });
+    });
+</script>
+{% endblock %}

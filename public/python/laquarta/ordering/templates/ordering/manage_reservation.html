@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="/static/images/logos.png" type="image/png">
+    <meta charset="UTF-8">
+    <title>Manage Reservation</title>
+    <link rel="stylesheet" href="{% static 'css/reservation_package.css' %}">
+
+</head>
+<body>
+
+    <a href="{% url 'custom_admin_dashboard' %}" class="back-link">← Back to Dashboard</a>
+
+    <h2>Manage Reservation #{{ reservation.id }}</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div>
+            <label for="status">Reservation Status</label>
+            <select name="status" id="status">
+                <option value="Pending" {% if reservation.status == "Pending" %}selected{% endif %}>Pending</option>
+                <option value="Accepted" {% if reservation.status == "Accepted" %}selected{% endif %}>Accepted</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="payment_status">Payment Status</label>
+            <select name="payment_status" id="payment_status">
+                <option value="Unpaid" {% if reservation.payment_status == "Unpaid" %}selected{% endif %}>Unpaid</option>
+                <option value="Paid" {% if reservation.payment_status == "Paid" %}selected{% endif %}>Paid</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="delivery_fee">Delivery Fee (₱)</label>
+            <input type="number" name="delivery_fee" id="delivery_fee" step="0.01" value="{{ reservation.delivery_fee }}">
+        </div>
+
+        <button type="submit">Update Reservation</button>
+    </form>
+
+</body>
+</html>

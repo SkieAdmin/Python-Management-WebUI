@@ -1,0 +1,264 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="/static/images/logos.png" type="image/png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <style>
+        /* Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    width: 100%;
+    max-width: 450px;
+    background-color: white;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 6.1);
+    padding: 30px;
+    margin: 20px auto;
+    border-radius: 10px;
+}
+
+/* Header Styles */
+.header-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid red;
+}
+
+.header-container img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 20px;
+    border: 3px solid black;
+    padding: 3px;
+    background-color: white;
+}
+
+.header-container h2 {
+    color: black;
+    text-shadow: 1px 1px 0 green;
+    font-size: 1.8rem;
+}
+
+/* Profile Info Section */
+.profile-info {
+    margin-bottom: 30px;
+}
+
+.profile-info h3 {
+    color: black;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 1.3rem;
+}
+
+.profile-info p {
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px dashed black;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.profile-info p:last-child {
+    border-bottom: none;
+}
+
+.profile-info strong {
+    color:black;
+    font-weight: 600;
+    min-width: 140px;
+    display: inline-block;
+}
+
+/* Button Styles */
+.edit-btn, .back-btn {
+    display: block;
+    width: 100%;
+    padding: 12px 0;
+    margin-bottom: 15px;
+    text-align: center;
+    border-radius: 5px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.edit-btn {
+    background-color: red;
+    color: white;
+}
+
+.edit-btn:hover {
+    background-color:green;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 3.1);
+}
+
+.back-btn {
+    background-color:red;
+    color: white;
+}
+
+.back-btn:hover {
+    background-color: green;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 5.1);
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        max-width: 100%;
+        margin: 10px;
+    }
+    
+    .header-container {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .header-container img {
+        margin-right: 0;
+        margin-bottom: 15px;
+    }
+    
+    .profile-info p {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .profile-info strong {
+        margin-bottom: 5px;
+    }
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.sidebar {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #d35400;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #e67e22;
+}
+
+/* Additional Styling for Profile Info */
+.profile-info p:nth-child(even) {
+    background-color: #fafafa;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+/* Status Indicator */
+.status-indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background-color: #2ecc71;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+/* Profile Card Effect */
+.sidebar {
+    position: relative;
+    overflow: hidden;
+}
+
+.sidebar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(to right, #d35400, #e67e22);
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar (Profile Info) -->
+        <div class="sidebar">
+            <header>
+                <div class="header-container">
+                    <!-- Add a circular logo or profile image -->
+                    <img src="{% static 'images/logos.png' %}" alt="Logo">
+                    <h2>User Profile</h2>
+                </div>
+            </header>
+
+            <!-- Profile Info Section (Top) -->
+            <div class="profile-info">
+                <h3>Profile Details</h3>
+                <p><strong>Username:</strong> {{ user.username }}</p>
+                <p><strong>Full Name:</strong> {{ user.profile.full_name }}</p>
+                <p><strong>Address:</strong> {{ user.profile.address }}</p>
+                <p><strong>Phone Number:</strong> {{ user.profile.phone_number }}</p>
+                <p><strong>Email Address:</strong> {{ user.profile.email_address }}</p>
+                <p><strong>Landmark:</strong> {{ user.profile.landmark }}</p>
+                <p><strong>Joined On:</strong> {{ user.date_joined }}</p>
+            </div>
+<br>
+<br>
+<br>
+<br><br>
+<br>
+<br>
+<br>
+<a href="{% url 'edit_profile' %}" class="edit-btn">Edit Profile</a>
+            <a href="{% url 'menu' %}" class="back-btn">Back to Menu</a>
+        </div>
+
+        
+    </div>
+</body>
+</html>

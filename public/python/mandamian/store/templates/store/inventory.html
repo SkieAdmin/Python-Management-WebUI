@@ -1,0 +1,242 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block title %}Inventory Management - Lourgie Sari-Sari Store{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/inventory.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h2 style="color: #87ceeb;">Inventory Management</h2>
+        <button class="btn" onclick="showAddProductForm()">Add New Product</button>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Status</th>
+                <th>Last Updated</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td>
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" style="width: 50px; height: 50px; object-fit: cover;">
+                    {% else %}
+                        <div style="width: 50px; height: 50px; background: #eee; display: flex; align-items: center; justify-content: center;">No Image</div>
+                    {% endif %}
+                </td>
+                <td>{{ product.name }}</td>
+                <td>{{ product.description }}</td>
+                <td>₱{{ product.price }}</td>
+                <td>
+                    <span {% if product.stock < 10 %}style="color: #d9534f;"{% endif %}>
+                        {{ product.stock }}
+                    </span>
+                </td>
+                <td>
+                    <span class="status-badge {% if product.is_active %}active{% else %}inactive{% endif %}">
+                        {% if product.is_active %}Active{% else %}Inactive{% endif %}
+                    </span>
+                </td>
+                <td>{{ product.updated_at|date:"M d, Y H:i" }}</td>
+                <td>
+                    <button class="btn" onclick="editProduct('{{ product.id }}')">Edit</button>
+                    <button class="btn" style="background-color: #5cb85c;" onclick="updateStock('{{ product.id }}')">Update Stock</button>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">No products in inventory.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Add Product Modal -->
+<div id="addProductModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);">
+    <div class="card" style="position: relative; top: 50%; left: 50%; transform: translate(-50%, -50%); max-width: 500px;">
+        <h3>Add New Product</h3>
+        <form id="addProductForm" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div style="display: flex; gap: 1rem;">
+                <button type="submit" class="btn">Add Product</button>
+                <button type="button" class="btn" style="background-color: #d9534f;" onclick="hideAddProductModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function showAddProductForm() {
+    document.getElementById('addProductModal').style.display = 'block';
+}
+
+function hideAddProductModal() {
+    document.getElementById('addProductModal').style.display = 'none';
+}
+
+function editProduct(productId) {
+    // Get the product details via AJAX
+    fetch(`/product/${productId}/`)
+        .then(response => response.json())
+        .then(product => {
+            // Create a modal for editing
+            const modal = document.createElement('div');
+            modal.id = 'editProductModal';
+            modal.style.cssText = 'display: block; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);';
+            
+            const modalContent = document.createElement('div');
+            modalContent.className = 'card';
+            modalContent.style.cssText = 'position: relative; top: 50%; left: 50%; transform: translate(-50%, -50%); max-width: 500px;';
+            
+            modalContent.innerHTML = `
+                <h3>Edit Product</h3>
+                <form id="editProductForm" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" value="${product.name}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description" required>${product.description}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="price">Price</label>
+                        <input type="number" id="price" name="price" step="0.01" value="${product.price}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="stock">Stock</label>
+                        <input type="number" id="stock" name="stock" value="${product.stock}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="is_active">Status</label>
+                        <select id="is_active" name="is_active">
+                            <option value="true" ${product.is_active ? 'selected' : ''}>Active</option>
+                            <option value="false" ${!product.is_active ? 'selected' : ''}>Inactive</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 1rem;">
+                        <button type="button" class="btn" onclick="saveProductChanges(${product.id})">Save Changes</button>
+                        <button type="button" class="btn" style="background-color: #d9534f;" onclick="closeEditModal()">Cancel</button>
+                    </div>
+                </form>
+            `;
+            
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+            
+            // Close modal when clicking outside
+            modal.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    closeEditModal();
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to load product details');
+        });
+}
+
+function updateStock(productId) {
+    const newStock = prompt('Enter new stock quantity:');
+    if (newStock !== null && !isNaN(newStock) && parseInt(newStock) >= 0) {
+        // Send AJAX request to update stock
+        fetch(`/product/${productId}/update-stock/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ stock: parseInt(newStock) })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Stock updated successfully!');
+                window.location.reload();
+            } else {
+                alert(data.error || 'Failed to update stock');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while updating stock');
+        });
+    } else if (newStock !== null) {
+        alert('Please enter a valid number for stock quantity');
+    }
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('addProductModal');
+    if (event.target == modal) {
+        hideAddProductModal();
+    }
+}
+
+function closeEditModal() {
+    const modal = document.getElementById('editProductModal');
+    if (modal) {
+        document.body.removeChild(modal);
+    }
+}
+
+function saveProductChanges(productId) {
+    const form = document.getElementById('editProductForm');
+    const formData = new FormData(form);
+    
+    fetch(`/product/${productId}/edit/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Product updated successfully!');
+            window.location.reload();
+        } else {
+            alert(data.error || 'Failed to update product');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while updating the product');
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

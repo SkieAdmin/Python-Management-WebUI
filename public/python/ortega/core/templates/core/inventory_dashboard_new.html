@@ -1,0 +1,211 @@
+{% extends 'core/staff_base.html' %}
+{% load static %}
+
+{% block title %}Inventory Management{% endblock %}
+{% block page_title %}Inventory Management{% endblock %}
+
+{% block content %}
+    <!-- Stats Overview -->
+    <div class="stats-container">
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="icon"><i class="fas fa-boxes"></i></div>
+            <h3>Total Products</h3>
+            <div class="number">{{ total_products }}</div>
+        </div>
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="200">
+            <div class="icon"><i class="fas fa-check-circle"></i></div>
+            <h3>In Stock</h3>
+            <div class="number">{{ in_stock_count }}</div>
+        </div>
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="300">
+            <div class="icon"><i class="fas fa-exclamation-triangle"></i></div>
+            <h3>Low Stock</h3>
+            <div class="number">{{ low_stock_count }}</div>
+        </div>
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="400">
+            <div class="icon"><i class="fas fa-times-circle"></i></div>
+            <h3>Out of Stock</h3>
+            <div class="number">{{ out_of_stock_count }}</div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <a href="{% url 'admin_dashboard' %}" class="action-button" data-aos="fade-up" data-aos-delay="100">
+            <span class="icon"><i class="fas fa-plus-circle"></i></span>
+            Add New Product
+        </a>
+        <a href="#" class="action-button" data-aos="fade-up" data-aos-delay="200">
+            <span class="icon"><i class="fas fa-file-export"></i></span>
+            Export Inventory
+        </a>
+        <a href="javascript:void(0)" class="action-button" id="print-report" data-aos="fade-up" data-aos-delay="300">
+            <span class="icon"><i class="fas fa-print"></i></span>
+            Print Report
+        </a>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-container" data-aos="fade-up" data-aos-delay="400">
+        <form action="" method="get" class="filter-form">
+            <div class="search-group">
+                <input type="text" name="search" placeholder="Search products..." value="{{ search_term }}">
+                <button type="submit"><i class="fas fa-search"></i></button>
+            </div>
+            <div class="filter-group">
+                <select name="category">
+                    <option value="">All Categories</option>
+                    {% for category in categories %}
+                        <option value="{{ category }}" {% if current_category == category %}selected{% endif %}>{{ category }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-group">
+                <select name="stock_status">
+                    <option value="">All Stock Status</option>
+                    <option value="in_stock" {% if stock_status == 'in_stock' %}selected{% endif %}>In Stock</option>
+                    <option value="low_stock" {% if stock_status == 'low_stock' %}selected{% endif %}>Low Stock</option>
+                    <option value="out_of_stock" {% if stock_status == 'out_of_stock' %}selected{% endif %}>Out of Stock</option>
+                </select>
+            </div>
+            
+            {% if search_term or current_category or stock_status %}
+                <a href="{% url 'inventory_dashboard' %}" class="clear-filters"><i class="fas fa-times"></i> Clear Filters</a>
+            {% endif %}
+        </form>
+    </div>
+
+    <!-- Inventory Table -->
+    <div class="table-container" data-aos="fade-up" data-aos-delay="500">
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Category</th>
+                    <th>Unit</th>
+                    <th>Price</th>
+                    <th>Current Stock</th>
+                    <th>Reorder Level</th>
+                    <th>Last Restock</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                    <tr>
+                        <td>
+                            <div class="product-name">
+                                {% if product.image %}
+                                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                                {% else %}
+                                    <img src="{% static 'images/placeholder.jpg' %}" alt="No image" class="product-image">
+                                {% endif %}
+                                <span>{{ product.name }}</span>
+                            </div>
+                        </td>
+                        <td>{{ product.category }}</td>
+                        <td>{{ product.unit }}</td>
+                        <td>₱{{ product.price }}</td>
+                        <td>{{ product.stock_quantity }}</td>
+                        <td>{{ product.reorder_level }}</td>
+                        <td>{{ product.last_restock_date }}</td>
+                        <td>
+                            {% if product.stock_quantity == 0 %}
+                                <span class="stock-status out-of-stock">Out of Stock</span>
+                            {% elif product.stock_quantity <= product.reorder_level %}
+                                <span class="stock-status low-stock">Low Stock</span>
+                            {% else %}
+                                <span class="stock-status in-stock">In Stock</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="{% url 'edit_product' product.id %}" class="action-button edit-button">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <a href="#" class="action-button restock-button">
+                                    <i class="fas fa-plus-circle"></i> Restock
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="9" style="text-align: center; padding: 30px;">No products found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        <a href="#" class="active">1</a>
+        <a href="#">2</a>
+        <a href="#">3</a>
+        <a href="#">Next</a>
+    </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Print report functionality
+        const printButton = document.getElementById('print-report');
+        if (printButton) {
+            printButton.addEventListener('click', function() {
+                // Create a printable version of the table
+                const printContent = document.querySelector('.table-container').cloneNode(true);
+                
+                // Create a new window for printing
+                const printWindow = window.open('', '_blank', 'height=600,width=800');
+                printWindow.document.write('<html><head><title>Inventory Report</title>');
+                
+                // Add styles for the print version
+                printWindow.document.write(`
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 20px; }
+                    h1 { text-align: center; margin-bottom: 20px; }
+                    table { width: 100%; border-collapse: collapse; }
+                    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                    th { background-color: #f2f2f2; }
+                    .print-header { margin-bottom: 20px; text-align: center; }
+                    .print-date { text-align: right; margin-bottom: 20px; }
+                    @media print {
+                        .no-print { display: none; }
+                    }
+                </style>
+                `);
+                
+                printWindow.document.write('</head><body>');
+                
+                // Add header and date
+                const now = new Date();
+                printWindow.document.write(`
+                    <div class="print-header">
+                        <h1>Inventory Report</h1>
+                        <div class="print-date">Generated on: ${now.toLocaleDateString()} ${now.toLocaleTimeString()}</div>
+                    </div>
+                `);
+                
+                // Add the table content
+                printWindow.document.write(printContent.innerHTML);
+                
+                // Add print button in the preview
+                printWindow.document.write(`
+                    <div style="margin-top: 20px; text-align: center;" class="no-print">
+                        <button onclick="window.print(); return false;" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            Print Report
+                        </button>
+                    </div>
+                `);
+                
+                printWindow.document.write('</body></html>');
+                printWindow.document.close();
+                printWindow.focus();
+            });
+        }
+    });
+</script>
+{% endblock %}

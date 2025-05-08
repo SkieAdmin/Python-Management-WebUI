@@ -1,0 +1,314 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="/static/images/logos.png" type="image/png">
+    <meta charset="UTF-8">
+    <title>Add New User - Admin Dashboard</title>
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* Body and Layout */
+        body {
+            background-image: url('/static/images/win.jpg');
+            backdrop-filter: blur(20px);
+            background-size: cover;
+            color: #333;
+            display: flex;
+            min-height: 100vh;
+             font-family: 'Courier New', monospace; /* Receipt-like font */
+        }
+        
+        /* Wrapper */
+        .wrapper {
+            display: flex;
+            width: 100%;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 300px;
+            background: linear-gradient(to bottom, transparent, black);
+            box-shadow: 0 6px 18px rgba(0, 0, 2, 4.15);
+            color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        .sidebar-header {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .sidebar-header h2 {
+            font-size: 30px;
+            color: red;
+            margin-bottom: 30px;
+        }
+        
+        /* Sidebar Links */
+        .sidebar-links {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .sidebar-links li {
+            margin-bottom: 20px;
+        }
+        
+        .sidebar-links a {
+            text-decoration: none;
+            color: white;
+            font-size: 26px;
+            transition: color 0.3s ease;
+            font-weight: bolder;
+            font-family: monospace;
+        }
+        
+        .sidebar-links a:hover {
+            color: red;
+        }
+        
+        /* Logout Button in Sidebar */
+        .logout-container {
+            margin-top: auto;
+        }
+        
+        .logout-button {
+            display: block;
+            text-align: center;
+            padding: 12px 25px;
+            background: linear-gradient(to right, transparent, red);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .logout-button:hover {
+            background: linear-gradient(to left, transparent, red);
+            transform: scale(1.05);
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+        
+        .content-header {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 28px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* Form Container */
+        .form-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            margin: 20px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .form-check {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .form-check-input {
+            margin-right: 10px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(to right, #3498db, #2c3e50);
+            color: white;
+            border: none;
+        }
+        
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+            border: none;
+            text-decoration: none;
+            display: inline-block;
+            margin-left: 10px;
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .form-error {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        /* Sidebar Logo */
+        .sidebar-logo {
+            width: 40%;
+            max-width: 100px;
+            margin-bottom: 30px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .wrapper {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .sidebar-links {
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .form-container {
+                margin: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <img src="{% static 'images/logos.png' %}" alt="Admin Dashboard Logo" class="sidebar-logo">
+            </div>
+            <ul class="sidebar-links">
+                <li><a href="{% url 'menu_list' %}">Manage Menu Items</a></li>
+                <li><a href="{% url 'manage_orders' %}">Manage Orders</a></li>
+                <li><a href="/custom-admin/reservation/manage/">Manage Reservations</a></li>
+                <li><a href="{% url 'order_list' %}">List of Orders</a></li>
+                <li><a href="{% url 'user_list' %}">Manage Users</a></li>
+            </ul>
+            <div class="logout-container">
+                <a href="{% url 'logout' %}" class="logout-button">Logout</a>
+            </div>
+        </nav>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <h1 class="content-header">Add New User</h1>
+            
+            <!-- User Form -->
+            <div class="form-container">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" class="form-control" required>
+                        {% if form.username.errors %}
+                            <div class="form-error">{{ form.username.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" class="form-control" required>
+                        {% if form.email.errors %}
+                            <div class="form-error">{{ form.email.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="first_name">First Name</label>
+                        <input type="text" id="first_name" name="first_name" class="form-control">
+                        {% if form.first_name.errors %}
+                            <div class="form-error">{{ form.first_name.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="last_name">Last Name</label>
+                        <input type="text" id="last_name" name="last_name" class="form-control">
+                        {% if form.last_name.errors %}
+                            <div class="form-error">{{ form.last_name.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-check">
+                        <input type="checkbox" id="is_staff" name="is_staff" class="form-check-input">
+                        <label for="is_staff" class="form-check-label">Admin Status</label>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" class="form-control" required>
+                        {% if form.password.errors %}
+                            <div class="form-error">{{ form.password.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password_confirm">Confirm Password</label>
+                        <input type="password" id="password_confirm" name="password_confirm" class="form-control" required>
+                        {% if form.password_confirm.errors %}
+                            <div class="form-error">{{ form.password_confirm.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Create User</button>
+                    <a href="{% url 'user_list' %}" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

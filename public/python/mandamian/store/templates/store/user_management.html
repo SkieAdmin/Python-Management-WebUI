@@ -1,0 +1,323 @@
+{% extends 'store/base.html' %}
+
+{% block title %}User Management - Lourgie Sari-Sari Store{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h2 style="color: #87ceeb;">User Management</h2>
+        <button class="btn" onclick="showAddUserForm()">Add New User</button>
+    </div>
+    
+    <div style="margin-bottom: 1rem;">
+        <label for="roleFilter">Filter by Role:</label>
+        <select id="roleFilter" onchange="filterUsers(this.value)">
+            <option value="all">All</option>
+            <option value="CUSTOMER">Customer</option>
+            <option value="STAFF">Staff</option>
+            <option value="ADMIN">Admin</option>
+            <option value="SUPPLIER">Supplier</option>
+        </select>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Phone</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr class="user-row" data-role="{{ user.role }}" data-user-id="{{ user.id }}">
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.get_role_display }}</td>
+                <td>{{ user.phone|default:"-" }}</td>
+                <td>
+                    {% if user.is_active %}
+                        <span style="color: #5cb85c;">Active</span>
+                    {% else %}
+                        <span style="color: #d9534f;">Inactive</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <button class="btn" onclick="editUser('{{ user.id }}')">Edit</button>
+                    <button class="btn" style="background-color: #f0ad4e;" onclick="changeRole('{{ user.id }}', '{{ user.username }}', '{{ user.role }}')">Change Role</button>
+                    {% if user.is_active %}
+                        <button class="btn" style="background-color: #d9534f;" onclick="toggleUserStatus('{{ user.id }}', false)">Deactivate</button>
+                    {% else %}
+                        <button class="btn" style="background-color: #5cb85c;" onclick="toggleUserStatus('{{ user.id }}', true)">Activate</button>
+                    {% endif %}
+                    <button class="btn" style="background-color: #dc3545;" onclick="deleteUser('{{ user.id }}', '{{ user.username }}')">Delete</button>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">No users found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Add User Modal -->
+<div id="userModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);">
+    <div class="card" style="position: relative; top: 50%; left: 50%; transform: translate(-50%, -50%); max-width: 500px;">
+        <h3 id="modalTitle">Add New User</h3>
+        <form id="userForm" method="post" action="{% url 'create_staff' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password1">Password:</label>
+                <input type="password" id="password1" name="password1" required>
+            </div>
+            <div class="form-group">
+                <label for="password2">Confirm Password:</label>
+                <input type="password" id="password2" name="password2" required>
+            </div>
+            <div class="form-group">
+                <label for="role">Role:</label>
+                <select id="role" name="role" required>
+                    <option value="STAFF">Staff</option>
+                    <option value="SUPPLIER">Supplier</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone:</label>
+                <input type="tel" id="phone" name="phone">
+            </div>
+            <div style="display: flex; gap: 1rem;">
+                <button type="submit" class="btn">Save</button>
+                <button type="button" class="btn" style="background-color: #d9534f;" onclick="hideUserModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Change Role Modal -->
+<div id="roleModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);">
+    <div class="card" style="position: relative; top: 50%; left: 50%; transform: translate(-50%, -50%); max-width: 500px;">
+        <h3>Change User Role</h3>
+        <p id="roleUserInfo">Change role for: <span id="roleUsername"></span></p>
+        <form id="roleForm" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="newRole">Select New Role:</label>
+                <select id="newRole" name="role" required>
+                    <option value="CUSTOMER">Customer</option>
+                    <option value="STAFF">Staff</option>
+                    <option value="ADMIN">Admin</option>
+                    <option value="SUPPLIER">Supplier</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 1rem;">
+                <button type="submit" class="btn">Save</button>
+                <button type="button" class="btn" style="background-color: #d9534f;" onclick="hideRoleModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function filterUsers(role) {
+    const rows = document.querySelectorAll('.user-row');
+    rows.forEach(row => {
+        if (role === 'all' || row.dataset.role === role) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+function showAddUserForm() {
+    document.getElementById('modalTitle').textContent = 'Add New Staff Account';
+    document.getElementById('userForm').reset();
+    document.getElementById('userModal').style.display = 'block';
+    
+    // Set up form submission
+    const form = document.getElementById('userForm');
+    form.onsubmit = function(e) {
+        e.preventDefault();
+        
+        // Validate passwords match
+        const password1 = document.getElementById('password1').value;
+        const password2 = document.getElementById('password2').value;
+        if (password1 !== password2) {
+            alert('Passwords do not match!');
+            return;
+        }
+        
+        const formData = new FormData(form);
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error);
+            } else {
+                alert(data.message);
+                location.reload(); // Refresh to show new user
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while creating the account');
+        });
+    };
+}
+
+function editUser(userId) {
+    document.getElementById('modalTitle').textContent = 'Edit User';
+    document.getElementById('password').required = false;
+    document.getElementById('userModal').style.display = 'block';
+    // We'll implement this in the next step
+    alert('User edit functionality coming soon!');
+}
+
+function hideUserModal() {
+    document.getElementById('userModal').style.display = 'none';
+}
+
+function toggleUserStatus(userId, activate) {
+    const action = activate ? 'activate' : 'deactivate';
+    if (confirm(`Are you sure you want to ${action} this user?`)) {
+        fetch(`/users/toggle/${userId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error);
+            } else {
+                // Update the UI
+                const row = document.querySelector(`tr[data-user-id="${userId}"]`);
+                const statusCell = row.querySelector('td:nth-child(5)');
+                const actionCell = row.querySelector('td:last-child');
+                
+                statusCell.innerHTML = `<span style="color: ${data.is_active ? '#5cb85c' : '#d9534f'}">${data.is_active ? 'Active' : 'Inactive'}</span>`;
+                
+                const toggleButton = actionCell.querySelector(data.is_active ? 'button:nth-child(2)' : 'button:nth-child(2)');
+                if (data.is_active) {
+                    toggleButton.textContent = 'Deactivate';
+                    toggleButton.style.backgroundColor = '#d9534f';
+                    toggleButton.onclick = () => toggleUserStatus(userId, false);
+                } else {
+                    toggleButton.textContent = 'Activate';
+                    toggleButton.style.backgroundColor = '#5cb85c';
+                    toggleButton.onclick = () => toggleUserStatus(userId, true);
+                }
+                
+                // Show success message
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while updating user status');
+        });
+    }
+}
+
+function deleteUser(userId, username) {
+    if (confirm(`Are you sure you want to permanently delete the user '${username}'? This action cannot be undone.`)) {
+        fetch(`/users/delete/${userId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error);
+            } else {
+                // Remove the row from the table
+                const row = document.querySelector(`tr[data-user-id="${userId}"]`);
+                row.remove();
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while deleting the user');
+        });
+    }
+}
+
+function changeRole(userId, username, currentRole) {
+    // Set up the role change modal
+    document.getElementById('roleUsername').textContent = username;
+    const roleSelect = document.getElementById('newRole');
+    roleSelect.value = currentRole;
+    
+    // Set up form submission
+    const form = document.getElementById('roleForm');
+    form.onsubmit = function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(form);
+        fetch(`/users/update-role/${userId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error);
+            } else {
+                // Update the UI
+                const row = document.querySelector(`tr[data-user-id="${userId}"]`);
+                row.querySelector('td:nth-child(3)').textContent = data.new_role;
+                row.dataset.role = data.role_code;
+                
+                alert(data.message);
+                hideRoleModal();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while updating the user role');
+        });
+    };
+    
+    // Show the modal
+    document.getElementById('roleModal').style.display = 'block';
+}
+
+function hideRoleModal() {
+    document.getElementById('roleModal').style.display = 'none';
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('userModal');
+    if (event.target == modal) {
+        hideUserModal();
+    }
+}
+</script>
+{% endblock %}

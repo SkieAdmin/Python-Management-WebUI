@@ -1,0 +1,48 @@
+{% extends "pos/base.html" %}
+{% load static %}
+{% load custom_filters %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'pos/css/receipt.css' %}">
+<div class="receipt-container" id="receipt">
+    <h2 class="store-name">COFFEE POS</h2>
+    <p class="receipt-info">Receipt #: {{ receipt.receipt_number }}</p>
+    <p>Date: {{ receipt.printed_at }}</p>
+    <hr>
+
+    <table class="item-table">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Qty</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order_items %}
+            <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.product.price|multiply:item.quantity|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <hr>
+    <p><strong>Payment Method:</strong> {{ receipt.payment_method }}</p>
+    <p><strong>Total:</strong> ₱{{ receipt.total_amount }}</p>
+    <hr>
+    <p class="thank-you">Thank you for your purchase!</p>
+</div>
+
+<button onclick="window.print()" class="print-button">🖨️ Print</button>
+
+<a href="{% url 'dashboard_cashier' %}" class="back-link">
+    <i class="fas fa-arrow-left"></i> Back to Dashboard
+  </a>
+
+
+{% endblock %}
+

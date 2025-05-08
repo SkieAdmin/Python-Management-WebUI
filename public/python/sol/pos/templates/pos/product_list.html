@@ -1,0 +1,407 @@
+{% extends 'pos/base.html' %}
+
+{% load static %}
+
+{% block title %}Manage Products{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'pos/css/products.css' %}">
+<style>
+:root {
+  --bg-color: #1e1816;
+  --card-bg: #493628;
+  --text-color: #E4E0E1;
+  --text-light: #D6C0B3;
+  --border-color: #AB886D;
+  --hover-bg: #5d4434;
+  --primary-color: #AB886D;
+  --secondary-color: #D6C0B3;
+  --accent-color: #D6C0B3;
+  --danger-color: #D9534F;
+}
+
+body {
+  background: var(--bg-color);
+  color: var(--text-color);
+}
+
+.content-header .page-title {
+  color: var(--accent-color);
+  
+    color: #AB886D;
+
+}
+.content-header .actions {
+  display: flex;
+  gap: 1em;
+  margin-top: 1em;
+  flex-wrap: wrap;
+}
+
+/* Button Styles */
+.btn, .btn-primary, .btn-secondary, .btn-outline-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.5em 1.2em;
+  border-radius: 0.3em;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  font-size: 1rem;
+  transition: background 0.13s, color 0.13s;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: var(--primary-color);
+  color: var(--bg-color);
+  border: 1px solid var(--primary-color);
+}
+.btn-primary:hover {
+  background: var(--hover-bg);
+  color: var(--accent-color);
+}
+
+.btn-secondary, .btn-outline-secondary {
+  background: transparent;
+  color: var(--accent-color);
+  border: 1px solid var(--accent-color);
+}
+.btn-secondary:hover, .btn-outline-secondary:hover {
+  background: var(--hover-bg);
+  color: var(--secondary-color);
+}
+
+/* Action buttons on table */
+.actions {
+    display: flex;
+    gap: 0.4em;
+}
+.btn-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.2em;
+    height: 2.2em;
+    border: none;
+    border-radius: 0.4em;
+    color: #fff;
+    font-size: 1.2em;
+    margin: 0 2px;
+    transition: background 0.18s, box-shadow 0.13s;
+    outline: none;
+    cursor: pointer;
+}
+
+.btn-edit {
+    background: var(--primary-color);
+}
+.btn-edit:hover, .btn-edit:focus {
+    background: var(--hover-bg);
+    color: var(--accent-color);
+    box-shadow: 0 0 0 2px var(--primary-color)66;
+}
+
+.btn-stock {
+    background: var(--accent-color);
+    color: var(--bg-color);
+}
+.btn-stock:hover, .btn-stock:focus {
+    background: var(--hover-bg);
+    color: var(--accent-color);
+    box-shadow: 0 0 0 2px var(--accent-color)66;
+}
+
+.btn-delete {
+    background: var(--danger-color);
+}
+.btn-delete:hover, .btn-delete:focus {
+    background: #b03030;
+    color: #fff;
+    box-shadow: 0 0 0 2px var(--danger-color)44;
+}
+
+/* For accessible focus state */
+.btn-action:focus {
+    outline: 2px solid #fff;
+    outline-offset: -2px;
+}
+
+.filter-panel {
+  background: var(--card-bg);
+  border: 1.5px solid var(--border-color);
+  border-radius: 0.5em;
+  padding: 1.2em 1em;
+  margin: 1em 0 1.5em 0;
+  color: var(--text-light);
+}
+.filters-form .form-row {
+  display: flex;
+  gap: 1.5em;
+  align-items: end;
+  flex-wrap: wrap;
+}
+.form-group label {
+  color: var(--accent-color);
+  font-weight: 500;
+  margin-bottom: .4em;
+}
+.form-group select, .form-group input, .form-control {
+  background: var(--bg-color);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  border-radius: .3em;
+  padding: .45em .8em;
+  font-size: 1em;
+  width: 100%;
+}
+.form-group select:focus, .form-group input:focus {
+  outline: none;
+  background: var(--hover-bg);
+  border-color: var(--primary-color);
+}
+
+/* Products Table */
+.products-container {
+  background: var(--card-bg);
+  border-radius: 0.5em;
+  padding: 1.5em;
+  border: 1.5px solid var(--border-color);
+  margin-bottom: 2em;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: transparent;
+  color: var(--text-color);
+}
+.table th, .table td {
+  padding: 0.8em;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+}
+.table th {
+  background: var(--card-bg);
+  color: var(--accent-color);
+  font-weight: 600;
+}
+.table-hover tbody tr:hover {
+  background: var(--hover-bg);
+}
+
+.product-image .img-placeholder {
+  font-size: 1.5em;
+  color: var(--accent-color);
+  background: var(--bg-color);
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px; width: 40px;
+  border: 1px solid var(--border-color);
+}
+
+.stock-badge {
+  display: inline-block;
+  padding: 0.3em 0.7em;
+  border-radius: 1em;
+  font-size: 0.98em;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+.in-stock { background: #244d2b; color: #cde7c1; }
+.low-stock { background: #704519; color: #ffe3b3; }
+.out-of-stock { background: var(--danger-color); color: #fff; }
+
+.status-badge {
+  padding: 0.27em 0.85em;
+  border-radius: 1em;
+  font-size: 0.98em;
+  font-weight: 600;
+}
+.status-active { background: var(--primary-color); color: var(--bg-color);}
+.status-inactive { background: var(--danger-color); color: #fff; }
+
+/* Alert styles */
+.alert {
+  padding: 0.8em 1em;
+  border-radius: 0.4em;
+  margin-bottom: 1em;
+  font-size: 1em;
+}
+.alert-success { background: #244d2b; color: #cde7c1; }
+.alert-error   { background: var(--danger-color); color: #fff; }
+.alert-warning { background: #704519; color: #ffe3b3; }
+
+.pagination .step-links {
+  display: flex;
+  gap: 1em;
+  align-items: center;
+  margin-top: 1.5em;
+  justify-content: center;
+}
+.pagination .current {
+  color: var(--secondary-color);
+}
+
+
+/* Miscellaneous */
+.text-center { text-align: center; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="content-header">
+  <h1 class="page-title">Manage Products</h1>
+  <div class="actions">
+    <a href="{% url 'add_product' %}" class="btn btn-primary">
+      <i class="fas fa-plus"></i> Add New Product
+    </a>
+    <button type="button" class="btn btn-secondary" id="filterToggle">
+      <i class="fas fa-filter"></i> Filter by Category
+    </button>
+  </div>
+</div>
+
+<div class="filter-panel" id="filterPanel" style="display: none;">
+  <form method="get" action="{% url 'product_list' %}" class="filters-form">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="category">Category:</label>
+        <select name="category" id="category" class="form-control">
+          <option value="">All Categories</option>
+          {% for category in categories %}
+            <option value="{{ category.id }}" {% if request.GET.category == category.id|stringformat:"s" %}selected{% endif %}>
+              {{ category.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group filters-buttons">
+        <button type="submit" class="btn btn-primary">Apply</button>
+        <a href="{% url 'product_list' %}" class="btn btn-outline-secondary">Reset</a>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="content-body">
+  {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="products-container">
+    <div class="table-responsive">
+      <table class="table table-hover product-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for product in products %}
+            <tr data-product-id="{{ product.id }}">
+              <td>{{ product.id }}</td>
+              <td class="product-image" style="text-align: center;">
+                {% if product.image %}
+                  <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-height: 48px; max-width: 48px; border-radius: 6px; border:1px solid #84654d;">
+                {% else %}
+                  <div class="img-placeholder">
+                    <i class="fas fa-coffee"></i>
+                  </div>
+                {% endif %}
+              </td>
+              <td>{{ product.name }}</td>
+              <td>{{ product.category.name }}</td>
+              <td>₱{{ product.price }}</td>
+              <td class="inventory-status">
+                {% if product.inventory.quantity_in_stock > 10 %}
+                  <span class="stock-badge in-stock">{{ product.inventory.quantity_in_stock }}</span>
+                {% elif product.inventory.quantity_in_stock > 0 %}
+                  <span class="stock-badge low-stock">{{ product.inventory.quantity_in_stock }}</span>
+                {% else %}
+                  <span class="stock-badge out-of-stock">Out of stock</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if product.inventory.quantity_in_stock > 0 %}
+                  <span class="status-badge status-active">Active</span>
+                {% else %}
+                  <span class="status-badge status-inactive">Inactive</span>
+                {% endif %}
+              </td>
+              <td class="actions">
+                <a href="{% url 'edit_product' product.id %}" class="btn-action btn-edit" title="Edit Product">
+                  <i class="fas fa-edit"></i>
+                </a>
+                <a href="{% url 'update_inventory' product.id %}" class="btn-action btn-stock" title="Update Stock">
+                  <i class="fas fa-boxes"></i>
+                </a>
+                <form method="post" action="{% url 'delete_product' product.id %}" style="display:inline;">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-action btn-delete" title="Delete Product" onclick="return confirm('Are you sure you want to delete {{ product.name }}?');">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </form>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="8" class="text-center">No products found</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {% if products.has_other_pages %}
+    <div class="pagination">
+      <span class="step-links">
+        {% if products.has_previous %}
+          <a href="?category={{ request.GET.category }}&page=1">&laquo; first</a>
+          <a href="?category={{ request.GET.category }}&page={{ products.previous_page_number }}">previous</a>
+        {% endif %}
+        <span class="current">
+          Page {{ products.number }} of {{ products.paginator.num_pages }}
+        </span>
+        {% if products.has_next %}
+          <a href="?category={{ request.GET.category }}&page={{ products.next_page_number }}">next</a>
+          <a href="?category={{ request.GET.category }}&page={{ products.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+      </span>
+    </div>
+  {% endif %}
+</div>
+
+<a href="{% url 'dashboard_manager' %}" class="btn btn-secondary">
+  <i class="fas fa-arrow-left"></i> Back to Dashboard
+</a>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const filterToggle = document.getElementById('filterToggle');
+    const filterPanel = document.getElementById('filterPanel');
+    filterToggle.addEventListener('click', function() {
+      filterPanel.style.display = filterPanel.style.display === 'none' ? 'block' : 'none';
+    });
+  });
+</script>
+{% endblock %}

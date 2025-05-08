@@ -1,0 +1,331 @@
+{% extends 'base.html' %}
+
+{% block title %}My Cart{% endblock %}
+
+{% block extra_css %}
+<style>
+    .cart-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+    
+    .cart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .cart-title {
+        margin: 0;
+        color: var(--primary-color);
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .cart-count {
+        font-family: monospace;
+        font-weight: 600;
+        background-color: #f5f5f5;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        color: var(--primary-color);
+        font-size: 1.1rem;
+    }
+    
+    .cart-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .cart-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1.5rem;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .cart-table th {
+        text-align: left;
+        padding: 1rem;
+        background-color: #f5f5f5;
+        border-bottom: 2px solid var(--border);
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+    
+    .cart-table td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+        vertical-align: middle;
+    }
+    
+    .cart-table tr:last-child td {
+        border-bottom: none;
+    }
+    
+    .cart-table tbody tr {
+        transition: all 0.2s ease;
+    }
+    
+    .cart-table tbody tr:hover {
+        background-color: #f9f9f9;
+    }
+    
+    .cart-item-name {
+        font-weight: 600;
+        color: var(--text-dark);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .cart-item-price {
+        color: var(--text-dark);
+    }
+    
+    .cart-item-quantity {
+        font-weight: 600;
+        background-color: #f5f5f5;
+        padding: 0.3rem 0.7rem;
+        border-radius: 50px;
+        display: inline-block;
+        text-align: center;
+        min-width: 2.5rem;
+    }
+    
+    .cart-item-subtotal {
+        font-weight: 600;
+        color: #2e7d32;
+    }
+    
+    .cart-total-row {
+        font-weight: 700;
+        background-color: #f9f9f9;
+    }
+    
+    .cart-total-row td {
+        border-top: 2px solid var(--border);
+        padding: 1.2rem 1rem;
+    }
+    
+    .cart-total-label {
+        text-align: right;
+        color: var(--text-dark);
+    }
+    
+    .cart-total-amount {
+        font-weight: 700;
+        color: var(--primary-color);
+        font-size: 1.1rem;
+    }
+    
+    .cart-actions {
+        margin-top: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .btn-continue {
+        background-color: white;
+        color: var(--text-dark);
+        border: 1px solid var(--border);
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+    
+    .btn-continue:hover {
+        background-color: #f5f5f5;
+        transform: translateY(-2px);
+    }
+    
+    .btn-checkout {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+    
+    .btn-checkout:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+    }
+    
+    .btn-remove {
+        background-color: #ffebee;
+        color: #d32f2f;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+    
+    .btn-remove:hover {
+        background-color: #ffcdd2;
+        transform: translateY(-2px);
+    }
+    
+    .empty-cart {
+        text-align: center;
+        padding: 3rem 2rem;
+    }
+    
+    .empty-cart-icon {
+        font-size: 4rem;
+        color: #e0e0e0;
+        margin-bottom: 1.5rem;
+    }
+    
+    .empty-cart-message {
+        font-size: 1.2rem;
+        color: var(--text-dark);
+        margin-bottom: 2rem;
+    }
+    
+    .btn-browse {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        margin: 0 auto;
+    }
+    
+    .btn-browse:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+    }
+    
+    @media (max-width: 768px) {
+        .cart-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .cart-card {
+            padding: 1.5rem;
+        }
+        
+        .cart-table {
+            display: block;
+            overflow-x: auto;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="cart-container">
+    <div class="cart-header">
+        <h1 class="cart-title">
+            <i class="fas fa-shopping-cart"></i> Shopping Cart
+            {% if cart_items %}
+                <span class="cart-count">{{ cart_items|length }}</span>
+            {% endif %}
+        </h1>
+    </div>
+    
+    {% if cart_items %}
+        <div class="cart-card">
+            <table class="cart-table">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Subtotal</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cart_item in cart_items %}
+                        <tr>
+                            <td>
+                                <div class="cart-item-name">
+                                    <i class="fas fa-pizza-slice"></i>
+                                    {{ cart_item.item.name }}
+                                </div>
+                            </td>
+                            <td class="cart-item-price">${{ cart_item.item.price }}</td>
+                            <td><span class="cart-item-quantity">{{ cart_item.quantity }}</span></td>
+                            <td class="cart-item-subtotal">${{ cart_item.subtotal }}</td>
+                            <td>
+                                <a href="{% url 'remove_from_cart' cart_item.item.id %}" class="btn-remove">
+                                    <i class="fas fa-trash-alt"></i> Remove
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    <tr class="cart-total-row">
+                        <td colspan="3" class="cart-total-label">Total:</td>
+                        <td class="cart-total-amount">${{ total }}</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="cart-actions">
+                <a href="{% url 'menu' %}" class="btn-continue">
+                    <i class="fas fa-arrow-left"></i> Continue Shopping
+                </a>
+                <a href="{% url 'create_order' %}" class="btn-checkout">
+                    <i class="fas fa-credit-card"></i> Proceed to Checkout
+                </a>
+            </div>
+        </div>
+    {% else %}
+        <div class="cart-card empty-cart">
+            <div class="empty-cart-icon">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+            <p class="empty-cart-message">Your cart is empty</p>
+            <p>Looks like you haven't added any items to your cart yet.</p>
+            <a href="{% url 'menu' %}" class="btn-browse">
+                <i class="fas fa-pizza-slice"></i> Browse Our Menu
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

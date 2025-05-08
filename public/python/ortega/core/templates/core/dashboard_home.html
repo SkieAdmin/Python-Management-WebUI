@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Customer Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f4f9; /* Light Gray for background */
+            color: #000; /* Black */
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background-color: #3A0A45; /* Deep Purple */
+            color: #ffab40; /* Dark Orange */
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar h1 {
+            color: #ffab40;
+            margin: 0;
+            font-size: 2em;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar a {
+            color: #ffab40; /* Dark Orange */
+            text-decoration: none;
+            margin: 0 10px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+        
+        .cart-link {
+            position: relative;
+            font-size: 1.2em;
+        }
+        
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #e64a19;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .search-bar {
+            display: flex;
+        }
+
+        .search-bar input[type="text"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .search-bar button {
+            padding: 10px 20px;
+            background-color: #ffab40; /* Dark Orange */
+            color: #000; /* Black */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .search-bar button:hover {
+            background-color: #e64a19; /* Darker Orange */
+            color: #fff;
+        }
+
+        /* Products Container Styles */
+        .products {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+            margin-top: 100px; /* Adjusted for fixed navbar */
+        }
+
+        /* Product Styles */
+        .product {
+            background: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            width: 300px; /* Adjust width as needed */
+            margin: 20px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .product:hover {
+            transform: translateY(-5px);
+        }
+
+        .product img {
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .product h3 {
+            font-size: 1.5em;
+            color: #e64a19; /* Dark Orange */
+            margin-bottom: 10px;
+        }
+
+        .product .price {
+            font-weight: bold;
+            color: #000; /* Black */
+            margin-bottom: 10px;
+        }
+
+        .product .quantity,
+        .product .stock {
+            font-size: 0.9em;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .product .out-of-stock {
+            color: #d32f2f; /* Red */
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="navbar">
+        <h1>Welcome, {{ user.first_name }} {{ user.last_name }}!</h1>  <!-- Added user's name -->
+        <div class="search-bar">
+            <form method="get" action="{% url 'customer_dashboard' %}">
+                <input type="text" name="search" placeholder="Search products...">
+                <button type="submit">Search</button>
+            </form>
+        </div>
+        <div class="nav-links">
+            <a href="{% url 'cart_view' %}" class="cart-link">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count">{{ request.user.cart_set.first.get_total_items|default:0 }}</span>
+            </a>
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
+    </div>
+
+    <div id="success-alert" style="display:none;position:fixed;top:80px;left:50%;transform:translateX(-50%);background:#3A0A45;color:#fff;padding:18px 40px;border-radius:8px;z-index:2000;font-size:1.2em;font-family:'Poppins',sans-serif;box-shadow:0 4px 16px rgba(0,0,0,0.13);text-align:center;min-width:260px;max-width:90vw;"></div>
+
+    <div class="products">
+        {% for product in products %}
+        <div class="product">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            {% endif %}
+            <h3>{{ product.name }}</h3>
+            <div class="price">${{ product.price }}</div>
+            <div class="quantity">Quantity: {{ product.stock_quantity }}</div>
+            {% if product.in_stock %}
+                <div class="stock">In Stock</div>
+                <button class="add-to-cart-btn" data-product-id="{{ product.id }}">Add to Cart</button>
+            {% else %}
+                <div class="stock out-of-stock">Out of Stock</div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+<script>
+// CSRF helper for Django
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Add to Cart AJAX
+function showSuccessAlert(msg) {
+    const alert = document.getElementById('success-alert');
+    alert.textContent = msg;
+    alert.style.display = 'block';
+    setTimeout(() => { alert.style.display = 'none'; }, 1800);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.add-to-cart-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const productId = this.getAttribute('data-product-id');
+            fetch('{% url "add_to_cart_ajax" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ product_id: productId, quantity: 1 })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    showSuccessAlert('Added to cart!');
+                    // Update cart count
+                    const cartCount = document.querySelector('.cart-count');
+                    if(cartCount && data.cart_count !== undefined) {
+                        cartCount.textContent = data.cart_count;
+                    }
+                } else {
+                    showSuccessAlert(data.error || 'Failed to add to cart.');
+                }
+            })
+            .catch(() => showSuccessAlert('Error adding to cart.'));
+        });
+    });
+});
+</script>
+</body>
+</html>

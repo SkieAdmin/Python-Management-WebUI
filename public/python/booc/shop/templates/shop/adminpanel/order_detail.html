@@ -1,0 +1,19 @@
+{% extends 'shop/adminpanel/base.html' %}
+{% block content %}
+  <h1><i class="fas fa-shopping-cart"></i> Order #{{ order.id }}</h1>
+  <dl>
+    <dt>Product</dt><dd>{{ order.product.name }}</dd>
+    <dt>Customer</dt><dd>{{ order.customer_name }} ({{ order.customer_email }})</dd>
+    <dt>Scheduled</dt><dd>{{ order.scheduled_for }}</dd>
+    <dt>Quantity</dt><dd>{{ order.quantity }}</dd>
+    <dt>Notes</dt><dd>{{ order.notes }}</dd>
+    <dt>Created At</dt><dd>{{ order.ordered_at }}</dd>
+  </dl>
+  <form onsubmit="return saveModal(this);" method="post" action="{% url 'shop_admin:order_edit_modal' order.id %}">
+    {% csrf_token %}{{ form.as_p }}
+    <button class="btn"><i class="fas fa-save"></i> Update Status</button>
+  </form>
+  <button class="btn-danger btn-sm" onclick="if(confirm('Delete this order?')) location.href='{% url 'shop_admin:order_delete' order.id %}'">
+    <i class="fas fa-trash"></i> Delete
+  </button>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Staff List{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card">
+        <h2 style="margin-bottom: 1.5rem;">Staff List</h2>
+        
+        {% if staff %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Admin</th>
+                        <th>Joined</th>
+                        <th>Last Login</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for staff_member in staff %}
+                        <tr>
+                            <td>{{ staff_member.id }}</td>
+                            <td>{{ staff_member.get_full_name|default:staff_member.username }}</td>
+                            <td>{{ staff_member.email }}</td>
+                            <td>{% if staff_member.is_superuser %}Yes{% else %}No{% endif %}</td>
+                            <td>{{ staff_member.date_joined|date:"M d, Y" }}</td>
+                            <td>{{ staff_member.last_login|date:"M d, Y H:i"|default:"-" }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No staff members found.</p>
+        {% endif %}
+        
+        <div style="margin-top: 1.5rem;">
+            <a href="{% url 'dashboard' %}" class="btn">Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

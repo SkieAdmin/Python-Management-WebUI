@@ -1,0 +1,252 @@
+{% extends 'core/staff_base.html' %}
+{% load static %}
+
+{% block title %}Customer Management{% endblock %}
+{% block page_title %}Customer Management{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stats-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .customers-table {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--threads-border);
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
+    
+    .customers-table table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .customers-table th {
+        background-color: rgba(255, 255, 255, 0.05);
+        color: var(--threads-text);
+        font-weight: 600;
+        text-align: left;
+        padding: 15px;
+        font-size: 0.9rem;
+    }
+    
+    .customers-table td {
+        padding: 15px;
+        border-top: 1px solid var(--threads-border);
+        color: var(--threads-secondary-text);
+        font-size: 0.9rem;
+    }
+    
+    .customers-table tr:hover td {
+        background-color: rgba(255, 255, 255, 0.02);
+    }
+    
+    .customer-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .customer-avatar {
+        width: 40px;
+        height: 40px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--threads-text);
+    }
+    
+    .customer-details {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .customer-name {
+        font-weight: 600;
+        color: var(--threads-text);
+    }
+    
+    .customer-email {
+        font-size: 0.85rem;
+        color: var(--threads-secondary-text);
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    
+    .status-active {
+        background-color: rgba(46, 204, 113, 0.2);
+        color: var(--threads-success);
+    }
+    
+    .status-new {
+        background-color: rgba(52, 152, 219, 0.2);
+        color: #3498db;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+    }
+    
+    .action-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: var(--threads-transition);
+    }
+    
+    .view-button {
+        background-color: rgba(255, 255, 255, 0.05);
+        color: var(--threads-secondary-text);
+    }
+    
+    .view-button:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: var(--threads-text);
+    }
+    
+    .message-button {
+        background-color: rgba(46, 204, 113, 0.1);
+        color: var(--threads-success);
+    }
+    
+    .message-button:hover {
+        background-color: rgba(46, 204, 113, 0.2);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="icon"><i class="fas fa-users"></i></div>
+            <h3>Total Customers</h3>
+            <div class="number">{{ customers.count }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="icon"><i class="fas fa-user-plus"></i></div>
+            <h3>New Customers</h3>
+            <div class="number">{{ customers.count|add:-10 }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="icon"><i class="fas fa-shopping-cart"></i></div>
+            <h3>Total Orders</h3>
+            <div class="number">{{ customers.count|add:25 }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="icon"><i class="fas fa-money-bill-wave"></i></div>
+            <h3>Revenue</h3>
+            <div class="number">₱{{ revenue|default:0 }}</div>
+        </div>
+    </div>
+
+    <!-- Filter and Search Bar -->
+    <div class="filter-container">
+        <form method="get" action="{% url 'customer_management' %}" class="filter-form">
+            <div class="search-group">
+                <input type="text" name="search" placeholder="Search customers..." value="{{ search_term }}">
+                <button type="submit"><i class="fas fa-search"></i></button>
+            </div>
+            
+            <div class="filter-group">
+                <select name="sort" onchange="this.form.submit()">
+                    <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Newest First</option>
+                    <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name (A-Z)</option>
+                    <option value="email" {% if sort_by == 'email' %}selected{% endif %}>Email</option>
+                </select>
+            </div>
+            
+            {% if search_term %}
+                <a href="{% url 'customer_management' %}" class="clear-filters"><i class="fas fa-times"></i> Clear Filters</a>
+            {% endif %}
+        </form>
+    </div>
+
+    <!-- Customers Table -->
+    <div class="customers-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Customer</th>
+                    <th>Username</th>
+                    <th>Date Joined</th>
+                    <th>Status</th>
+                    <th>Orders</th>
+                    <th>Total Spent</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for customer in customers %}
+                    <tr>
+                        <td>
+                            <div class="customer-info">
+                                <div class="customer-avatar">
+                                    {{ customer.first_name|first|upper }}{{ customer.last_name|first|upper }}
+                                </div>
+                                <div class="customer-details">
+                                    <span class="customer-name">{{ customer.first_name }} {{ customer.last_name }}</span>
+                                    <span class="customer-email">{{ customer.email }}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ customer.username }}</td>
+                        <td>{{ customer.date_joined|date:"M d, Y" }}</td>
+                        <td>
+                            {% if customer.date_joined|date:"Y-m-d" > "2025-04-26"|date:"Y-m-d" %}
+                                <span class="status-badge status-new">New</span>
+                            {% else %}
+                                <span class="status-badge status-active">Active</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ customer.id|add:3 }}</td>
+                        <td>₱{{ customer.id|add:1000|add:500 }}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="#" class="action-button view-button">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                                <a href="#" class="action-button message-button">
+                                    <i class="fas fa-envelope"></i> Message
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 30px;">No customers found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        <a href="#" class="active">1</a>
+        <a href="#">2</a>
+        <a href="#">3</a>
+        <a href="#">Next</a>
+    </div>
+{% endblock %}

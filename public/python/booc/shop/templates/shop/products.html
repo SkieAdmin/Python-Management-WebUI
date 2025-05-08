@@ -1,0 +1,308 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Products – Ground Coffee</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #5c4033;
+      --secondary: #a9746e;
+      --light-bg: #f9f6f2;
+      --text-dark: #333;
+      --text-light: #fff;
+      --modal-bg: #fff;
+      --input-bg: #f5f1ed;
+      --input-border: #ddd;
+      --disabled-bg: #ccc;
+      --disabled-text: #777;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: var(--light-bg);
+      color: var(--text-dark);
+      line-height: 1.6;
+    }
+    a { text-decoration: none; color: inherit; }
+    button { font-family: inherit; }
+
+    /* Products grid & cards */
+    .products-section {
+      max-width: 1200px;
+      margin: 3rem auto;
+      padding: 0 1rem;
+    }
+    .section-header {
+      display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;
+      margin-bottom: 2rem;
+    }
+    .section-title {
+      font-size: 2.5rem; color: var(--primary);
+    }
+    .section-description {
+      flex: 1 1 100%; text-align: center; font-size: 1.1rem; color: #666;
+      margin: 0.5rem 0 2rem;
+    }
+    .search-bar {
+      position: relative; max-width: 300px; margin-left: auto;
+    }
+    .search-bar input {
+      width:100%; padding:.8rem 1rem .8rem 2.5rem; border:1px solid var(--input-border);
+      border-radius:2rem; background:var(--input-bg); font-size:1rem; transition:border-color .2s;
+    }
+    .search-bar .fa-search {
+      position:absolute; top:50%; left:1rem; transform:translateY(-50%); color:#999;
+    }
+    .products-grid {
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:2rem;
+    }
+    .product-card {
+      background:#fff; border-radius:1rem; overflow:hidden;
+      box-shadow:0 8px 20px rgba(0,0,0,0.08);
+      transition:transform .3s,box-shadow .3s;
+      display:flex; flex-direction:column;
+    }
+    .product-card:hover {
+      transform:translateY(-8px); box-shadow:0 12px 30px rgba(0,0,0,0.12);
+    }
+    .product-card.unavailable {
+      opacity: 0.6;
+    }
+    .product-card.unavailable .nav-btn {
+      background: var(--disabled-bg);
+      color: var(--disabled-text);
+      cursor: not-allowed;
+    }
+    .product-card img { width:100%; height:200px; object-fit:cover; }
+    .product-details {
+      flex:1; padding:1.5rem; display:flex; flex-direction:column;
+    }
+    .product-details h3 { margin-bottom:.75rem; font-size:1.5rem; color:var(--primary); }
+    .product-details p { flex:1; margin-bottom:1rem; font-size:.95rem; color:#555; }
+    .product-details .price {
+      font-size:1.25rem; font-weight:bold; color:var(--secondary); margin-bottom:1rem;
+    }
+    .product-details .nav-btn {
+      align-self:flex-start; padding:.75rem 1.5rem;
+      background:var(--secondary); color:var(--text-light); border:none; border-radius:.5rem;
+      cursor:pointer; transition:background .3s;
+    }
+    .product-details .nav-btn:hover {
+      background:var(--primary);
+    }
+    .product-details .nav-btn i { margin-right:.5rem; }
+    .no-products { text-align:center; color:#777; font-size:1.2rem; margin-top:2rem; }
+
+    /* Modal */
+    .modal {
+      display:none; position:fixed; inset:0;
+      background:rgba(0,0,0,0.6); align-items:center; justify-content:center;
+      padding:1rem; z-index:1000;
+    }
+    .modal.show { display:flex; }
+    .modal-content {
+      background:var(--modal-bg); border-radius:1rem; width:100%; max-width:480px;
+      padding:2rem; position:relative; box-shadow:0 12px 30px rgba(0,0,0,0.1);
+      animation:fadeInScale .4s ease-out; z-index:1001;
+    }
+    @keyframes fadeInScale {
+      from {opacity:0; transform:scale(0.9);} to {opacity:1; transform:scale(1);}
+    }
+    .modal .close {
+      position:absolute; top:1.2rem; right:1.2rem; font-size:1.4rem; color:#aaa;
+      cursor:pointer; transition:color .2s; z-index:1002;
+    }
+    .modal .close:hover { color:var(--primary); }
+    .modal-content h2 {
+      margin-bottom:1.5rem; color:var(--primary); text-align:center;
+    }
+
+    .form-group {
+      position:relative; margin-bottom:1.25rem;
+    }
+    .form-group label {
+      display:block; margin-bottom:.4rem; font-weight:600;
+    }
+    .form-group input,
+    .form-group textarea {
+      width:100%; padding:.75rem 1rem .75rem 2.5rem;
+      border:1px solid var(--input-border); border-radius:.5rem;
+      background:var(--input-bg); font-size:1rem; transition:border-color .2s;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color:var(--primary); outline:none;
+    }
+    .form-group .fa-icon {
+      position:absolute; left:1rem; top:70%; transform:translateY(-50%);
+      color:#999; pointer-events:none;
+    }
+
+    .submit-btn {
+      width:100%; padding:.75rem; background:var(--secondary);
+      color:var(--text-light); border:none; border-radius:.5rem;
+      font-size:1.1rem; cursor:pointer; transition:background .3s;
+    }
+    .submit-btn:hover { background:var(--primary); }
+    .submit-btn i { margin-right:.5rem; }
+
+    @media(max-width:600px){
+      .section-title { font-size:2rem; }
+      .product-details h3 { font-size:1.3rem; }
+    }
+  </style>
+</head>
+<body>
+
+  {% include 'shop/navbar.html' %}
+
+  <section class="products-section">
+    <div class="section-header">
+      <h1 class="section-title">Our Coffee Selection</h1>
+    </div>
+    <p class="section-description">
+      Discover our rich, aromatic coffees carefully curated for every taste.
+    </p>
+    <div id="productsGrid" class="products-grid">
+      {% for product in products %}
+        <div class="product-card {% if not product.available %}unavailable{% endif %}"
+             data-name="{{ product.name|lower }}">
+          {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+          {% else %}
+            <img src="{% static 'images/default_coffee.jpg' %}" alt="{{ product.name }}">
+          {% endif %}
+          <div class="product-details">
+            <h3>{{ product.name }}</h3>
+            <p>{{ product.description|truncatechars:100 }}</p>
+            <span class="price">₱{{ product.price }}</span>
+
+            {% if product.available %}
+              <button class="nav-btn open-order-btn" data-product-id="{{ product.id }}">
+                <i class="fas fa-shopping-cart"></i> Order Now
+              </button>
+            {% else %}
+              <button class="nav-btn" disabled>
+                <i class="fas fa-ban"></i> Unavailable
+              </button>
+            {% endif %}
+          </div>
+        </div>
+      {% empty %}
+        <p class="no-products">No products available right now.</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  {% include 'shop/footers.html' %}
+
+  <!-- Modal -->
+  <div id="orderModal" class="modal">
+    <div class="modal-content">
+      <span id="modalClose" class="close">&times;</span>
+      <h2>Place Your Order</h2>
+
+      <form id="orderForm" method="post" action="{% url 'submit_order' %}">
+        {% csrf_token %}
+        <input type="hidden" name="product_id" id="modalProductId">
+
+        <div class="form-group">
+          <i class="fas fa-user fa-icon"></i>
+          <label for="full_name">Full Name</label>
+          <input required type="text" id="full_name" name="full_name">
+        </div>
+
+        <div class="form-group">
+          <i class="fas fa-envelope fa-icon"></i>
+          <label for="email">Email Address</label>
+          <input required type="email" id="email" name="email">
+        </div>
+
+        <div class="form-group">
+          <i class="fas fa-map-marker-alt fa-icon"></i>
+          <label for="address">Address</label>
+          <textarea required id="address" name="address" rows="2"></textarea>
+        </div>
+
+        <div class="form-group">
+          <i class="fas fa-phone fa-icon"></i>
+          <label for="contact">Contact Number</label>
+          <input required type="tel" id="contact" name="contact">
+        </div>
+
+        <div class="form-group">
+          <i class="fas fa-mug-hot fa-icon"></i>
+          <label for="quantity">Quantity</label>
+          <input required type="number" id="quantity" name="quantity" min="1">
+        </div>
+
+        <div class="form-group">
+          <i class="fas fa-calendar-alt fa-icon"></i>
+          <label for="scheduled_for">Date &amp; Time</label>
+          <input required type="datetime-local" id="scheduled_for" name="scheduled_for">
+        </div>
+
+        <div class="form-group">
+          <i class="fas fa-sticky-note fa-icon"></i>
+          <label for="notes">Notes (optional)</label>
+          <textarea id="notes" name="notes" rows="3"></textarea>
+        </div>
+
+        <button class="submit-btn" type="submit">
+          <i class="fas fa-paper-plane"></i> Submit Order
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const modal = document.getElementById('orderModal');
+      const openBtns = document.querySelectorAll('.open-order-btn');
+      const closeBtn = document.getElementById('modalClose');
+      const pidInput = document.getElementById('modalProductId');
+
+      openBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          pidInput.value = btn.dataset.productId;
+          modal.classList.add('show');
+        });
+      });
+
+      closeBtn.addEventListener('click', () => modal.classList.remove('show'));
+      window.addEventListener('click', e => {
+        if (e.target === modal) modal.classList.remove('show');
+      });
+
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('ordered') === '1') {
+        Swal.fire({
+          icon: 'success',
+          title: 'Order Placed!',
+          text: 'Thank you! Your order has been successfully submitted.',
+          timer: 2500,
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false
+        });
+        history.replaceState(null, '', window.location.pathname);
+      }
+
+      const searchInput = document.getElementById('searchInput');
+      const cards = document.querySelectorAll('.product-card');
+      searchInput.addEventListener('input', () => {
+        const term = searchInput.value.toLowerCase();
+        cards.forEach(c => {
+          c.style.display = c.dataset.name.includes(term) ? 'flex' : 'none';
+        });
+      });
+    });
+  </script>
+</body>
+</html>

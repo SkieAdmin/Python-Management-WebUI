@@ -1,0 +1,491 @@
+{% load static %}
+{% load tz %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="{% static 'images/logos.png' %}" type="image/png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Payment Proofs</title>
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+    <style>
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.5;
+            padding-bottom: 20px;
+        }
+        
+        /* Header Styles */
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: white;
+            padding: 15px 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .header-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
+        }
+        
+        .header-container h2 {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .back-button {
+            display: inline-block;
+            padding: 8px 15px;
+            background-color: #c00;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .back-button:hover {
+            background-color: #900;
+        }
+        
+        /* Gallery Container */
+        .gallery-container {
+            max-width: 1200px;
+            margin: 0 auto 20px;
+            padding: 0 15px;
+        }
+        
+        .gallery-header {
+            padding: 12px 15px;
+            background-color: white;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            border-left: 3px solid #c00;
+        }
+        
+        .gallery-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        /* Image Grid */
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .no-images {
+            padding: 20px;
+            text-align: center;
+            color: #777;
+            grid-column: 1 / -1;
+            background-color: white;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        
+        /* Receipt Card */
+        .image-card {
+            border-radius: 4px;
+            background-color: white;
+            border: 1px solid #ddd;
+            overflow: hidden;
+        }
+        
+        /* Status-based styling */
+        .image-card[data-status="pending"] {
+            border-top: 3px solid #f0ad4e;
+        }
+        
+        .image-card[data-status="paid"] {
+            border-top: 3px solid #5cb85c;
+        }
+        
+        .image-card[data-status="cancelled"] {
+            border-top: 3px solid #d9534f;
+        }
+        
+        /* Receipt header */
+        .receipt-header {
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #eee;
+            background-color: #f9f9f9;
+        }
+        
+        /* Image Container */
+        .image-container {
+            position: relative;
+            height: 150px;
+            overflow: hidden;
+        }
+        
+        .receipt-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+        }
+        
+        .source-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .reservation-badge {
+            background-color: #c00;
+        }
+        
+        .order-badge {
+            background-color: #080;
+        }
+        
+        /* Receipt Info */
+        .image-info {
+            padding: 10px;
+        }
+        
+        .item-details {
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .item-details span:first-child {
+            color: #555;
+            font-weight: bold;
+        }
+        
+        /* Price styling */
+        .price-detail {
+            font-weight: bold;
+            font-size: 1rem;
+            margin: 8px 0;
+            text-align: right;
+            border-top: 1px solid #eee;
+            padding-top: 8px;
+            color: #c00;
+        }
+        
+        .date-info {
+            font-size: 0.75rem;
+            color: #777;
+            text-align: center;
+            border-top: 1px solid #eee;
+            padding-top: 8px;
+            margin-top: 8px;
+        }
+        
+        /* Receipt footer */
+        .receipt-footer {
+            text-align: center;
+            font-size: 0.8rem;
+            font-style: italic;
+            padding: 8px 0;
+            background-color: #f9f9f9;
+            border-top: 1px solid #eee;
+            color: #777;
+        }
+        
+        /* Status indicator */
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .status-paid {
+            background-color: #5cb85c;
+        }
+        
+        .status-pending {
+            background-color: #f0ad4e;
+        }
+        
+        .status-cancelled {
+            background-color: #d9534f;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+        }
+        
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            color: white;
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .modal-content {
+            display: block;
+            max-width: 80%;
+            max-height: 80vh;
+            margin: 40px auto;
+            object-fit: contain;
+            border-radius: 4px;
+        }
+        
+        .modal-details {
+            text-align: center;
+            color: white;
+            padding: 15px;
+            font-size: 1rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 3px;
+            color: white;
+            font-size: 0.8rem;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+        
+        .badge-reservation {
+            background-color: #c00;
+        }
+        
+        .badge-order {
+            background-color: #080;
+        }
+        
+        .badge-paid {
+            background-color: #5cb85c;
+        }
+        
+        .badge-pending {
+            background-color: #f0ad4e;
+        }
+        
+        .badge-cancelled {
+            background-color: #d9534f;
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .image-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+            
+            .header-container h2 {
+                font-size: 1.1rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .image-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-container {
+                flex-direction: column;
+            }
+            
+            .header-left {
+                margin-bottom: 10px;
+            }
+            
+            .header-right {
+                width: 100%;
+                text-align: center;
+            }
+            
+            .back-button {
+                width: 100%;
+                display: block;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header-container">
+        <div class="header-left">
+            <img src="{% static 'images/logos.png' %}" alt="Reservation Icon" class="header-icon">
+            <h2>Jaimes Lechon Bayug | My Payment Proofs</h2>
+        </div>
+        <div class="header-right">
+            <a href="{% url 'menu' %}" class="back-button">Back to Menu</a>
+        </div>
+    </div>
+    
+    <div class="gallery-container">
+        <div class="gallery-header">
+            <h3 class="gallery-title">My Reservation Receipt Images</h3>
+        </div>
+        <div class="image-grid">
+            {% if user_reservations %}
+                {% for r in user_reservations %}
+                    {% if r.gcash_screenshot %}
+                        <div class="image-card" data-status="{{ r.payment_status|lower }}" data-type="reservation">
+                            <div class="receipt-header">Payment Proof</div>
+                            <div class="image-container">
+                                <img src="{{ r.gcash_screenshot.url }}" alt="GCash Receipt" class="receipt-image"
+                                    onclick="zoomImage(this, '{{ r.kilos }} kg | {{ r.get_package_deal_display }}', '{{ r.date_time|localtime }}', 'Reservation - {{ r.payment_status|title }}', '₱{{ r.price }}')">
+                                <span class="source-badge reservation-badge">Reservation</span>
+                            </div>
+                            <div class="image-info">
+                                <div class="item-details"><span>Package:</span> <span>{{ r.get_package_deal_display }}</span></div>
+                                <div class="item-details"><span>Quantity:</span> <span>{{ r.kilos }} kg</span></div>
+                                <div class="item-details">
+                                    <span>Status:</span> 
+                                    <span>
+                                        <span class="status-indicator status-{{ r.payment_status|lower }}"></span>
+                                        {{ r.payment_status|title }}
+                                    </span>
+                                </div>
+                                <div class="price-detail">Total: ₱{{ r.price }}</div>
+                                <div class="date-info">{{ r.date_time|localtime }}</div>
+                            </div>
+                            <div class="receipt-footer">Thank You!</div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <div class="no-images">
+                    <p>No reservation receipt images found.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="gallery-container">
+        <div class="gallery-header">
+            <h3 class="gallery-title">My Order Receipt Images</h3>
+        </div>
+        <div class="image-grid">
+            {% if user_orders %}
+                {% for o in user_orders %}
+                    {% if o.gcash_screenshot %}
+                        <div class="image-card" data-status="{{ o.payment_status|lower }}" data-type="order">
+                            <div class="receipt-header">Payment Proof</div>
+                            <div class="image-container">
+                                <img src="{{ o.gcash_screenshot.url }}" alt="GCash Receipt" class="receipt-image"
+                                    onclick="zoomImage(this, '{{ o.item.name }} ({{ o.quantity }})', '{{ o.date_time|localtime }}', 'Order - {{ o.payment_status|title }}', '₱{{ o.total_price }}')">
+                                <span class="source-badge order-badge">Order</span>
+                            </div>
+                            <div class="image-info">
+                                <div class="item-details"><span>Item:</span> <span>{{ o.item.name }}</span></div>
+                                <div class="item-details"><span>Quantity:</span> <span>{{ o.quantity }}</span></div>
+                                <div class="item-details">
+                                    <span>Status:</span> 
+                                    <span>
+                                        <span class="status-indicator status-{{ o.payment_status|lower }}"></span>
+                                        {{ o.payment_status|title }}
+                                    </span>
+                                </div>
+                                <div class="price-detail">Total: ₱{{ o.total_price }}</div>
+                                <div class="date-info">{{ o.date_time|localtime }}</div>
+                            </div>
+                            <div class="receipt-footer">Thank You!</div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <div class="no-images">
+                    <p>No order receipt images found.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Modal for enlarged image -->
+    <div id="imageModal" class="modal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modalImage">
+        <div class="modal-details" id="modalDetails"></div>
+    </div>
+    
+    <script>
+        // Image zoom functionality  
+        function zoomImage(img, item, date, type, price) {
+            var modal = document.getElementById("imageModal");
+            var modalImg = document.getElementById("modalImage");
+            var modalDetails = document.getElementById("modalDetails");
+            modal.style.display = "block";
+            modalImg.src = img.src;
+            
+            // Extract the type and status
+            var typeParts = type.split(' - ');
+            var itemType = typeParts[0].toLowerCase();
+            var status = typeParts[1].toLowerCase();
+            
+            modalDetails.innerHTML = `
+                <strong>${item}</strong><br>
+                ${price}<br>
+                ${date}<br>
+                <span class="badge badge-${itemType}">${typeParts[0]}</span>
+                <span class="badge badge-${status}">${typeParts[1]}</span>
+            `;
+        }
+
+               function closeModal() {
+            var modal = document.getElementById("imageModal");
+            modal.style.display = "none";
+        }
+
+        // Close modal when clicking outside the image
+        window.onclick = function(event) {
+            var modal = document.getElementById("imageModal");
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        // Add keyboard support for closing modal
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape") {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

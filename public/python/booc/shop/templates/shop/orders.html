@@ -1,0 +1,176 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Your Orders – Ground Coffee</title>
+
+  <!-- Fonts, Icons, and SweetAlert2 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    body { font-family: 'Montserrat', sans-serif; background-color: #f9f9f9; color: #333; }
+    .orders-section { max-width: 1200px; margin: 3rem auto; padding: 0 1.5rem; }
+    .section-title { font-size: 2.2rem; font-weight: 700; color: #4b2e2e; text-align: center; margin-bottom: 2rem; }
+    .orders-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 2rem; }
+    .order-card { background: #fff; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.08); transition: transform 0.3s ease; }
+    .order-card:hover { transform: translateY(-5px); }
+    .order-image-wrapper { position: relative; height: 200px; overflow: hidden; }
+    .order-image-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+    .status-badge { position: absolute; top: 12px; left: 12px; background: #4b2e2e; color: #fff; padding: 0.4rem 0.7rem; font-size: 0.75rem; font-weight: 600; border-radius: 5px; text-transform: uppercase; }
+    .order-details { padding: 1.2rem; }
+    .order-details h3 { font-size: 1.3rem; color: #3e2723; margin-bottom: 0.5rem; }
+    .order-details p { margin-bottom: 0.4rem; font-size: 0.95rem; }
+    .timestamp { font-size: 0.85rem; color: #999; margin-top: 0.5rem; }
+    .pay-btn { margin-top: 1rem; padding: 0.6rem 1.2rem; background-color: #8d4f3e; color: #fff; font-weight: 600; border: none; border-radius: 8px; cursor: pointer; }
+    .pay-btn:hover { background-color: #6c3e2e; }
+    .payment-info { margin-top: 1rem; background: #f4f4f4; padding: 0.8rem; border-radius: 6px; font-size: 0.9rem; }
+    .no-orders { text-align: center; font-size: 1.1rem; color: #666; }
+
+    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); }
+    .modal.show { display: flex; justify-content: center; align-items: center; }
+    .modal-content { background-color: #fff; border-radius: 10px; padding: 2rem; width: 90%; max-width: 500px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+    .modal-close { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; color: #333; cursor: pointer; }
+
+    .form-group { margin-bottom: 1rem; }
+    input, textarea { width: 100%; padding: 0.6rem; border: 1px solid #ccc; border-radius: 6px; }
+    button[type="submit"] { padding: 0.7rem; background-color: #4b2e2e; color: white; font-weight: 600; border: none; border-radius: 6px; cursor: pointer; }
+    button[type="submit"]:hover { background-color: #3a1e1e; }
+  </style>
+</head>
+<body>
+
+  {% include 'shop/navbar.html' %}
+
+  <section class="orders-section">
+    <h1 class="section-title">Your Orders</h1>
+
+    {% if messages %}
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          {% for msg in messages %}
+            Swal.fire({
+              icon: '{{ msg.tags }}' === 'success' ? 'success' : 'error',
+              title: '{{ msg|escapejs }}',
+              toast: true,
+              position: 'top-end',
+              showConfirmButton: false,
+              timer: 2500
+            });
+          {% endfor %}
+        });
+      </script>
+    {% endif %}
+
+    {% if orders %}
+      <div class="orders-grid">
+        {% for order in orders %}
+          {% if order.status in visible_statuses %}
+            <div class="order-card" id="order-{{ order.id }}">
+              <div class="order-image-wrapper">
+                <span class="status-badge">{{ order.status|upper }}</span>
+                {% if order.product.image %}
+                  <img src="{{ order.product.image.url }}" alt="{{ order.product.name }}">
+                {% else %}
+                  <img src="{% static 'images/default_coffee.jpg' %}" alt="{{ order.product.name }}">
+                {% endif %}
+              </div>
+              <div class="order-details">
+                <h3>{{ order.product.name }}</h3>
+                <p><strong>Qty:</strong> {{ order.quantity }}</p>
+                <p><strong>Scheduled:</strong> {{ order.scheduled_for|date:"M d, Y H:i" }}</p>
+                <p><strong>Address:</strong> {{ order.customer_address }}</p>
+                {% if order.notes %}<p><strong>Notes:</strong> {{ order.notes }}</p>{% endif %}
+                <p class="timestamp">Ordered on {{ order.ordered_at|date:"M d, Y H:i" }}</p>
+
+                {% if request.user.is_staff %}
+                  {% if order.payment %}
+                    <div class="payment-info">
+                      <p><strong>Paid by:</strong> {{ order.payment.full_name }}</p>
+                      <p><strong>Email:</strong> {{ order.payment.email }}</p>
+                      <p><strong>Contact:</strong> {{ order.payment.contact }}</p>
+                      <p><strong>On:</strong> {{ order.payment.created_at|date:"M d, Y H:i" }}</p>
+                      <p><strong>Receipt:</strong> <a href="{{ order.payment.receipt.url }}" target="_blank">View</a></p>
+                    </div>
+                  {% else %}
+                    <p><em>No payment submitted.</em></p>
+                  {% endif %}
+                {% else %}
+                  {% if not order.payment %}
+                    <button class="pay-btn" data-order-id="{{ order.id }}">Pay</button>
+                  {% else %}
+                    <p><em>Payment received. Thank you!</em></p>
+                  {% endif %}
+                {% endif %}
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="no-orders">You haven’t placed any orders yet.</p>
+    {% endif %}
+  </section>
+
+  <!-- Payment Modal -->
+  <div id="paymentModal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close">&times;</span>
+      <h2>Payment Details</h2>
+      <h2>Gcash Account Number: 09123456789</h2>
+      <form action="{% url 'submit_payment' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="order_id" id="orderIdInput">
+        <div class="form-group">
+          <input type="text" name="full_name" placeholder="Full Name" required>
+        </div>
+        <div class="form-group">
+          <input type="email" name="email" placeholder="Email" required>
+        </div>
+        <div class="form-group">
+          <textarea name="address" placeholder="Address" required></textarea>
+        </div>
+        <div class="form-group">
+          <input type="text" name="contact" placeholder="Contact Number" required>
+        </div>
+        <div class="form-group">
+          <input type="file" name="receipt" accept="image/*" required>
+        </div>
+        <button type="submit">Submit Payment</button>
+      </form>
+    </div>
+  </div>
+
+  {% include 'shop/footers.html' %}
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const modal = document.getElementById('paymentModal');
+      const orderInput = document.getElementById('orderIdInput');
+      const closeBtn = modal.querySelector('.modal-close');
+      const payButtons = document.querySelectorAll('.pay-btn[data-order-id]');
+
+      function showModal(orderId) {
+        orderInput.value = orderId;
+        modal.classList.add('show');
+      }
+
+      function hideModal() {
+        modal.classList.remove('show');
+      }
+
+      payButtons.forEach(btn => {
+        btn.addEventListener('click', () => showModal(btn.dataset.orderId));
+      });
+
+      closeBtn.addEventListener('click', hideModal);
+      modal.addEventListener('click', e => {
+        if (e.target === modal) hideModal();
+      });
+    });
+  </script>
+</body>
+</html>

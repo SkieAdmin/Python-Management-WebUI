@@ -1,0 +1,496 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Contact Us - Iligan2L Construction Supply{% endblock %}
+{% block meta_description %}Contact Iligan2L Construction Supply - Your one-stop shop for quality construction materials and tools{% endblock %}
+{% block meta_keywords %}construction, supply, tools, cement, nails, lumber, hardware, contact{% endblock %}
+
+{% block content %}
+  <!-- Contact Hero Section -->
+  <section class="hero-section">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-text">
+          <h2>Get In Touch With Us</h2>
+          <p>We're here to help with all your construction material needs. Reach out to us with any questions, inquiries, or feedback. Our team is ready to assist you with product information, pricing, and delivery options.</p>
+          <a href="#contact-form" class="hero-cta">
+            <i class="fas fa-paper-plane"></i> Send Message
+          </a>
+        </div>
+        <div class="hero-image">
+          <img src="{% static 'images/placeholder.jpg' %}" alt="Contact Us" class="rounded-image">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container">
+    <!-- Contact Info Section -->
+    <section class="content-section" data-aos="fade-up">
+      <div class="section-title">
+        <h2>Get In Touch</h2>
+      </div>
+      <div class="contact-info-grid">
+        <div class="contact-info-card">
+          <div class="contact-icon">
+            <i class="fas fa-map-marker-alt"></i>
+          </div>
+          <h3>Our Location</h3>
+          <p>123 Main Street, Iligan City</p>
+          <p>Lanao del Norte, Philippines</p>
+          <a href="https://maps.google.com" target="_blank" class="content-cta">
+            <i class="fas fa-directions"></i> Get Directions
+          </a>
+        </div>
+        <div class="contact-info-card">
+          <div class="contact-icon">
+            <i class="fas fa-phone"></i>
+          </div>
+          <h3>Phone Number</h3>
+          <p><a href="tel:+639123456789">+63 912 345 6789</a></p>
+          <p><a href="tel:+639876543210">+63 987 654 3210</a></p>
+          <a href="tel:+639123456789" class="content-cta">
+            <i class="fas fa-phone"></i> Call Now
+          </a>
+        </div>
+        <div class="contact-info-card">
+          <div class="contact-icon">
+            <i class="fas fa-envelope"></i>
+          </div>
+          <h3>Email Address</h3>
+          <p><a href="mailto:info@iligan2l.com">info@iligan2l.com</a></p>
+          <p><a href="mailto:support@iligan2l.com">support@iligan2l.com</a></p>
+          <a href="mailto:info@iligan2l.com" class="content-cta">
+            <i class="fas fa-envelope"></i> Email Us
+          </a>
+        </div>
+        <div class="contact-info-card">
+          <div class="contact-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <h3>Business Hours</h3>
+          <p>Monday - Saturday: 8:00 AM - 6:00 PM</p>
+          <p>Sunday: Closed</p>
+          <a href="#hours-list" class="content-cta">
+            <i class="fas fa-info-circle"></i> More Info
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Form Section -->
+    <section id="contact-form" class="content-section" data-aos="fade-up">
+      <div class="section-title">
+        <h2>Send Us a Message</h2>
+      </div>
+      <div class="form-container">
+        <form class="contact-form">
+          <div class="form-group">
+            <label for="name">Your Name</label>
+            <input type="text" id="name" class="form-control" placeholder="Enter your full name" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" class="form-control" placeholder="Enter your email address" required>
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" class="form-control" placeholder="Enter your phone number">
+          </div>
+          <div class="form-group">
+            <label for="subject">Subject</label>
+            <input type="text" id="subject" class="form-control" placeholder="What is this regarding?">
+          </div>
+          <div class="form-group">
+            <label for="message">Your Message</label>
+            <textarea id="message" class="form-control" placeholder="Type your message here..." required></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="hero-cta">
+              <i class="fas fa-paper-plane"></i> Send Message
+            </button>
+            <button type="reset" class="content-cta">
+              <i class="fas fa-redo"></i> Reset Form
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- Map Section -->
+    <section class="content-section" data-aos="fade-up">
+      <div class="section-title">
+        <h2>Find Us</h2>
+      </div>
+      <div class="map-container">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63524.43033508384!2d124.19945407431642!3d8.228635700000005!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x32555eb4a5a3a63f%3A0x9e2e4d7c5e0b9f4c!2sIligan%20City%2C%20Lanao%20del%20Norte!5e0!3m2!1sen!2sph!4v1714838400000!5m2!1sen!2sph" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+      <div class="cta-container">
+        <a href="https://maps.google.com" target="_blank" class="hero-cta">
+          <i class="fas fa-directions"></i> Get Directions
+        </a>
+      </div>
+    </section>
+
+    <!-- Business Hours Section -->
+    <section id="hours-list" class="content-section" data-aos="fade-up">
+      <div class="section-title">
+        <h2>Business Hours</h2>
+      </div>
+      <div class="hours-container">
+        <ul class="hours-list">
+          <li>
+            <span class="day">Monday</span>
+            <span class="time">8:00 AM - 6:00 PM</span>
+          </li>
+          <li>
+            <span class="day">Tuesday</span>
+            <span class="time">8:00 AM - 6:00 PM</span>
+          </li>
+          <li>
+            <span class="day">Wednesday</span>
+            <span class="time">8:00 AM - 6:00 PM</span>
+          </li>
+          <li>
+            <span class="day">Thursday</span>
+            <span class="time">8:00 AM - 6:00 PM</span>
+          </li>
+          <li>
+            <span class="day">Friday</span>
+            <span class="time">8:00 AM - 6:00 PM</span>
+          </li>
+          <li>
+            <span class="day">Saturday</span>
+            <span class="time">8:00 AM - 6:00 PM</span>
+          </li>
+          <li>
+            <span class="day">Sunday</span>
+            <span class="time">Closed</span>
+          </li>
+        </ul>
+      </div>
+      <div class="cta-container">
+        <a href="{% url 'home' %}" class="hero-cta">
+          <i class="fas fa-store"></i> Visit Our Store
+        </a>
+        <a href="#contact-form" class="content-cta">
+          <i class="fas fa-envelope"></i> Send Message
+        </a>
+      </div>
+    </section>
+  </div>
+{% endblock %}
+
+{% block page_css %}
+/* Hero Section */
+.hero-section {
+  padding: 4rem 0;
+  margin-bottom: 3rem;
+  background-color: var(--threads-bg);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-text {
+  flex: 1;
+  max-width: 600px;
+}
+
+.hero-text h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+}
+
+.hero-text p {
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  color: var(--threads-secondary-text);
+}
+
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--threads-text);
+  color: var(--threads-bg);
+  padding: 0.75rem 1.5rem;
+  border-radius: 30px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: var(--threads-transition);
+  gap: 0.5rem;
+  box-shadow: var(--threads-box-shadow);
+  border: none;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+}
+
+.hero-cta:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+.hero-image {
+  flex: 1;
+  max-width: 500px;
+}
+
+.hero-image img {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: var(--threads-box-shadow);
+}
+
+/* Content Sections */
+.content-section {
+  padding: 3rem 0;
+  margin-bottom: 2rem;
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.section-title h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--threads-text);
+  display: inline-block;
+  position: relative;
+}
+
+/* Contact Info Grid */
+.contact-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, auto);
+  gap: 2rem;
+}
+
+.contact-info-card {
+  background-color: var(--threads-card-bg);
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  border: 1px solid var(--threads-border);
+  transition: var(--threads-transition);
+  box-shadow: var(--threads-box-shadow);
+}
+
+.contact-info-card:hover {
+  transform: translateY(-5px);
+}
+
+.contact-icon {
+  font-size: 2.5rem;
+  color: var(--threads-text);
+  margin-bottom: 1rem;
+}
+
+.contact-info-card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  color: var(--threads-text);
+  font-weight: 600;
+}
+
+.contact-info-card p, .contact-info-card a {
+  color: var(--threads-secondary-text);
+  font-size: 0.9rem;
+  font-weight: 400;
+  text-decoration: none;
+  transition: var(--threads-transition);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.contact-info-card a:hover {
+  color: var(--threads-text);
+}
+
+.content-cta {
+  display: inline-flex;
+  align-items: center;
+  background-color: transparent;
+  color: var(--threads-text);
+  padding: 0.75rem 1.5rem;
+  border-radius: 30px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: var(--threads-transition);
+  gap: 0.5rem;
+  border: 1px solid var(--threads-text);
+  margin-top: 1rem;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+}
+
+.content-cta:hover {
+  background-color: var(--threads-hover);
+  transform: translateY(-2px);
+}
+
+/* Form Container */
+.form-container {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.contact-form {
+  background-color: var(--threads-card-bg);
+  border-radius: 12px;
+  padding: 2rem;
+  border: 1px solid var(--threads-border);
+  box-shadow: var(--threads-box-shadow);
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--threads-text);
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  font-size: 1rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--threads-border);
+  border-radius: 8px;
+  color: var(--threads-text);
+  font-family: 'Poppins', sans-serif;
+  transition: var(--threads-transition);
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--threads-text);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.form-control::placeholder {
+  color: var(--threads-secondary-text);
+}
+
+textarea.form-control {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+/* Map Container */
+.map-container {
+  height: 400px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--threads-box-shadow);
+  border: 1px solid var(--threads-border);
+}
+
+.map-container iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.cta-container {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+/* Hours List */
+.hours-container {
+  max-width: 600px;
+  margin: 0 auto;
+  margin-bottom: 2rem;
+  background-color: var(--threads-card-bg);
+  border-radius: 12px;
+  padding: 2rem;
+  border: 1px solid var(--threads-border);
+  box-shadow: var(--threads-box-shadow);
+}
+
+.hours-list {
+  list-style: none;
+}
+
+.hours-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--threads-border);
+  color: var(--threads-text);
+}
+
+.hours-list li:last-child {
+  border-bottom: none;
+}
+
+.day {
+  font-weight: 600;
+}
+
+.time {
+  color: var(--threads-secondary-text);
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+  .contact-info-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-content {
+    flex-direction: column;
+  }
+  
+  .hero-text {
+    text-align: center;
+    max-width: 100%;
+  }
+  
+  .hero-image {
+    max-width: 100%;
+    order: -1;
+    margin-bottom: 2rem;
+  }
+  
+  .contact-info-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-actions,
+  .cta-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+}
+{% endblock %}

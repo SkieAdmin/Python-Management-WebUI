@@ -1,0 +1,78 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Audit Logs - Lourgie Sari-Sari Store{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2 style="color: #87ceeb; margin-bottom: 1rem;">Audit Logs</h2>
+    
+    <div style="margin-bottom: 1rem;">
+        <input type="text" id="searchInput" placeholder="Search logs..." onkeyup="searchLogs()" style="padding: 0.5rem; width: 300px;">
+        
+        <div style="float: right;">
+            <label for="dateFilter">Filter by Date:</label>
+            <input type="date" id="dateFilter" onchange="filterByDate(this.value)">
+        </div>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>User</th>
+                <th>Action</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody id="logsTableBody">
+            {% for log in audit_logs %}
+            <tr class="log-row">
+                <td>{{ log.created_at|date:"M d, Y H:i:s" }}</td>
+                <td>{{ log.user.username }}</td>
+                <td>{{ log.action }}</td>
+                <td>{{ log.details }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">No audit logs found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function searchLogs() {
+    const input = document.getElementById('searchInput');
+    const filter = input.value.toLowerCase();
+    const rows = document.querySelectorAll('.log-row');
+    
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        if (text.includes(filter)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+function filterByDate(date) {
+    const rows = document.querySelectorAll('.log-row');
+    if (!date) {
+        rows.forEach(row => row.style.display = '');
+        return;
+    }
+    
+    rows.forEach(row => {
+        const timestamp = row.querySelector('td').textContent;
+        const logDate = new Date(timestamp).toISOString().split('T')[0];
+        if (logDate === date) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+</script>
+{% endblock %}

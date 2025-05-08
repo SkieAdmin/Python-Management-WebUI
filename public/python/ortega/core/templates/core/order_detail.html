@@ -1,0 +1,339 @@
+{% extends 'core/customer_base.html' %}
+{% load static %}
+
+{% block title %}Order Details - Iligan2L{% endblock %}
+
+{% block extra_css %}
+<style>
+    .order-detail-container {
+        padding: 2rem 0;
+    }
+    
+    .page-header {
+        margin-bottom: 2rem;
+    }
+    
+    .page-title {
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        position: relative;
+        display: inline-block;
+        margin-bottom: 1.5rem;
+    }
+    
+    .page-title:after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        width: 40px;
+        height: 3px;
+        background: linear-gradient(90deg, var(--threads-primary) 0%, var(--threads-secondary) 100%);
+        border-radius: 3px;
+    }
+    
+    .order-card {
+        background-color: var(--threads-card-bg);
+        border: 1px solid var(--threads-border);
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+    
+    .order-header {
+        background: linear-gradient(90deg, rgba(33,37,41,1) 0%, rgba(66,70,73,0.8) 100%);
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--threads-border);
+    }
+    
+    .order-badge {
+        font-size: 0.8rem;
+        padding: 0.35rem 0.65rem;
+        border-radius: 30px;
+    }
+    
+    .order-badge.pending {
+        background-color: rgba(255, 193, 7, 0.2);
+        color: #ffc107;
+    }
+    
+    .order-badge.completed {
+        background-color: rgba(40, 167, 69, 0.2);
+        color: #28a745;
+    }
+    
+    .order-badge.cancelled {
+        background-color: rgba(220, 53, 69, 0.2);
+        color: #dc3545;
+    }
+    
+    .order-badge.processing {
+        background-color: rgba(23, 162, 184, 0.2);
+        color: #17a2b8;
+    }
+    
+    .order-info {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--threads-border);
+    }
+    
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--threads-border);
+    }
+    
+    .info-row:last-child {
+        border-bottom: none;
+    }
+    
+    .info-label {
+        font-weight: 600;
+        color: var(--threads-text);
+    }
+    
+    .info-value {
+        color: var(--threads-secondary-text);
+    }
+    
+    .order-items {
+        padding: 1.5rem;
+    }
+    
+    .order-items-title {
+        color: var(--threads-text);
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid var(--secondary-color);
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
+    
+    .item {
+        display: flex;
+        justify-content: space-between;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--threads-border);
+    }
+    
+    .item:last-child {
+        border-bottom: none;
+    }
+    
+    .item-details {
+        display: flex;
+        align-items: center;
+        flex: 1;
+    }
+    
+    .item-image {
+        width: 60px;
+        height: 60px;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-right: 1rem;
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--threads-border);
+    }
+    
+    .item-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .item-quantity {
+        background-color: var(--secondary-color);
+        color: black;
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-right: 1rem;
+        font-weight: 600;
+    }
+    
+    .item-name {
+        font-weight: 500;
+        color: var(--threads-text);
+    }
+    
+    .item-price {
+        font-weight: 600;
+        color: var(--secondary-color);
+    }
+    
+    .button-container {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .button {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 30px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--threads-transition);
+        font-family: 'Poppins', sans-serif;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .button:hover {
+        transform: translateY(-2px);
+    }
+    
+    .button-primary {
+        background-color: var(--secondary-color);
+        color: black;
+    }
+    
+    .button-primary:hover {
+        opacity: 0.9;
+    }
+    
+    .button-secondary {
+        background-color: var(--threads-text);
+        color: var(--threads-bg);
+    }
+    
+    .button-secondary:hover {
+        opacity: 0.9;
+    }
+    
+    .total-section {
+        background-color: rgba(255, 255, 255, 0.05);
+        padding: 1.5rem;
+        border-top: 1px solid var(--threads-border);
+    }
+    
+    .total-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+    }
+    
+    .total-label {
+        font-weight: 600;
+        color: var(--threads-text);
+    }
+    
+    .total-value {
+        font-weight: 700;
+        color: var(--secondary-color);
+        font-size: 1.1rem;
+    }
+    
+    @media print {
+        .button-container {
+            display: none;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container order-detail-container">
+    <div class="page-header">
+        <h1 class="page-title">Order Details</h1>
+        <p class="text-threads-muted">View the details of your order #{{ order.id }}</p>
+    </div>
+    
+    <div class="order-card">
+        <div class="order-header d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="text-white mb-0">Order #{{ order.id }}</h2>
+                <span class="text-threads-muted">Placed on {{ order.order_date|date:"F j, Y, g:i a" }}</span>
+            </div>
+            <span class="order-badge {{ order.status|lower }}">
+                {{ order.status }}
+            </span>
+        </div>
+        
+        <div class="order-info">
+            <div class="info-row">
+                <span class="info-label">Payment Method:</span>
+                <span class="info-value">{{ payment.payment_method }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Payment Status:</span>
+                <span class="info-value">{{ payment.payment_status }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Shipping Address:</span>
+                <span class="info-value">{{ order.shipping_address }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Contact Number:</span>
+                <span class="info-value">{{ order.phone_number }}</span>
+            </div>
+        </div>
+        
+        <div class="order-items">
+            <h3 class="order-items-title">Order Items</h3>
+            {% for item in order_items %}
+            <div class="item">
+                <div class="item-details">
+                    <div class="item-image">
+                        {% if item.product.image %}
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                        {% else %}
+                            <img src="{% static 'images/placeholder.jpg' %}" alt="{{ item.product.name }}">
+                        {% endif %}
+                    </div>
+                    <span class="item-quantity">{{ item.quantity }}</span>
+                    <span class="item-name">{{ item.product.name }}</span>
+                </div>
+                <span class="item-price">₱{{ item.price }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="total-section">
+            <div class="total-row">
+                <span class="total-label">Subtotal:</span>
+                <span class="total-value">₱{{ order.total_amount }}</span>
+            </div>
+            <div class="total-row">
+                <span class="total-label">Shipping:</span>
+                <span class="total-value">₱0.00</span>
+            </div>
+            <div class="total-row">
+                <span class="total-label">Total:</span>
+                <span class="total-value">₱{{ order.total_amount }}</span>
+            </div>
+        </div>
+        
+        <div class="button-container">
+            <a href="{% url 'order_history' %}" class="button button-primary">
+                <i class="fas fa-arrow-left"></i> Back to Orders
+            </a>
+            <button onclick="window.print()" class="button button-secondary">
+                <i class="fas fa-print"></i> Print Order
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Highlight the Orders link in the sidebar
+    document.addEventListener('DOMContentLoaded', function() {
+        const ordersLink = document.querySelector('a[href="{% url "order_history" %}"]');
+        if (ordersLink) {
+            ordersLink.classList.add('active');
+            ordersLink.closest('.nav-item').classList.add('active');
+        }
+    });
+</script>
+{% endblock %}

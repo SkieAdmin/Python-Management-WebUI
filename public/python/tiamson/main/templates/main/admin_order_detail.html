@@ -1,0 +1,51 @@
+{% extends 'main/admin_base.html' %}
+{# This template extends the base admin layout #}
+
+{% block content %}
+  {# Start of the content block that will be inserted into the base template #}
+
+  <h1 style="font-size: 1.75rem; font-weight: 600; color: #2d3748; margin-bottom: 1rem;">
+    Order #{{ order.id }}
+    {# Display the order number in a styled heading #}
+  </h1>
+
+  {% if confirm_delete %}
+    {# If the user has requested to delete the order, show confirmation prompt #}
+    <div style="background: #fff3f3; padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
+      <p>Are you sure you want to delete <strong>Order #{{ order.id }}</strong>?</p>
+      <form method="post" style="margin-top: 1rem;">
+        {% csrf_token %}
+        {# CSRF token for form security #}
+        <button class="btn" style="margin-right: 0.5rem;">Yes, delete</button>
+        <a class="btn secondary" href="{% url 'admin_orders' %}">Cancel</a>
+        {# "Yes" button submits the form; "Cancel" link redirects back to the orders list #}
+      </form>
+    </div>
+  {% else %}
+    {# If not deleting, show the order details and update form #}
+    <div style="background: #ffffff; padding: 1.5rem; border-radius: 0.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 1.5rem;">
+      <ul style="list-style: none; line-height: 1.8;">
+        <li><strong>User:</strong> {{ order.user.email }}</li>
+        {# Display the email of the user who placed the order #}
+        <li><strong>Product:</strong> {{ order.product.name }}</li>
+        {# Display the name of the product ordered #}
+        <li><strong>Quantity:</strong> {{ order.quantity }}</li>
+        {# Show quantity ordered #}
+        <li><strong>Placed:</strong> {{ order.ordered_at }}</li>
+        {# Show the date and time the order was placed #}
+      </ul>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" style="max-width: 600px;">
+      {% csrf_token %}
+      {# CSRF token is required for form submission in Django #}
+      {{ form.as_p }}
+      {# Render the form fields as <p> elements #}
+      <button class="btn" style="margin-right: 0.5rem;">Update</button>
+      <a class="btn secondary" href="{% url 'admin_orders' %}">Back to list</a>
+      {# Submit button for updating the order, and a link to return to the orders list #}
+    </form>
+
+    
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,328 @@
+{% extends 'store/base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Stock Delivery Progress - Lourgie Sari-Sari Store{% endblock %}
+
+{% block content %}
+<div class="delivery-progress-container">
+    <div class="delivery-header">
+        <h2>Stock Delivery Progress</h2>
+        <p>Track the status of all stock requests and deliveries</p>
+    </div>
+
+    <div class="filter-controls">
+        <div class="filter-buttons">
+            <button class="filter-btn active" data-status="all">All</button>
+            <button class="filter-btn" data-status="pending">Pending</button>
+            <button class="filter-btn" data-status="approved">Approved</button>
+            <button class="filter-btn" data-status="in_transit">In Transit</button>
+            <button class="filter-btn" data-status="delivered">Delivered</button>
+            <button class="filter-btn" data-status="rejected">Rejected</button>
+            <button class="filter-btn" data-status="cancelled">Cancelled</button>
+        </div>
+    </div>
+
+    <div class="delivery-list">
+        {% for request in stock_requests %}
+        <div class="delivery-card" data-status="{{ request.status|lower }}">
+            <div class="delivery-header">
+                <h3>{{ request.product.name }}</h3>
+                <span class="status-badge {{ request.status|lower }}">{{ request.get_status_display }}</span>
+            </div>
+            <div class="delivery-details">
+                <div class="detail-row">
+                    <span class="detail-label">Request ID:</span>
+                    <span class="detail-value">#{{ request.id }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Quantity:</span>
+                    <span class="detail-value">{{ request.quantity }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Requested By:</span>
+                    <span class="detail-value">{{ request.requested_by.username }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Supplier:</span>
+                    <span class="detail-value">{{ request.supplier.username }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Request Date:</span>
+                    <span class="detail-value">{{ request.created_at|date:"M d, Y H:i" }}</span>
+                </div>
+                {% if request.notes %}
+                <div class="detail-row">
+                    <span class="detail-label">Notes:</span>
+                    <span class="detail-value">{{ request.notes }}</span>
+                </div>
+                {% endif %}
+                
+                {% if request.id in delivery_info %}
+                    {% with delivery=delivery_info|get_item:request.id %}
+                    <div class="delivery-section">
+                        <h4>Delivery Information</h4>
+                        <div class="detail-row">
+                            <span class="detail-label">Status:</span>
+                            <span class="detail-value">{{ delivery.get_status_display }}</span>
+                        </div>
+                        {% if delivery.delivery_date %}
+                        <div class="detail-row">
+                            <span class="detail-label">Delivery Date:</span>
+                            <span class="detail-value">{{ delivery.delivery_date|date:"M d, Y H:i" }}</span>
+                        </div>
+                        {% endif %}
+                        {% if delivery.notes %}
+                        <div class="detail-row">
+                            <span class="detail-label">Delivery Notes:</span>
+                            <span class="detail-value">{{ delivery.notes }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endwith %}
+                {% endif %}
+            </div>
+            
+            <div class="delivery-timeline">
+                <div class="timeline-step {% if request.status != 'PENDING' %}complete{% endif %}">
+                    <div class="step-icon">1</div>
+                    <div class="step-label">Requested</div>
+                </div>
+                <div class="timeline-connector"></div>
+                <div class="timeline-step {% if request.status == 'APPROVED' or request.status == 'IN_TRANSIT' or request.status == 'DELIVERED' %}complete{% elif request.status == 'REJECTED' or request.status == 'CANCELLED' %}rejected{% endif %}">
+                    <div class="step-icon">2</div>
+                    <div class="step-label">Approved</div>
+                </div>
+                <div class="timeline-connector"></div>
+                <div class="timeline-step {% if request.status == 'IN_TRANSIT' or request.status == 'DELIVERED' %}complete{% endif %}">
+                    <div class="step-icon">3</div>
+                    <div class="step-label">In Transit</div>
+                </div>
+                <div class="timeline-connector"></div>
+                <div class="timeline-step {% if request.status == 'DELIVERED' %}complete{% endif %}">
+                    <div class="step-icon">4</div>
+                    <div class="step-label">Delivered</div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="no-deliveries">
+            <p>No stock requests found.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .delivery-progress-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .delivery-header {
+        margin-bottom: 30px;
+    }
+
+    .delivery-header h2 {
+        color: #2c3e50;
+        margin-bottom: 10px;
+    }
+
+    .delivery-header p {
+        color: #7f8c8d;
+    }
+
+    .filter-controls {
+        margin-bottom: 20px;
+    }
+
+    .filter-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .filter-btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        background-color: #f0f0f0;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .filter-btn:hover {
+        background-color: #e0e0e0;
+    }
+
+    .filter-btn.active {
+        background-color: #3498db;
+        color: white;
+    }
+
+    .delivery-card {
+        background-color: white;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .delivery-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .delivery-header h3 {
+        margin: 0;
+        color: #2c3e50;
+    }
+
+    .status-badge {
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .status-badge.pending { background-color: #ffd700; color: #333; }
+    .status-badge.approved { background-color: #90EE90; color: #333; }
+    .status-badge.in_transit { background-color: #87CEEB; color: #333; }
+    .status-badge.delivered { background-color: #98FB98; color: #333; }
+    .status-badge.rejected { background-color: #ffcccb; color: #333; }
+    .status-badge.cancelled { background-color: #d9534f; color: white; }
+
+    .delivery-details {
+        margin-bottom: 20px;
+    }
+
+    .detail-row {
+        display: flex;
+        margin-bottom: 8px;
+    }
+
+    .detail-label {
+        width: 150px;
+        font-weight: bold;
+        color: #7f8c8d;
+    }
+
+    .detail-value {
+        flex: 1;
+        color: #2c3e50;
+    }
+
+    .delivery-section {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #eee;
+    }
+
+    .delivery-section h4 {
+        margin-top: 0;
+        margin-bottom: 10px;
+        color: #2c3e50;
+    }
+
+    .delivery-timeline {
+        display: flex;
+        align-items: center;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+    }
+
+    .timeline-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+    }
+
+    .step-icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: #e0e0e0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 5px;
+    }
+
+    .timeline-step.complete .step-icon {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    .timeline-step.rejected .step-icon {
+        background-color: #d9534f;
+        color: white;
+    }
+
+    .timeline-connector {
+        flex: 1;
+        height: 2px;
+        background-color: #e0e0e0;
+        margin: 0 5px;
+    }
+
+    .step-label {
+        font-size: 12px;
+        color: #7f8c8d;
+    }
+
+    .timeline-step.complete .step-label {
+        color: #4CAF50;
+    }
+
+    .timeline-step.rejected .step-label {
+        color: #d9534f;
+    }
+
+    .no-deliveries {
+        text-align: center;
+        padding: 40px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .no-deliveries p {
+        color: #7f8c8d;
+        font-size: 16px;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Filter functionality
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const deliveryCards = document.querySelectorAll('.delivery-card');
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const status = button.dataset.status;
+                
+                // Update active button
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                // Filter cards
+                deliveryCards.forEach(card => {
+                    if (status === 'all' || card.dataset.status === status) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}

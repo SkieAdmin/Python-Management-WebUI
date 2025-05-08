@@ -1,0 +1,497 @@
+{% extends 'base.html' %}
+
+{% block title %}Order #{{ order.id }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .order-detail-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+    
+    .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .order-header h1 {
+        margin: 0;
+        color: var(--primary-color);
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .order-id {
+        font-family: monospace;
+        font-weight: 600;
+        background-color: #f5f5f5;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        color: var(--primary-color);
+        font-size: 1.2rem;
+    }
+    
+    .back-link {
+        color: var(--primary-color);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        border: 1px solid var(--border);
+        font-weight: 600;
+    }
+    
+    .back-link:hover {
+        background-color: #f5f5f5;
+        transform: translateY(-2px);
+    }
+    
+    .back-link svg {
+        margin-right: 0.5rem;
+    }
+    
+    .order-section {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .order-section-header {
+        margin-bottom: 1.5rem;
+        position: relative;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .order-section h2 {
+        margin: 0;
+        color: var(--primary-color);
+        font-size: 1.5rem;
+        font-weight: 700;
+        font-family: 'Playfair Display', serif;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .order-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+    
+    .order-detail-item {
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: baseline;
+    }
+    
+    .order-detail-label {
+        font-weight: 600;
+        color: var(--text-dark);
+        width: 140px;
+        flex-shrink: 0;
+    }
+    
+    .order-detail-value {
+        color: var(--text-dark);
+        flex: 1;
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-align: center;
+    }
+    
+    .status-pending { background-color: #fff8e1; color: #f57c00; }
+    .status-accepted { background-color: #e3f2fd; color: #1976d2; }
+    .status-preparing { background-color: #f3e5f5; color: #9c27b0; }
+    .status-ready { background-color: #e8f5e9; color: #2e7d32; }
+    .status-completed { background-color: #e8f5e9; color: #2e7d32; }
+    .status-rejected { background-color: #ffebee; color: #d32f2f; }
+    .status-cancelled { background-color: #ffebee; color: #d32f2f; }
+    
+    .payment-unpaid { background-color: #ffebee; color: #d32f2f; }
+    .payment-processing { background-color: #fff8e1; color: #f57c00; }
+    .payment-paid { background-color: #e8f5e9; color: #2e7d32; }
+    
+    .order-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1.5rem;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    .order-table th {
+        text-align: left;
+        padding: 1rem;
+        background-color: #f5f5f5;
+        border-bottom: 2px solid var(--border);
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+    
+  
+    .order-table td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+        vertical-align: middle;
+    }
+    
+    .order-table tr:last-child td {
+        border-bottom: none;
+    }
+    
+    .order-table tbody tr {
+        transition: all 0.2s ease;
+    }
+    
+    .order-table tbody tr:hover {
+        background-color: #f9f9f9;
+    }
+    
+    .order-total {
+        font-weight: 700;
+        background-color: #f9f9f9;
+    }
+    
+    .order-total td {
+        border-top: 2px solid var(--border);
+        padding: 1.2rem 1rem;
+        color: var(--primary-color);
+    }
+    
+    .item-name {
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+    
+    .item-price {
+        color: var(--text-dark);
+    }
+    
+    .item-quantity {
+        font-weight: 600;
+        background-color: #f5f5f5;
+        padding: 0.3rem 0.7rem;
+        border-radius: 50px;
+        display: inline-block;
+        text-align: center;
+        min-width: 2.5rem;
+    }
+    
+    .item-subtotal {
+        font-weight: 600;
+        color: #2e7d32;
+    }
+    
+    .receipt-link {
+        color: var(--primary-color);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        padding: 0.4rem 0.8rem;
+        border-radius: 50px;
+        background-color: #f5f5f5;
+        transition: all 0.3s ease;
+    }
+    
+    .receipt-link:hover {
+        background-color: #e3f2fd;
+        transform: translateY(-2px);
+    }
+    
+    .action-buttons {
+        margin-top: 2rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .btn {
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    .special-instructions {
+        margin-top: 2rem;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        padding: 1.5rem;
+    }
+    
+    .special-instructions h3 {
+        margin-top: 0;
+        margin-bottom: 1rem;
+        color: var(--text-dark);
+        font-size: 1.1rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .special-instructions p {
+        margin: 0;
+        color: var(--text-dark);
+        line-height: 1.5;
+    }
+    
+    .payment-method {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .payment-method-icon {
+        width: 24px;
+        height: 24px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background-color: #f5f5f5;
+        color: var(--text-dark);
+    }
+    
+    .payment-amount {
+        font-weight: 600;
+        color: #2e7d32;
+    }
+    
+    @media (max-width: 768px) {
+        .order-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+        
+        .order-section {
+            padding: 1.5rem;
+        }
+        
+        .order-table {
+            display: block;
+            overflow-x: auto;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="order-detail-container">
+    {# Order header with title and back navigation #}
+    <div class="order-header">
+        <h1>Order <span class="order-id">#{{ order.id }}</span></h1>
+        {% if user.is_staff %}
+            {# Back link for staff users to return to order list #}
+            <a href="{% url 'order_list' %}" class="back-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5"></path>
+                    <path d="M12 19l-7-7 7-7"></path>
+                </svg>
+                Back to Orders
+            </a>
+        {% else %}
+            {# Back link for customers to return to their orders #}
+            <a href="{% url 'customer_orders' %}" class="back-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5"></path>
+                    <path d="M12 19l-7-7 7-7"></path>
+                </svg>
+                Back to My Orders
+            </a>
+        {% endif %}
+    </div>
+    
+    {# Order details section - displays basic order information #}
+    <div class="order-section">
+        <div class="order-section-header">
+            <h2><i class="fas fa-info-circle"></i> Order Details</h2>
+        </div>
+        <div class="order-grid">
+            <div>
+                {# Customer information #}
+                <div class="order-detail-item">
+                    <div class="order-detail-label">Customer:</div>
+                    <div class="order-detail-value">{{ order.customer.user.get_full_name|default:order.customer.user.username }}</div>
+                </div>
+                <div class="order-detail-item">
+                    <div class="order-detail-label">Email:</div>
+                    <div class="order-detail-value">{{ order.customer.user.email }}</div>
+                </div>
+                <div class="order-detail-item">
+                    <div class="order-detail-label">Phone:</div>
+                    <div class="order-detail-value">{{ order.customer.phone_number|default:"-" }}</div>
+                </div>
+            </div>
+            <div>
+                {# Order information #}
+                <div class="order-detail-item">
+                    <div class="order-detail-label">Order Date:</div>
+                    <div class="order-detail-value">{{ order.order_date|date:"F j, Y, g:i a" }}</div>
+                </div>
+                <div class="order-detail-item">
+                    <div class="order-detail-label">Status:</div>
+                    <div class="order-detail-value">
+                        <span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span>
+                    </div>
+                </div>
+                <div class="order-detail-item">
+                    <div class="order-detail-label">Payment:</div>
+                    <div class="order-detail-value">
+                        <span class="status-badge payment-{{ order.payment_status }}">{{ order.get_payment_status_display }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {# Action buttons section - different for staff and customers #}
+        <div class="action-buttons">
+            {% if not user.is_staff and order.payment_status == 'unpaid' %}
+                {# Payment button only shown to customers with unpaid orders #}
+                <a href="{% url 'make_payment' order.id %}" class="btn">Make Payment</a>
+            {% endif %}
+            
+            {% if user.is_staff %}
+                {# Staff-only buttons for updating order and payment status #}
+                <a href="{% url 'update_order_status' order.id %}" class="btn">Update Status</a>
+                <a href="{% url 'update_payment_status' order.id %}" class="btn">Update Payment</a>
+            {% endif %}
+        </div>
+    </div>
+    
+    {# Order items section - displays the items in the order #}
+    <div class="order-section">
+        <div class="order-section-header">
+            <h2><i class="fas fa-pizza-slice"></i> Order Items</h2>
+        </div>
+        <table class="order-table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Price</th>
+                    <th>Qty</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {# Loop through each item in the order #}
+                {% for item in items %}
+                    <tr>
+                        <td class="item-name">{{ item.item.name }}</td>
+                        <td class="item-price">${{ item.price_at_order }}</td>
+                        <td><span class="item-quantity">{{ item.quantity }}</span></td>
+                        <td class="item-subtotal">${{ item.subtotal }}</td>
+                    </tr>
+                {% endfor %}
+                {# Order total row #}
+                <tr class="order-total">
+                    <td colspan="3" style="text-align: right;">Total:</td>
+                    <td>${{ order.total_amount }}</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        {# Special instructions section - only shown if notes exist #}
+        {% if order.notes %}
+            <div class="special-instructions">
+                <h3><i class="fas fa-comment-alt"></i> Special Instructions</h3>
+                <p>{{ order.notes }}</p>
+            </div>
+        {% endif %}
+    </div>
+    
+    {# Payment information section - only shown if payments exist #}
+    {% if payments %}
+    <div class="order-section">
+        <div class="order-section-header">
+            <h2><i class="fas fa-credit-card"></i> Payment Information</h2>
+        </div>
+        <table class="order-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Method</th>
+                    {% if user.is_staff %}
+                    {# Receipt column only shown to staff #}
+                    <th>Receipt</th>
+                    {% endif %}
+                    <th>Reference #</th>
+                </tr>
+            </thead>
+            <tbody>
+                {# Loop through each payment for this order #}
+                {% for payment in payments %}
+                    <tr>
+                        <td>{{ payment.transaction_date|date:"M d, Y" }}</td>
+                        <td class="payment-amount">${{ payment.amount }}</td>
+                        <td>
+                            <span class="payment-method">
+                                <span class="payment-method-icon">
+                                    {% if payment.payment_method == 'cash' %}
+                                        <i class="fas fa-money-bill-wave"></i>
+                                    {% elif payment.payment_method == 'credit_card' %}
+                                        <i class="fas fa-credit-card"></i>
+                                    {% elif payment.payment_method == 'bank_transfer' %}
+                                        <i class="fas fa-university"></i>
+                                    {% else %}
+                                        <i class="fas fa-wallet"></i>
+                                    {% endif %}
+                                </span>
+                                {{ payment.get_payment_method_display }}
+                            </span>
+                        </td>
+                        {% if user.is_staff %}
+                        <td>
+                            {% if payment.receipt_image %}
+                                {# Receipt link with icon - only shown to staff if receipt exists #}
+                                <a href="{{ payment.receipt_image.url }}" target="_blank" class="receipt-link">
+                                    <i class="fas fa-file-invoice"></i>
+                                    View Receipt
+                                </a>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        {% endif %}
+                        <td>{{ payment.reference_number|default:"-" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

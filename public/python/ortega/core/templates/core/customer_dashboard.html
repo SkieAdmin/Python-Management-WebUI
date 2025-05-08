@@ -1,0 +1,642 @@
+{% extends 'core/customer_base.html' %}
+{% load static %}
+
+{% block title %}Customer Dashboard{% endblock %}
+{% block page_title %}Browse Products{% endblock %}
+
+{% block extra_css %}
+<style>
+    .alert {
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        background-color: rgba(46, 204, 113, 0.1);
+        color: var(--threads-success);
+        border-left: 4px solid var(--threads-success);
+    }
+    
+    .success-notification {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(46, 204, 113, 0.9);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 500;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s, visibility 0.3s;
+    }
+    
+    .success-notification.show {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    .success-notification i {
+        font-size: 1.5rem;
+    }
+    
+    .alert-danger {
+        background-color: rgba(231, 76, 60, 0.1);
+        color: var(--threads-danger);
+        border-left: 4px solid var(--threads-danger);
+    }
+    
+    .alert-warning {
+        background-color: rgba(241, 196, 15, 0.1);
+        color: #f1c40f;
+        border-left: 4px solid #f1c40f;
+    }
+    
+    .welcome-banner {
+        background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(230, 126, 34, 0.7) 100%), url('{% static "images/placeholder.jpg" %}');
+        background-size: cover;
+        background-position: center;
+        border-radius: 12px;
+        padding: 30px;
+        margin-bottom: 25px;
+        color: var(--threads-text);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .welcome-banner h2 {
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+    
+    .welcome-banner p {
+        font-size: 1rem;
+        margin-bottom: 20px;
+        max-width: 600px;
+        line-height: 1.6;
+    }
+    
+    .welcome-banner .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background-color: var(--secondary-color);
+        color: black;
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: var(--threads-transition);
+    }
+    
+    .welcome-banner .btn:hover {
+        background-color: #d35400;
+        transform: translateY(-2px);
+    }
+    
+    .empty-results {
+        text-align: center;
+        padding: 50px 20px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--threads-border);
+        border-radius: 12px;
+    }
+    
+    .empty-results i {
+        font-size: 3rem;
+        color: var(--threads-secondary-text);
+        margin-bottom: 20px;
+    }
+    
+    .empty-results h3 {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+        color: var(--threads-text);
+    }
+    
+    .empty-results p {
+        color: var(--threads-secondary-text);
+        max-width: 500px;
+        margin: 0 auto 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <!-- Success Notification -->
+    <div id="successNotification" class="success-notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notificationText"></span>
+    </div>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'warning' %}alert-warning{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="welcome-banner">
+        <h2>Welcome to Iligan2L Hardware</h2>
+        <p>Find everything you need for your construction and home improvement projects. Browse our wide selection of quality products at competitive prices.</p>
+        <a href="#products" class="btn">
+            <i class="fas fa-shopping-bag"></i> Shop Now
+        </a>
+    </div>
+
+    <div class="filter-section">
+        <form method="get" action="{% url 'customer_dashboard' %}" class="filter-form">
+            <div class="search-group">
+                <input type="text" name="search" placeholder="Search products..." value="{{ search_term }}">
+                <button type="submit"><i class="fas fa-search"></i></button>
+            </div>
+            
+            <select name="category" class="filter-select">
+                <option value="">All Categories</option>
+                {% for category in categories %}
+                    <option value="{{ category }}" {% if current_category == category %}selected{% endif %}>{{ category }}</option>
+                {% endfor %}
+            </select>
+            
+            <select name="sort" class="filter-select">
+                <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Sort by Name</option>
+                <option value="price_low" {% if sort_by == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                <option value="price_high" {% if sort_by == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Newest First</option>
+            </select>
+            
+            {% if search_term or current_category or sort_by != 'name' %}
+                <a href="{% url 'customer_dashboard' %}" class="clear-filters">
+                    <i class="fas fa-times-circle"></i> Clear Filters
+                </a>
+            {% endif %}
+        </form>
+    </div>
+
+    <div class="category-filters">
+        <a href="javascript:void(0)" data-category="" class="category-filter ajax-category {% if not current_category %}active{% endif %}">
+            <i class="fas fa-th-large"></i> All Products
+        </a>
+        <a href="javascript:void(0)" data-category="cement" class="category-filter ajax-category {% if current_category == 'cement' %}active{% endif %}">
+            <i class="fas fa-cubes"></i> Cement
+        </a>
+        <a href="javascript:void(0)" data-category="nails" class="category-filter ajax-category {% if current_category == 'nails' %}active{% endif %}">
+            <i class="fas fa-thumbtack"></i> Nails
+        </a>
+        <a href="javascript:void(0)" data-category="lumber" class="category-filter ajax-category {% if current_category == 'lumber' %}active{% endif %}">
+            <i class="fas fa-tree"></i> Lumber
+        </a>
+        <a href="javascript:void(0)" data-category="tools" class="category-filter ajax-category {% if current_category == 'tools' %}active{% endif %}">
+            <i class="fas fa-wrench"></i> Tools
+        </a>
+    </div>
+
+    <div id="products" class="product-grid">
+        {% for product in products %}
+            <div class="product-card" data-product-id="{{ product.id }}">
+                {% if product.in_stock %}
+                    <div class="product-badge">In Stock</div>
+                {% else %}
+                    <div class="product-badge out-of-stock">Out of Stock</div>
+                {% endif %}
+                <div class="product-image">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                    {% else %}
+                        <img src="{% static 'images/placeholder.jpg' %}" alt="{{ product.name }}">
+                    {% endif %}
+                </div>
+                <div class="product-details">
+                    <div class="product-category">{{ product.category }}</div>
+                    <h3>{{ product.name }}</h3>
+                    <div class="product-meta">
+                        <div class="product-price">₱{{ product.price }}</div>
+                        <div class="product-stock">
+                            {% if product.in_stock %}
+                                <i class="fas fa-check-circle in-stock"></i> <span class="in-stock">Available</span>
+                            {% else %}
+                                <i class="fas fa-times-circle out-of-stock"></i> <span class="out-of-stock">Unavailable</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="product-quantity">Qty: {{ product.stock_quantity }}</div>
+                    <div class="product-actions">
+                        <a href="{% url 'product_detail' product.id %}" class="btn-details">
+                            <i class="fas fa-info-circle"></i> Details
+                        </a>
+                        <button class="btn-cart ajax-add-to-cart" data-product-id="{{ product.id }}" data-stock="{{ product.stock_quantity }}" {% if not product.in_stock %}disabled{% endif %}>
+                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                        </button>
+                        <button class="btn-buy buy-now-button" data-product-id="{{ product.id }}" data-stock="{{ product.stock_quantity }}" {% if not product.in_stock %}disabled{% endif %}>
+                            <i class="fas fa-bolt"></i> Buy Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="empty-results">
+                <i class="fas fa-search"></i>
+                <h3>No Products Found</h3>
+                <p>We couldn't find any products matching your search criteria. Try adjusting your filters or check back later for new products.</p>
+                <a href="{% url 'customer_dashboard' %}" class="category-filter">
+                    <i class="fas fa-undo"></i> View All Products
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // AJAX functionality for add to cart and category filtering
+    document.addEventListener('DOMContentLoaded', function() {
+        const successNotification = document.getElementById('successNotification');
+        const notificationText = document.getElementById('notificationText');
+        const productGrid = document.getElementById('products');
+        const categoryFilters = document.querySelectorAll('.ajax-category');
+        
+        // Function to get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        // Function to update product quantity display
+        function updateProductQuantity(productId, newQuantity) {
+            const productCard = document.querySelector(`.product-card[data-product-id="${productId}"]`);
+            if (productCard) {
+                const quantityElement = productCard.querySelector('.product-quantity');
+                if (quantityElement) {
+                    quantityElement.textContent = `Qty: ${newQuantity}`;
+                }
+                
+                // Update stock status if needed
+                if (newQuantity <= 0) {
+                    const button = productCard.querySelector('.btn-cart');
+                    if (button) {
+                        button.disabled = true;
+                    }
+                    
+                    const stockBadge = productCard.querySelector('.product-badge');
+                    if (stockBadge) {
+                        stockBadge.textContent = 'Out of Stock';
+                        stockBadge.classList.add('out-of-stock');
+                    }
+                    
+                    const stockStatus = productCard.querySelector('.product-stock');
+                    if (stockStatus) {
+                        stockStatus.innerHTML = '<i class="fas fa-times-circle out-of-stock"></i> <span class="out-of-stock">Unavailable</span>';
+                    }
+                }
+            }
+        }
+        
+        // Track if a notification is currently showing
+        let notificationActive = false;
+        
+        // Add to cart AJAX functionality
+        function setupAddToCartButtons() {
+            const addToCartButtons = document.querySelectorAll('.ajax-add-to-cart');
+            
+            addToCartButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const productId = this.getAttribute('data-product-id');
+                    const originalText = this.innerHTML;
+                    const currentStock = parseInt(this.getAttribute('data-stock'));
+                    const button = this;
+                    const productCard = button.closest('.product-card');
+                    const productName = productCard.querySelector('.product-details h3').textContent;
+                    
+                    // Don't proceed if out of stock
+                    if (currentStock <= 0 || button.disabled) {
+                        return;
+                    }
+                    
+                    // Disable button during request
+                    button.disabled = true;
+                    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
+                    
+                    // Create form data
+                    const formData = new FormData();
+                    formData.append('product_id', productId);
+                    formData.append('quantity', 1);
+                    formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+                    
+                    // Send AJAX request
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('POST', '{% url "add_to_cart_ajax" %}', true);
+                    
+                    xhr.onload = function() {
+                        if (xhr.status >= 200 && xhr.status < 300) {
+                            try {
+                                const data = JSON.parse(xhr.responseText);
+                                
+                                if (data.success) {
+                                    // Update cart count and dropdown in navbar
+                                    if (typeof window.updateCartDropdown === 'function') {
+                                        // Use the global function to update the cart dropdown
+                                        window.updateCartDropdown(
+                                            data.cart_count,
+                                            data.product_info,
+                                            data.cart_total
+                                        );
+                                    } else {
+                                        // Fallback to basic cart count update if function not available
+                                        const cartCount = document.querySelector('.cart-count');
+                                        if (cartCount) {
+                                            cartCount.textContent = data.cart_count;
+                                            cartCount.style.display = 'flex';
+                                        } else {
+                                            // If cart count element doesn't exist, create it
+                                            const cartButton = document.querySelector('.cart-button');
+                                            if (cartButton) {
+                                                const newCartCount = document.createElement('span');
+                                                newCartCount.className = 'cart-count';
+                                                newCartCount.textContent = data.cart_count;
+                                                cartButton.appendChild(newCartCount);
+                                            }
+                                        }
+                                    }
+                                    
+                                    // Update cart icon in the header
+                                    const headerCartCount = document.querySelector('.header-cart-count');
+                                    if (headerCartCount) {
+                                        headerCartCount.textContent = data.cart_count;
+                                        headerCartCount.style.display = 'flex';
+                                    }
+                                    
+                                    // Force refresh cart data in session
+                                    localStorage.setItem('cartUpdated', 'true');
+                                    
+                                    // Update product quantity using the value from the server
+                                    const newQuantity = data.new_stock;
+                                    button.setAttribute('data-stock', newQuantity);
+                                    updateProductQuantity(productId, newQuantity);
+                                    
+                                    // If stock is zero, disable the button
+                                    if (newQuantity <= 0) {
+                                        const productCard = button.closest('.product-card');
+                                        const stockBadge = productCard.querySelector('.product-stock .in-stock');
+                                        if (stockBadge) {
+                                            stockBadge.innerHTML = '<i class="fas fa-times-circle out-of-stock"></i> <span class="out-of-stock">Out of Stock</span>';
+                                        }
+                                    }
+                                    
+                                    // Show success animation
+                                    button.innerHTML = '<i class="fas fa-check"></i> Added';
+                                    button.style.backgroundColor = 'rgba(46, 204, 113, 0.3)';
+                                    
+                                    // Only show notification if one isn't already active
+                                    if (!notificationActive) {
+                                        notificationActive = true;
+                                        notificationText.textContent = '1 x ' + productName + ' added to your cart.';
+                                        successNotification.classList.add('show');
+                                        
+                                        // Reset notification after delay
+                                        setTimeout(function() {
+                                            successNotification.classList.remove('show');
+                                            notificationActive = false;
+                                        }, 2000);
+                                    }
+                                    
+                                    // Reset button after delay
+                                    setTimeout(function() {
+                                        button.innerHTML = originalText;
+                                        button.style.backgroundColor = '';
+                                        button.disabled = false;
+                                    }, 1500);
+                                } else {
+                                    // Show error
+                                    button.innerHTML = '<i class="fas fa-times"></i> Error';
+                                    button.style.backgroundColor = 'rgba(231, 76, 60, 0.3)';
+                                    console.error('Error adding to cart:', data.message);
+                                    
+                                    // Reset button after delay
+                                    setTimeout(function() {
+                                        button.innerHTML = originalText;
+                                        button.style.backgroundColor = '';
+                                        button.disabled = false;
+                                    }, 2000);
+                                }
+                            } catch (e) {
+                                console.error('Error parsing JSON:', e);
+                                button.innerHTML = '<i class="fas fa-times"></i> Error';
+                                button.style.backgroundColor = 'rgba(231, 76, 60, 0.3)';
+                                
+                                setTimeout(function() {
+                                    button.innerHTML = originalText;
+                                    button.style.backgroundColor = '';
+                                    button.disabled = false;
+                                }, 2000);
+                            }
+                        } else {
+                            // Request failed
+                            button.innerHTML = '<i class="fas fa-times"></i> Error';
+                            button.style.backgroundColor = 'rgba(231, 76, 60, 0.3)';
+                            console.error('Request failed with status:', xhr.status);
+                            
+                            setTimeout(function() {
+                                button.innerHTML = originalText;
+                                button.style.backgroundColor = '';
+                                button.disabled = false;
+                            }, 2000);
+                        }
+                    };
+                    
+                    xhr.onerror = function() {
+                        console.error('Network error occurred');
+                        button.innerHTML = '<i class="fas fa-times"></i> Error';
+                        button.style.backgroundColor = 'rgba(231, 76, 60, 0.3)';
+                        
+                        setTimeout(function() {
+                            button.innerHTML = originalText;
+                            button.style.backgroundColor = '';
+                            button.disabled = false;
+                        }, 2000);
+                    };
+                    
+                    xhr.send(formData);
+                });
+            });
+        }
+        
+        // Function to handle Buy Now buttons
+        function setupBuyNowButtons() {
+            const buyNowButtons = document.querySelectorAll('.buy-now-button');
+            
+            buyNowButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const productId = this.getAttribute('data-product-id');
+                    const originalText = this.innerHTML;
+                    const currentStock = parseInt(this.getAttribute('data-stock'));
+                    const button = this;
+                    
+                    // Don't proceed if out of stock
+                    if (currentStock <= 0 || button.disabled) {
+                        return;
+                    }
+                    
+                    // Disable button during request
+                    button.disabled = true;
+                    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                    
+                    // Create form data
+                    const formData = new FormData();
+                    formData.append('product_id', productId);
+                    formData.append('quantity', 1);
+                    formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+                    
+                    // Send AJAX request to add to cart first
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('POST', '{% url "add_to_cart_ajax" %}', true);
+                    
+                    xhr.onload = function() {
+                        if (xhr.status >= 200 && xhr.status < 300) {
+                            try {
+                                const data = JSON.parse(xhr.responseText);
+                                
+                                if (data.success) {
+                                    // Update cart icon in the header before redirecting
+                                    const headerCartCount = document.querySelector('.header-cart-count');
+                                    if (headerCartCount) {
+                                        headerCartCount.textContent = data.cart_count;
+                                        headerCartCount.style.display = 'flex';
+                                    }
+                                    
+                                    // Force refresh cart data in session
+                                    localStorage.setItem('cartUpdated', 'true');
+                                    
+                                    // Small delay to ensure cart is updated before redirect
+                                    setTimeout(function() {
+                                        window.location.href = '{% url "cart_view" %}';
+                                    }, 300);
+                                } else {
+                                    // Show error
+                                    button.innerHTML = '<i class="fas fa-times"></i> Error';
+                                    button.style.backgroundColor = 'rgba(231, 76, 60, 0.3)';
+                                    console.error('Error adding to cart:', data.message);
+                                    
+                                    // Reset button after delay
+                                    setTimeout(function() {
+                                        button.innerHTML = originalText;
+                                        button.style.backgroundColor = '';
+                                        button.disabled = false;
+                                    }, 2000);
+                                }
+                            } catch (e) {
+                                console.error('Error parsing JSON:', e);
+                                button.innerHTML = '<i class="fas fa-times"></i> Error';
+                                button.style.backgroundColor = 'rgba(231, 76, 60, 0.3)';
+                                
+                                setTimeout(function() {
+                                    button.innerHTML = originalText;
+                                    button.style.backgroundColor = '';
+                                    button.disabled = false;
+                                }, 2000);
+                            }
+                        } else {
+                            // Request failed
+                            button.innerHTML = '<i class="fas fa-times"></i> Error';
+                            button.style.backgroundColor = 'rgba(231, 76, 60, 0.3)';
+                            console.error('Request failed with status:', xhr.status);
+                            
+                            setTimeout(function() {
+                                button.innerHTML = originalText;
+                                button.style.backgroundColor = '';
+                                button.disabled = false;
+                            }, 2000);
+                        }
+                    };
+                    
+                    xhr.onerror = function() {
+                        console.error('Network error occurred');
+                        button.innerHTML = '<i class="fas fa-times"></i> Error';
+                        button.style.backgroundColor = 'rgba(231, 76, 60, 0.3)';
+                        
+                        setTimeout(function() {
+                            button.innerHTML = originalText;
+                            button.style.backgroundColor = '';
+                            button.disabled = false;
+                        }, 2000);
+                    };
+                    
+                    xhr.send(formData);
+                });
+            });
+        }
+        
+        // Set up initial add to cart buttons
+        setupAddToCartButtons();
+        setupBuyNowButtons();
+        
+        // Category filter AJAX functionality
+        categoryFilters.forEach(filter => {
+            filter.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Update active class
+                categoryFilters.forEach(f => f.classList.remove('active'));
+                this.classList.add('active');
+                
+                const category = this.getAttribute('data-category');
+                const url = new URL(window.location.href);
+                
+                // Clear existing params and set new category if any
+                url.search = '';
+                if (category) {
+                    url.searchParams.set('category', category);
+                }
+                
+                // Show loading state
+                productGrid.innerHTML = '<div class="text-center p-5"><i class="fas fa-spinner fa-spin fa-3x"></i><p class="mt-3">Loading products...</p></div>';
+                
+                // Fetch products with the selected category
+                fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.text())
+                .then(html => {
+                    // Extract just the product grid content from the response
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const newProductGrid = doc.getElementById('products');
+                    
+                    if (newProductGrid) {
+                        productGrid.innerHTML = newProductGrid.innerHTML;
+                        
+                        // Update browser URL without reloading
+                        window.history.pushState({}, '', url);
+                        
+                        // Re-attach event listeners to new buttons
+                        setupAddToCartButtons();
+                        setupBuyNowButtons();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading products:', error);
+                    productGrid.innerHTML = '<div class="empty-results"><i class="fas fa-exclamation-circle"></i><h3>Error Loading Products</h3><p>There was a problem loading the products. Please try again.</p></div>';
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}

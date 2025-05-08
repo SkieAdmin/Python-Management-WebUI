@@ -1,0 +1,226 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Products - Lourgie Sari-Sari Store{% endblock %}
+
+{% block content %}
+{% csrf_token %}
+<div class="products-container">
+    <div class="products-header">
+        <h2>Available Products</h2>
+        <a href="{% url 'view_cart' %}" class="view-cart-btn">View Cart</a>
+    </div>
+    
+    <div class="products-grid">
+        {% for product in products %}
+        <div class="product-card">
+            <div class="product-image">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                {% else %}
+                    <div class="no-image">No Image</div>
+                {% endif %}
+            </div>
+            <div class="product-info">
+                <h3>{{ product.name }}</h3>
+                <p class="product-description">{{ product.description }}</p>
+                <p class="product-price">₱{{ product.price }}</p>
+                <p class="stock-status {% if product.stock > 0 %}in-stock{% else %}out-stock{% endif %}">
+                    {% if product.stock > 0 %}
+                        In Stock ({{ product.stock }} available)
+                    {% else %}
+                        Out of Stock
+                    {% endif %}
+                </p>
+                {% if product.stock > 0 %}
+                    <div class="add-to-cart">
+                        <input type="number" min="1" max="{{ product.stock }}" value="1" id="quantity-{{ product.id }}" class="quantity-input">
+                        <button class="add-cart-btn" onclick="addToCart({{ product.id }})">Add to Cart</button>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <div class="no-products">
+            <p>No products available at the moment.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .products-container {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 20px;
+    }
+
+    .products-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .products-header h2 {
+        color: #2c3e50;
+        margin: 0;
+    }
+
+    .view-cart-btn {
+        background: #3498db;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .view-cart-btn:hover {
+        background: #2980b9;
+    }
+
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 30px;
+    }
+
+    .product-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        overflow: hidden;
+        transition: transform 0.2s;
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .product-image {
+        height: 200px;
+        overflow: hidden;
+    }
+
+    .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .no-image {
+        height: 100%;
+        background: #f5f6fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #95a5a6;
+    }
+
+    .product-info {
+        padding: 20px;
+    }
+
+    .product-info h3 {
+        margin: 0 0 10px;
+        color: #2c3e50;
+    }
+
+    .product-description {
+        color: #7f8c8d;
+        margin: 0 0 15px;
+        font-size: 14px;
+    }
+
+    .product-price {
+        font-size: 20px;
+        color: #3498db;
+        font-weight: bold;
+        margin: 0 0 15px;
+    }
+
+    .stock-status {
+        margin: 0 0 15px;
+        font-size: 14px;
+    }
+
+    .in-stock {
+        color: #27ae60;
+    }
+
+    .out-stock {
+        color: #e74c3c;
+    }
+
+    .add-to-cart {
+        display: flex;
+        gap: 10px;
+    }
+
+    .quantity-input {
+        width: 80px;
+        padding: 8px;
+        border: 2px solid #e0e0e0;
+        border-radius: 6px;
+        text-align: center;
+    }
+
+    .add-cart-btn {
+        flex: 1;
+        background: #27ae60;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .add-cart-btn:hover {
+        background: #219a52;
+    }
+
+    .no-products {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 40px;
+        background: white;
+        border-radius: 12px;
+        color: #7f8c8d;
+    }
+</style>
+
+<script>
+function addToCart(productId) {
+    const quantityInput = document.getElementById(`quantity-${productId}`);
+    const quantity = parseInt(quantityInput.value);
+    
+    if (quantity < 1) {
+        alert('Please enter a valid quantity');
+        return;
+    }
+    
+    fetch(`/cart/add/${productId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: `quantity=${quantity}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.error);
+        } else {
+            alert(data.message);
+            quantityInput.value = '1';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while adding to cart');
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Pizza Galour{% endblock %}</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Montserrat:wght@300;400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #d32f2f;
+            --primary-dark: #9a0007;
+            --primary-light: #ff6659;
+            --accent-color: #ffc107;
+            --text-dark: #212121;
+            --text-light: #ffffff;
+            --text-muted: #757575;
+            --background: #f9f9f9;
+            --surface: #ffffff;
+            --border: #e0e0e0;
+            --success: #4caf50;
+            --italian-green: #4caf50;
+            --italian-white: #ffffff;
+            --italian-red: #d32f2f;
+            --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            --section-padding: 5rem 0;
+            --sidebar-width: 250px;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            background-color: var(--background);
+        }
+
+    
+        .page-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--surface);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            transition: margin-left 0.3s ease;
+        }
+
+        .mobile-header {
+            display: none;
+            align-items: center;
+            padding: 1rem;
+            background-color: var(--surface);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 900;
+        }
+
+        .mobile-header-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            margin-right: 1rem;
+        }
+
+        .mobile-logo {
+            font-family: 'Pacifico', cursive;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sidebar-logo {
+            font-family: 'Pacifico', cursive;
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .sidebar-close {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            cursor: pointer;
+        }
+
+        .sidebar-nav {
+            padding: 1.5rem 0;
+        }
+
+        .nav-item {
+            list-style: none;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1.5rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(211, 47, 47, 0.1);
+            color: var(--primary-color);
+        }
+
+        .nav-link i {
+            margin-right: 0.8rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .notification-badge {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            border-radius: 50%;
+            padding: 0.2rem 0.5rem;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+        }
+
+        
+        .user-section {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 0.8rem;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            margin: 0;
+            color: var(--text-dark);
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .user-dropdown {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+       
+        .main-footer {
+            background-color: var(--text-dark);
+            color: var(--text-light);
+            padding: 3rem 0;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-logo {
+            font-family: 'Pacifico', cursive;
+            font-size: 2rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1.2rem;
+            font-size: 1.3rem;
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+            color: var(--text-light);
+            opacity: 0.8;
+            text-decoration: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            opacity: 1;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .footer-social a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: var(--text-light);
+            transition: all 0.3s ease;
+        }
+
+        .footer-social a:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+            .content-wrapper {
+                margin-left: 0;
+            }
+            
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .mobile-header {
+                display: flex;
+            }
+            
+            .sidebar-close {
+                display: block;
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 1.8rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            border: 2px solid var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="page-wrapper">
+  
+        <header class="mobile-header">
+            <button class="mobile-header-toggle" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <a href="{% url 'home' %}" class="mobile-logo">Pizza Galour</a>
+        </header>
+        
+ 
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="{% url 'home' %}" class="sidebar-logo">Pizza Galour</a>
+                <button class="sidebar-close" id="sidebarClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <!-- Common navigation items for all users -->
+                    <li class="nav-item">
+                        <a href="/" class="nav-link {% if request.path == '/' %}active{% endif %}">
+                            <i class="fas fa-home"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'menu' %}" class="nav-link {% if 'menu' in request.path %}active{% endif %}">
+                            <i class="fas fa-pizza-slice"></i> Menu
+                        </a>
+                    </li>
+                    
+                    {% if user.is_authenticated %}
+                        {% if user.is_staff %}
+                            <!-- Admin/Staff only navigation items -->
+                            <li class="nav-item">
+                                <a href="{% url 'dashboard' %}" class="nav-link {% if 'dashboard' in request.path %}active{% endif %}">
+                                    <i class="fas fa-tachometer-alt"></i> Staff Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{% url 'order_list' %}" class="nav-link {% if 'orders' in request.path %}active{% endif %}">
+                                    <i class="fas fa-shopping-cart"></i> Manage Orders
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{% url 'inventory_list' %}" class="nav-link {% if 'inventory' in request.path %}active{% endif %}">
+                                    <i class="fas fa-boxes"></i> Inventory
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{% url 'report_list' %}" class="nav-link {% if 'reports' in request.path %}active{% endif %}">
+                                    <i class="fas fa-chart-bar"></i> Reports
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{% url 'notification_list' %}" class="nav-link {% if 'notifications' in request.path %}active{% endif %}">
+                                    <i class="fas fa-bell"></i> Notifications
+                                    {% if notification_count > 0 %}
+                                    <span class="notification-badge">{{ notification_count }}</span>
+                                    {% endif %}
+                                </a>
+                            </li>
+                        {% else %}
+                            <!-- Customer only navigation items -->
+                            <li class="nav-item">
+                                <a href="{% url 'view_cart' %}" class="nav-link {% if 'cart' in request.path %}active{% endif %}">
+                                    <i class="fas fa-shopping-cart"></i> My Cart
+                                    {% if request.session.cart %}
+                                    <span class="notification-badge">{{ request.session.cart|length }}</span>
+                                    {% endif %}
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{% url 'customer_orders' %}" class="nav-link {% if 'orders' in request.path %}active{% endif %}">
+                                    <i class="fas fa-receipt"></i> My Orders
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{% url 'notification_list' %}" class="nav-link {% if 'notifications' in request.path %}active{% endif %}">
+                                    <i class="fas fa-bell"></i> My Notifications
+                                    {% if notification_count > 0 %}
+                                    <span class="notification-badge">{{ notification_count }}</span>
+                                    {% endif %}
+                                </a>
+                            </li>
+                        {% endif %}
+                        
+                        <!-- Logout for all authenticated users -->
+                        <li class="nav-item">
+                            <a href="{% url 'logout' %}" class="nav-link">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                        </li>
+                    {% else %}
+                        <!-- Login for unauthenticated users -->
+                        <li class="nav-item">
+                            <a href="{% url 'login' %}" class="nav-link">
+                                <i class="fas fa-sign-in-alt"></i> Login
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            
+            {% if request.user.is_authenticated %}
+            <div class="user-section">
+                <img src="{{ request.user.profile.avatar.url|default:'https://ui-avatars.com/api/?name='|add:request.user.username }}" alt="{{ request.user.username }}" class="user-avatar">
+                <div class="user-info">
+                    <h4 class="user-name">{{ request.user.get_full_name|default:request.user.username }}</h4>
+                    <p class="user-role">{% if request.user.is_staff %}Staff{% else %}Customer{% endif %}</p>
+                </div>
+                <button class="user-dropdown">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+            </div>
+            {% else %}
+            <div class="user-section">
+                <a href="{% url 'login' %}" class="btn btn-primary" style="width: 100%;">Login</a>
+            </div>
+            {% endif %}
+        </aside>
+         
+        <div class="content-wrapper">
+            <main>
+                {% block content %}{% endblock %}
+            </main>
+            
+
+            <footer class="main-footer">
+                <div class="container">
+                    <div class="footer-content">
+                        <div class="footer-section">
+                            <span class="footer-logo">Pizza Galour</span>
+                            <p>Authentic Italian pizza made with love and tradition. Using only the finest ingredients for an unforgettable taste experience.</p>
+                            <div class="footer-social">
+                                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                                <a href="#"><i class="fab fa-instagram"></i></a>
+                                <a href="#"><i class="fab fa-twitter"></i></a>
+                                <a href="#"><i class="fab fa-yelp"></i></a>
+                            </div>
+                        </div>
+                        
+                        <div class="footer-section">
+                            <h3>Quick Links</h3>
+                            <ul class="footer-links">
+                                <li><a href="{% url 'home' %}">Home</a></li>
+                                <li><a href="{% url 'menu' %}">Menu</a></li>
+                                <li><a href="#">About Us</a></li>
+                                <li><a href="#">Contact</a></li>
+                                <li><a href="#">Careers</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="footer-section">
+                            <h3>Opening Hours</h3>
+                            <ul class="footer-links">
+                                <li>Monday - Thursday: 9am - 10pm</li>
+                                <li>Friday - Saturday: 2pm - 11pm</li>
+                                <li>Sunday: 10am - 10pm</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="footer-section">
+                            <h3>Contact Us</h3>
+                            <ul class="footer-links">
+                                <li><i class="fas fa-map-marker-alt"></i> Poblacion, Manticao Misamis Oriental</li>
+                                <li><i class="fas fa-phone"></i> 09977505813</li>
+                                <li><i class="fas fa-envelope"></i> GaLour Pub Gastro</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="footer-bottom">
+                        <p>&copy; {% now "Y" %} Pizza Galour. All rights reserved.</p>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebarClose = document.getElementById('sidebarClose');
+            const sidebar = document.querySelector('.sidebar');
+            
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebar.classList.add('active');
+                });
+            }
+            
+            if (sidebarClose) {
+                sidebarClose.addEventListener('click', function() {
+                    sidebar.classList.remove('active');
+                });
+            }
+            
+ 
+            document.addEventListener('click', function(event) {
+                const isClickInside = sidebar.contains(event.target) || 
+                                     (sidebarToggle && sidebarToggle.contains(event.target));
+                
+                if (!isClickInside && window.innerWidth <= 768 && sidebar.classList.contains('active')) {
+                    sidebar.classList.remove('active');
+                }
+            });
+            
+
+            const userDropdown = document.querySelector('.user-dropdown');
+            if (userDropdown) {
+                userDropdown.addEventListener('click', function() {
+                    console.log('User dropdown clicked');
+                });
+            }
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,118 @@
+/* Global Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body & Background */
+body {
+     font-family: 'Courier New', monospace; /* Receipt-like font */
+     background-image: url('/static/images/win.jpg');
+       backdrop-filter: blur(6px);
+    background-size: cover;  /* Adjusts the image to cover the entire background */
+    margin: 0;
+    padding: 0;
+    color: #333;
+       height: 100vh;
+    padding: 30px;
+    animation: fadeIn 0.8s ease-in;
+}
+
+/* Container */
+.container {
+  background: linear-gradient(to top,black, transparent,white);
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 4.1);
+    padding: 30px;
+    max-width: 1000px;
+    margin: 20px auto;
+    animation: fadeIn 0.5s ease-in-out;
+     font-weight: bolder;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Heading */
+.container h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+    text-shadow: 1px 1px 0 white;
+}
+
+
+/* Table Styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    animation: fadeIn 0.6s ease-in-out;
+}
+
+th, td {
+    padding: 15px;
+    text-align: center;
+    border-bottom: 1px solid white;
+    color: white;
+}
+
+th {
+    background-color: red;
+    color: white;
+    font-weight: 600;
+      text-shadow: 1px 1px 0 black;
+}
+
+tr:hover {
+    background-color: black;
+    color: white;
+}
+
+/* Action Buttons */
+a[href*="pay"], a[href*="cancel"] {
+    display: inline-block;
+    padding: 8px 15px;
+    margin: 5px;
+    color: white;
+    background-color: steelblue;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+a[href*="pay"]:hover {
+    background-color: #218838;
+    transform: scale(1.05);
+}
+
+a[href*="cancel"] {
+    background-color: #dc3545;
+}
+
+a[href*="cancel"]:hover {
+    background-color: black;
+    transform: scale(1.05);
+}
+/* Back to Menu Button */
+a[href*="menu"] {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 10px 20px;
+    background-color: black;
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 5.2);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+a[href*="menu"]:hover {
+    background-color: red;
+    transform: scale(1.05);
+}

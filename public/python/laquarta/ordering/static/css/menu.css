@@ -1,0 +1,155 @@
+/* Global Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body */
+body {
+     font-family: 'Courier New', monospace; /* Receipt-like font */
+    background-image: url('/static/images/james.jpg');
+    backdrop-filter: blur(3px);
+    background-size: cover;  /* Adjusts the image to cover the entire background */
+    color: #333;
+    padding: 30px;
+    animation: fadeIn 0.8s ease-in;
+}
+
+/* Fade In Animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Container */
+.container {
+    max-width: 1100px;
+    margin: auto;
+}
+
+/* Header */
+.header-container {
+    background-image: linear-gradient(to right, white, transparent);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 4.1);
+    margin-bottom: 30px;
+    animation: slideDown 0.7s ease-out;
+}
+
+.header-container h2 {
+    color: black;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana;
+    text-align: center;
+    text-shadow: 1px 1px 0 white;
+}
+
+/* Slide Animation */
+@keyframes slideDown {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Navigation Buttons */
+a.view-order-btn,
+a.logout-btn,
+a.view-profile-btn {  /* Add the new class for the View Profile button */
+    display: inline-block;
+    margin: 10px 10px 20px 0;
+    padding: 10px 20px;
+    background-color: black;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 30px;
+    transition: background 0.3s, transform 0.2s;
+    font-weight: bold;
+}
+
+/* Hover effect for buttons */
+a.view-order-btn:hover,
+a.logout-btn:hover,
+a.view-profile-btn:hover {  /* Hover effect for View Profile button */
+    background-color: red;
+    transform: scale(1.05);
+}
+
+/* Menu List */
+.menu-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 25px;
+}
+
+/* Each Item */
+.menu-list li {
+    background-image: linear-gradient(to left, white, white);
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 6.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: popIn 0.8s ease;
+}
+
+.menu-list li:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 4.15);
+    background-image: linear-gradient(to right, red, red);
+}
+
+/* Pop In Animation */
+@keyframes popIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Text */
+.menu-list li h4 {
+    font-size: 20px;
+    color: black;
+    margin-bottom: 10px;
+}
+
+.menu-list li p {
+    margin-bottom: 10px;
+    font-weight: bolder;
+}
+
+/* Image */
+.menu-item-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 15px;
+    margin-bottom: 15px;
+    transition: transform 0.3s;
+}
+
+.menu-item-image:hover {
+    transform: scale(1.05);
+}
+
+/* Order Button */
+.menu-list li a {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: black;
+    color: white;
+    text-decoration: none;
+    border-radius: 25px;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.menu-list li a:hover {
+    background-color: black;
+    transform: scale(1.05);
+}
+
+/* Logo */
+.logo-container {
+    margin-bottom: 20px;
+    animation: zoomIn 0.8s ease;
+}

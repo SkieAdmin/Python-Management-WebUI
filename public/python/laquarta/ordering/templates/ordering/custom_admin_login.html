@@ -1,0 +1,345 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="/static/images/logos.png" type="image/png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            animation: fadeIn 1.2s ease;
+        }
+
+        #video-background {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -1;
+            filter: brightness(0.6);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+        }
+
+        .container {
+            background: rgba(15, 15, 15, 0.7);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            animation: slideIn 1.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255, 255, 255, 0.05),
+                transparent,
+                transparent,
+                rgba(255, 255, 255, 0.05)
+            );
+            transform: rotate(30deg);
+            pointer-events: none;
+        }
+
+        .login-logo {
+            width: 120px;
+            margin-bottom: 30px;
+            animation: popIn 1s ease forwards;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+        }
+
+        .form-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            text-align: left;
+            margin-bottom: 8px;
+            color: #fff;
+            font-weight: 500;
+            font-size: 14px;
+            letter-spacing: 1px;
+            transform: translateY(25px);
+            opacity: 0;
+            position: absolute;
+            top: -20px;
+            left: 10px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus + label,
+        input:valid + label {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]::placeholder,
+        input[type="password"]::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        input:focus {
+            outline: none;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-bottom: 2px solid rgba(0, 153, 255, 0.8);
+            box-shadow: 0 5px 15px rgba(0, 153, 255, 0.2);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #0066cc, #003366);
+            border: none;
+            border-radius: 30px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 102, 204, 0.4);
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent
+            );
+            transition: 0.5s;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 102, 204, 0.6);
+        }
+
+        button:hover::before {
+            left: 100%;
+        }
+
+        .error {
+            color: #ff6b6b;
+            font-size: 14px;
+            margin-bottom: 15px;
+            background: rgba(255, 0, 0, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #ff6b6b;
+        }
+
+        a {
+            color: #66b3ff;
+            font-size: 16px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: inline-block;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: #66b3ff;
+            transition: width 0.3s ease;
+        }
+
+        a:hover {
+            color: #99ccff;
+        }
+
+        a:hover::after {
+            width: 100%;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.7); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+                width: 85%;
+            }
+            
+            input[type="text"],
+            input[type="password"] {
+                padding: 12px;
+                font-size: 14px;
+            }
+            
+            button {
+                padding: 12px;
+            }
+        }
+
+        /* Glowing effect */
+        .glow {
+            position: absolute;
+            width: 40%;
+            height: 40%;
+            background: radial-gradient(
+                circle,
+                rgba(0, 153, 255, 0.2),
+                transparent 70%
+            );
+            border-radius: 50%;
+            filter: blur(20px);
+            opacity: 0.5;
+            animation: pulse 5s infinite alternate;
+        }
+
+        .glow-1 {
+            top: -20%;
+            left: -20%;
+        }
+
+        .glow-2 {
+            bottom: -20%;
+            right: -20%;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+            100% {
+                opacity: 0.6;
+                transform: scale(1.2);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Video Background -->
+    <video autoplay muted loop id="video-background">
+        <source src="{% static 'images/vid.mp4' %}" type="video/mp4">
+        <!-- Fallback background if video doesn't load -->
+        <style>
+            body {
+                background-image: url("{% static 'images/uu.jpg' %}");
+                background-size: cover;
+                background-position: center;
+            }
+        </style>
+    </video>
+    
+    <div class="overlay"></div>
+    
+    <div class="container">
+        <div class="glow glow-1"></div>
+        <div class="glow glow-2"></div>
+        
+        <img src="{% static 'images/ad.png' %}" alt="Admin Login Logo" class="login-logo">
+        
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+        
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <input type="text" name="username" id="username" required>
+                <label for="username">Username</label>
+            </div>
+            
+            <div class="form-group">
+                <input type="password" name="password" id="password" required>
+                <label for="password">Password</label>
+            </div>
+            
+            <button type="submit">Sign In <span>🔑</span></button>
+        </form>
+        
+        <p><a href="{% url 'custom_admin_register' %}">Register as Admin</a></p>
+    </div>
+</body>
+</html>

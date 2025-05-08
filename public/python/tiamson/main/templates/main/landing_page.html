@@ -1,0 +1,386 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdTech </title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            overflow-x: hidden;
+        }
+
+        /* Full Screen Background Image */
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 40%;
+            background-image: url("{% static 'images/pop.png' %}");
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
+            filter: brightness(0.6); /* Dims the background image */
+        }
+
+    
+        /* About Section Styling */
+        .about-section {
+            text-align: center;
+            padding: 80px 20px;
+            visibility: hidden;
+        }
+
+        .about-section h2,
+        .about-section p {
+            visibility: hidden;
+        }
+
+        /* Features Section Styling */
+        .features-section {
+            padding: 80px 20px;
+            background-color: #fff;
+            text-align: center;
+        }
+
+        .features-section h2 {
+            font-size: 36px;
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 40px;
+            letter-spacing: 1px;
+        }
+
+        .feature-list {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .feature {
+            max-width: 300px;
+            margin: 20px;
+            padding: 30px;
+            background-color: #ecf0f1;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .feature:hover {
+            transform: translateY(-6px);
+        }
+
+        .feature i {
+            font-size: 50px;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .feature h3 {
+            font-size: 22px;
+            color: #34495e;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .feature p {
+            color: #7f8c8d;
+            font-size: 20px;
+        }
+
+        /* Call to Action Section Styling */
+        .cta-section {
+            text-align: center;
+            padding: 80px 20px;
+            background-color: #2c3e50;
+            color: white;
+        }
+
+        .cta-section h2 {
+            font-size: 40px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .cta-section p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+
+        .cta-button {
+            padding: 15px 30px;
+            background-color: #e74c3c;
+            color: white;
+            font-size: 18px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .cta-button:hover {
+            background-color: #c0392b;
+            transform: translateY(-4px);
+        }
+
+/* Footer Styling */
+footer {
+             text-align: center;
+             padding: 30px 20px;
+             background-color: #2c3e50;
+             color: white;
+             margin-top: 40px;
+         }
+         
+         footer p {
+             font-size: 16px;
+             letter-spacing: 1px;
+             margin-bottom: 20px;
+         }
+         
+         /* Social Media Icons Styling */
+         .social-links {
+             display: flex;
+             justify-content: center;
+             gap: 20px;
+         }
+         
+         .social-icon {
+             color: white;
+             font-size: 44px;
+             transition: color 0.3s ease, transform 0.3s ease;
+         }
+         
+         .social-icon:hover {
+             color: #3498db; /* Change this to any color you want on hover */
+             transform: scale(1.2);
+         }
+         
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            nav ul li {
+                margin: 10px 0;
+            }
+
+            nav .auth-links {
+                margin-top: 10px;
+                justify-content: center;
+            }
+
+            .features-section {
+                padding: 40px 20px;
+            }
+
+            .feature-list {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .cta-button {
+                padding: 12px 25px;
+                font-size: 16px;
+            }
+        }
+.cta-section {
+  padding: 4rem 2rem;
+  background-color: #0b182c;
+  text-align: center;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.cta-section h2 {
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  color: #f5f7f8;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.cta-card {
+  background-color: #f8f8f8;
+  padding: 2rem;
+  margin: 2rem auto;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  max-width: 900px;
+  text-align: left;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cta-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+.cta-image {
+  width: 100%;
+  height: auto;
+  max-height: 450px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+}
+
+.cta-image-description {
+  font-size: 1.1rem;
+  color: #333;
+  line-height: 1.6;
+}
+
+@media (min-width: 768px) {
+  .cta-card {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .cta-image {
+    width: 50%;
+    margin-bottom: 0;
+  }
+
+  .cta-image-description {
+    width: 50%;
+  }
+/* Enhanced About Section Styling */
+.about-section {
+    background-color: #ffffff;  
+    padding: 100px 20px;
+    text-align: center;
+    max-width: 2500px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 1s ease forwards;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.about-section h2 {
+    font-size: 36px;
+    color: #2c3e50;
+    margin-bottom: 30px;
+    font-weight: 700;
+    visibility: visible;
+}
+
+.about-section p {
+    font-size: 18px;
+    line-height: 1.8;
+    color: #555;
+    max-width: 800px;
+    margin: 0 auto;
+    visibility: visible;
+}
+
+/* Fade-in animation */
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+}
+    
+    </style>
+</head>
+<body>
+    <!-- Fullscreen Background Image -->
+    <div class="background"></div>
+
+    <!-- Include the Navbar -->
+    {% include 'main/navbar.html' %}
+
+    <!-- About Us Section (Hidden) -->
+    <section class="about-section">
+        <h1>Welcome to AdTech</h1>
+       
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+         <h1>"You can't view the products unless you are already signed up and logged in."</h1>
+         <h1>"To view the products, you must be signed up and logged in."</h1>
+        <br><br><h1>KEY FEATURES</h1><br><br>
+        <div class="feature-list">
+            <div class="feature">
+                <i class="fas fa-cogs"></i>
+                <h2>Advanced Tools</h2>
+                <h3>Our platform provides powerful tools for managing your products and campaigns effectively.</h3>
+            </div>
+            <div class="feature">
+                <i class="fas fa-chart-line"></i>
+                <h2>Insightful Analytics</h2>
+                <h3>Track your performance with detailed analytics and optimize your campaigns.</h3>
+            </div>
+            <div class="feature">
+                <i class="fas fa-users"></i>
+                <h2>Engage Your Audience</h2>
+                <h3>Reach and engage with your audience using targeted ads and campaigns.</h3>
+            </div>
+        </div>
+    </section>
+<!-- About Us Section -->
+<section class="about-section" style="visibility: visible;">
+    <h2 style="visibility: visible;">About AdTech</h2>
+    <h3 style="visibility: visible;">
+        At <strong>AdTech</strong>, we revolutionize how businesses connect with their customers through innovative digital advertising and e-commerce solutions. Our platform blends powerful product management, customer insights, and seamless ordering capabilities tailored for modern businesses. Whether you're a small store or a growing enterprise, AdTech empowers you with the tools to market smarter, sell faster, and engage better.
+    </h3    >
+</section>
+
+<!-- Call to Action Section -->
+<section class="cta-section">
+  <h2>AdTech</h2>
+
+  <div class="cta-card">
+    <img src="{% static 'images/990.jpg' %}" alt="QR Code for Payment" style="max-width: 500px;  border: 1px solid #ccc; padding: 8px; border-radius: 8px;">
+    <h3 class="cta-image-description">Adtech (advertising technology) refers to the tools and software used to manage and deliver digital advertising campaigns. These tools help advertisers reach audiences, manage campaigns, and measure their effectiveness.</h3>
+  </div>
+
+  <div class="cta-card">
+  <img src="{% static 'images/991.jpg' %}" alt="QR Code for Payment" style="max-width: 500px;  border: 1px solid #ccc; padding: 8px; border-radius: 8px;">
+    <h3 class="cta-image-description">Welcome to the AI Era of Computing — where intelligent performance meets cutting-edge design for the future of laptops.</h3>
+  </div>
+
+  <div class="cta-card">
+    <img src="{% static 'images/993.jpg' %}" alt="QR Code for Payment" style="max-width: 500px;  border: 1px solid #ccc; padding: 8px; border-radius: 8px;">
+    <h3 class="cta-image-description">To help you understand the complexities of AdTech, we’re going to unpack each of the different components that make up the AdTech ecosystem.</h3>
+  </div>
+</section>
+       
+         
+         <!-- Footer Section -->
+         
+         <footer>
+    <p>AdTech</p>
+    <div class="social-links">
+      <a href="https://twitter.com" target="_blank" class="social-icon"><i class="fab fa-twitter"></i></a>
+      <a href="https://facebook.com" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+      <a href="https://youtube.com" target="_blank" class="social-icon"><i class="fab fa-youtube"></i></a>
+      <a href="https://instagram.com" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
+    </div>
+  </footer>
+
+    <script src="{% static 'js/scripts.js' %}"></script>
+</body>
+</html>

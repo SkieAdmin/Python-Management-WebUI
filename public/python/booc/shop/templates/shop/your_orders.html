@@ -1,0 +1,160 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Your Orders – Ground Coffee</title>
+  <link rel="stylesheet"href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+
+  <style>
+    /* — root vars, resets, typography, section, grid, cards, etc. (reuse your existing CSS) */
+
+    /* — Payment Modal CSS — */
+    .modal-overlay {
+      position: fixed;
+      top:0; left:0; width:100%; height:100%;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal {
+      background: #fff;
+      border-radius: 1rem;
+      max-width: 500px; width: 90%;
+      padding: 2rem;
+      position: relative;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    }
+    .modal .close-btn {
+      position: absolute; top:1rem; right:1rem;
+      font-size:1.2rem; cursor:pointer; color:#777;
+    }
+    .modal form p { margin-bottom:1rem; }
+    .modal form label { display:block; font-weight:600; margin-bottom:.3rem; }
+    .modal form input,
+    .modal form textarea {
+      width:100%; padding:.5rem; border:1px solid #ccc; border-radius:.5rem;
+      font-size:.95rem;
+    }
+    .modal form button {
+      margin-top:1rem; padding:.7rem 1.2rem; border:none;
+      background: var(--primary); color:#fff; font-size:1rem;
+      border-radius:.5rem; cursor:pointer;
+    }
+    .make-payment-btn {
+      margin-top:1rem; padding:.6rem 1rem; font-size:.9rem;
+      border:2px solid var(--secondary); background:transparent;
+      color: var(--secondary); border-radius:.5rem; cursor:pointer;
+      transition: background .2s, color .2s;
+    }
+    .make-payment-btn:hover {
+      background: var(--secondary); color: #fff;
+    }
+  </style>
+</head>
+<body>
+  {% include 'shop/navbar.html' %}
+
+  <section class="orders-section">
+    <h1 class="section-title">Your Orders</h1>
+
+    {% if messages %}
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          {% for msg in messages %}
+            Swal.fire({
+              icon: '{{ msg.tags }}' === 'success' ? 'success' : 'error',
+              title: '{{ msg }}',
+              toast: true,
+              position: 'top-end',
+              showConfirmButton: false,
+              timer: 2500
+            });
+          {% endfor %}
+        });
+      </script>
+    {% endif %}
+
+    {% if orders %}
+      <div class="orders-grid">
+        {% for order in orders %}
+          {% if order.status in visible_statuses %}
+            <div class="order-card" data-order-id="{{ order.id }}">
+              <div class="order-image-wrapper">
+                <span class="status-badge status-{{ order.status }}">
+                  {{ order.status }}
+                </span>
+                {% if order.product.image %}
+                  <img src="{{ order.product.image.url }}"
+                       alt="{{ order.product.name }}">
+                {% else %}
+                  <img src="{% static 'images/default_coffee.jpg' %}"
+                       alt="{{ order.product.name }}">
+                {% endif %}
+              </div>
+              <div class="order-details">
+                <h3>{{ order.product.name }}</h3>
+                <p><strong>Quantity:</strong> {{ order.quantity }}</p>
+                <p><strong>Scheduled:</strong> {{ order.scheduled_for|date:"M d, Y H:i" }}</p>
+                <p><strong>Address:</strong> {{ order.customer_address }}</p>
+                {% if order.notes %}
+                  <p><strong>Notes:</strong> {{ order.notes }}</p>
+                {% endif %}
+                <p class="timestamp">Ordered on {{ order.ordered_at|date:"M d, Y H:i" }}</p>
+
+                {% if not order.payment %}
+                  <button class="make-payment-btn">Make Payment</button>
+                {% else %}
+                  <p style="margin-top:1rem; color:green;">
+                    Payment submitted on {{ order.payment.created_at|date:"M d, Y H:i" }}
+                  </p>
+                {% endif %}
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="no-orders">You haven’t placed any orders yet.</p>
+    {% endif %}
+  </section>
+
+  {% include 'shop/footers.html' %}
+
+  <!-- Modal Overlay -->
+  <div class="modal-overlay" id="paymentModalOverlay">
+    <div class="modal">
+      <span class="close-btn" id="paymentModalClose">&times;</span>
+      {% include 'shop/payment_modal.html' %}
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const overlay = document.getElementById('paymentModalOverlay');
+      const closeBtn = document.getElementById('paymentModalClose');
+      const form     = document.getElementById('paymentForm');
+
+      document.querySelectorAll('.make-payment-btn').forEach(btn => {
+        btn.addEventListener('click', e => {
+          const orderCard = e.target.closest('.order-card');
+          const orderId   = orderCard.dataset.orderId;
+          form.action = `/orders/${orderId}/make-payment/`;
+          overlay.style.display = 'flex';
+        });
+      });
+
+      closeBtn.addEventListener('click', () => overlay.style.display = 'none');
+      overlay.addEventListener('click', e => {
+        if (e.target === overlay) overlay.style.display = 'none';
+      });
+    });
+  </script>
+</body>
+</html>

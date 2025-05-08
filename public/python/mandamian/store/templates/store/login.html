@@ -1,0 +1,141 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Login - Lourgie Sari-Sari Store{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-box">
+        <div class="auth-header">
+            <h2>Welcome Back</h2>
+            <p class="auth-subtitle">Sign in to Lourgie's Sari-Sari Store</p>
+        </div>
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_username">Username</label>
+                <input type="text" name="username" id="id_username" required>
+            </div>
+            <div class="form-group">
+                <label for="id_password">Password</label>
+                <input type="password" name="password" id="id_password" required>
+            </div>
+            {% if form.errors %}
+            <div class="error-message">
+                Invalid username or password.
+            </div>
+            {% endif %}
+            <button type="submit" class="auth-button">Sign In</button>
+        </form>
+        <div class="auth-footer">
+            <p>Don't have an account? <a href="{% url 'register' %}">Create one</a></p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .auth-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+        padding: 20px;
+        background: linear-gradient(135deg, #f5f7fa 0%, #e4e7eb 100%);
+    }
+
+    .auth-box {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 40px;
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .auth-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .auth-header h2 {
+        color: #2c3e50;
+        font-size: 28px;
+        margin-bottom: 10px;
+    }
+
+    .auth-subtitle {
+        color: #7f8c8d;
+        font-size: 16px;
+        margin: 0;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #34495e;
+        font-weight: 500;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: border-color 0.3s;
+    }
+
+    .form-group input:focus {
+        border-color: #3498db;
+        outline: none;
+    }
+
+    .error-message {
+        color: #e74c3c;
+        font-size: 14px;
+        margin-top: 5px;
+    }
+
+    .auth-button {
+        width: 100%;
+        padding: 14px;
+        background: #3498db;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .auth-button:hover {
+        background: #2980b9;
+    }
+
+    .auth-footer {
+        text-align: center;
+        margin-top: 20px;
+        color: #7f8c8d;
+    }
+
+    .auth-footer a {
+        color: #3498db;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .auth-footer a:hover {
+        text-decoration: underline;
+    }
+
+    @media (max-width: 480px) {
+        .auth-box {
+            padding: 20px;
+        }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,423 @@
+{% extends 'core/checkout_base_clean.html' %}
+{% load static %}
+
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="checkout-header-section">
+        <div class="checkout-logo">
+            <a href="{% url 'home' %}">
+                <img src="{% static 'images/placeholder.jpg' %}" alt="Iligan2L Logo">
+            </a>
+        </div>
+        <h1 class="page-title">Checkout</h1>
+    </div>
+    
+    {% if cart_items %}
+    <div class="checkout-container">
+        <div class="order-summary">
+            <h2>Order Summary</h2>
+            <div class="cart-items">
+                {% for item in cart_items %}
+                <div class="cart-item">
+                    <div class="item-image">
+                        {% if item.product.image %}
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                        {% else %}
+                            <img src="{% static 'images/placeholder.jpg' %}" alt="{{ item.product.name }}">
+                        {% endif %}
+                    </div>
+                    <div class="item-details">
+                        <h3>{{ item.product.name }}</h3>
+                        <p class="item-price">₱{{ item.product.price }} x {{ item.quantity }}</p>
+                        <p class="item-total">₱{{ item.get_total_price }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="order-totals">
+                <div class="total-row">
+                    <span>Items ({{ total_items }}):</span>
+                    <span>₱{{ total_price }}</span>
+                </div>
+                <div class="total-row">
+                    <span>Shipping:</span>
+                    <span>Free</span>
+                </div>
+                <div class="total-row grand-total">
+                    <span>Total:</span>
+                    <span>₱{{ total_price }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="payment-section">
+            <h2>Payment Method</h2>
+            <form method="post" action="{% url 'checkout_view' %}">
+                {% csrf_token %}
+                <div class="payment-methods">
+                    <div class="payment-method">
+                        <input type="radio" id="cash" name="payment_method" value="Cash" checked>
+                        <label for="cash">Cash on Delivery</label>
+                    </div>
+                    
+                    <div class="payment-method">
+                        <input type="radio" id="gcash" name="payment_method" value="GCash">
+                        <label for="gcash">GCash</label>
+                        <div class="payment-details gcash-details" style="display: none;">
+                            <div class="qr-code">
+                                <img src="{% static 'images/payment/gcash.png' %}" alt="GCash QR Code" class="payment-qr">
+                                <p>Scan this QR code with your GCash app</p>
+                            </div>
+                            <p>Account Name: JO*N BA**Y O.</p>
+                            <p>Mobile No.: 099• •••058</p>
+                            <p>User ID: •••••••••WD6H5B</p>
+                        </div>
+                    </div>
+                    
+                    <div class="payment-method">
+                        <input type="radio" id="maya" name="payment_method" value="PayMaya">
+                        <label for="maya">Maya</label>
+                        <div class="payment-details maya-details" style="display: none;">
+                            <div class="qr-code">
+                                <img src="{% static 'images/payment/myqr_1746583366467.jpg' %}" alt="Maya QR Code" class="payment-qr">
+                                <p>Scan this QR code with your Maya app</p>
+                            </div>
+                            <p>Account Name: EMMANUEL BECERRO</p>
+                            <p>Username: @barryillest</p>
+                            <p>Mobile No.: +63 *** *** 8058</p>
+                        </div>
+                    </div>
+                    
+                    <div class="payment-method">
+                        <input type="radio" id="credit-card" name="payment_method" value="Credit Card">
+                        <label for="credit-card">Credit/Debit Card</label>
+                    </div>
+                </div>
+                
+                <div class="shipping-address">
+                    <h2>Shipping Address</h2>
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <textarea id="address" name="address" rows="3" required></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="city">City</label>
+                            <input type="text" id="city" name="city" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="postal_code">Postal Code</label>
+                            <input type="text" id="postal_code" name="postal_code" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" required>
+                    </div>
+                </div>
+                
+                <div class="checkout-buttons">
+                    <a href="{% url 'customer_dashboard' %}" class="back-button">Back to Menu</a>
+                    <button type="submit" class="checkout-button">Place Order</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% else %}
+    <div class="empty-cart">
+        <i class="fas fa-shopping-cart"></i>
+        <h2>Your cart is empty</h2>
+        <p>Add some products to your cart before checking out.</p>
+        <a href="{% url 'customer_dashboard' %}" class="continue-shopping">Continue Shopping</a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .checkout-header-section {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--threads-border);
+    }
+    
+    .checkout-logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1.5rem;
+        line-height: 0;
+    }
+    
+    .checkout-logo a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .checkout-logo img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        vertical-align: middle;
+    }
+    
+    .page-title {
+        font-size: 2rem;
+        font-weight: 600;
+        margin: 0;
+        color: var(--threads-text);
+    }
+    
+    .checkout-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+    
+    .order-summary, .payment-section {
+        background-color: var(--threads-card-bg);
+        border: 1px solid var(--threads-border);
+        border-radius: 12px;
+        padding: 1.5rem;
+    }
+    
+    .cart-items {
+        margin: 1.5rem 0;
+    }
+    
+    .cart-item {
+        display: flex;
+        gap: 1rem;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--threads-border);
+    }
+    
+    .item-image img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+    
+    .item-details {
+        flex: 1;
+    }
+    
+    .item-details h3 {
+        margin: 0 0 0.5rem;
+        font-size: 1rem;
+    }
+    
+    .item-price {
+        color: var(--threads-secondary-text);
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .item-total {
+        font-weight: 600;
+    }
+    
+    .order-totals {
+        margin-top: 1.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--threads-border);
+    }
+    
+    .total-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
+    
+    .grand-total {
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--threads-border);
+    }
+    
+    .payment-methods {
+        margin: 1.5rem 0;
+    }
+    
+    .payment-method {
+        margin-bottom: 1rem;
+        padding: 1rem;
+        border: 1px solid var(--threads-border);
+        border-radius: 8px;
+    }
+    
+    .payment-method label {
+        margin-left: 0.5rem;
+        font-weight: 500;
+    }
+    
+    .payment-details {
+        margin-top: 1rem;
+        padding: 1rem;
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+    }
+    
+    .qr-code {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    
+    .qr-code img {
+        width: 150px;
+        height: 150px;
+        background-color: white;
+        padding: 10px;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+    }
+    
+    .shipping-address {
+        margin-top: 2rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+    
+    .form-group input, .form-group textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid var(--threads-border);
+        background-color: rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+        color: var(--threads-text);
+    }
+    
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+    
+    .checkout-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+    
+    .back-button {
+        display: block;
+        padding: 1rem;
+        background-color: var(--threads-card-bg);
+        color: var(--threads-text);
+        border: 1px solid var(--threads-border);
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-align: center;
+        text-decoration: none;
+        flex: 1;
+    }
+    
+    .back-button:hover {
+        background-color: var(--threads-hover);
+    }
+    
+    .checkout-button {
+        display: block;
+        padding: 1rem;
+        background-color: var(--threads-success);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-align: center;
+        text-decoration: none;
+        flex: 2;
+    }
+    
+    .checkout-button:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+    }
+    
+    .empty-cart {
+        text-align: center;
+        padding: 3rem 0;
+    }
+    
+    .empty-cart i {
+        font-size: 3rem;
+        color: var(--threads-secondary-text);
+        margin-bottom: 1rem;
+    }
+    
+    .continue-shopping {
+        display: inline-block;
+        margin-top: 1rem;
+        padding: 0.75rem 1.5rem;
+        background-color: var(--secondary-color);
+        color: black;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: var(--threads-transition);
+    }
+    
+    .continue-shopping:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+    }
+    
+    @media (max-width: 768px) {
+        .checkout-container {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Show/hide payment details based on selected payment method
+        const gcashRadio = document.getElementById('gcash');
+        const mayaRadio = document.getElementById('maya');
+        const gcashDetails = document.querySelector('.gcash-details');
+        const mayaDetails = document.querySelector('.maya-details');
+        
+        function updatePaymentDetails() {
+            gcashDetails.style.display = gcashRadio.checked ? 'block' : 'none';
+            mayaDetails.style.display = mayaRadio.checked ? 'block' : 'none';
+        }
+        
+        // Initial update
+        updatePaymentDetails();
+        
+        // Update on change
+        const paymentMethods = document.querySelectorAll('input[name="payment_method"]');
+        paymentMethods.forEach(method => {
+            method.addEventListener('change', updatePaymentDetails);
+        });
+    });
+</script>
+{% endblock %}

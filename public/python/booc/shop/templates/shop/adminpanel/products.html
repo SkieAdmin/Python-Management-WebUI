@@ -1,0 +1,48 @@
+{% extends 'shop/adminpanel/base.html' %}
+
+{% block content %}
+  <div class="d-flex justify-content-between mb-3 align-items-center">
+    <h1><i class="fas fa-box-open"></i> Products</h1>
+    <button class="btn btn-primary btn-sm"
+            onclick="openModal('{% url 'shop_admin:product_add_modal' %}', 'Add Product')">
+      <i class="fas fa-plus-circle"></i> Add Product
+    </button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Available</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in products %}
+      <tr>
+        <td>{{ p.name }}</td>
+        <td>₱{{ p.price }}</td>
+        <td>{{ p.available|yesno:"Yes,No" }}</td>
+        <td>
+          <button class="btn btn-warning btn-sm"
+                  onclick="openModal('{% url 'shop_admin:product_edit_modal' p.pk %}', 'Edit {{ p.name }}')">
+            <i class="fas fa-edit"></i>
+          </button>
+          <a class="btn btn-danger btn-sm"
+             href="{% url 'shop_admin:product_delete' p.pk %}"
+             onclick="return confirm('Delete {{ p.name }}?');">
+            <i class="fas fa-trash"></i>
+          </a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="4" style="text-align:center; padding: 1rem; color: #666;">
+          No products found.
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

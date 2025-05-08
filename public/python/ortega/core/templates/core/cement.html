@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<h1>Cement Products</h1>
+<div class="product-list">
+    {% for product in products %}
+        <div class="product-item">
+          <img src="{{ product.image_url }}" alt="{{ product.name }}" onerror="this.onerror=null;this.src='{{ STATIC_URL }}images/placeholder.jpg';">
+
+            <h3>{{ product.name }} ({{ product.weight }})</h3>
+            <p class="price">₱{{ product.price }}</p>
+            <button class="order-button">Add to Cart</button>
+        </div>
+    {% empty %}
+        <p>No cement products available at the moment.</p>
+    {% endfor %}
+</div>
+{% endblock %}

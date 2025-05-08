@@ -1,0 +1,93 @@
+body {
+     font-family: 'Courier New', monospace; /* Receipt-like font */
+   background-image: url('/static/images/best.jpg');
+       backdrop-filter: blur(2px);
+    background-size: cover;  /* Adjusts the image to cover the entire background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    background: linear-gradient(to bottom,white, transparent);
+    padding: 20px 60px; /* shorter height, more width */
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 2,4.15);
+    max-width: 900px; /* increase width */
+    width: 100%;
+    height: auto; /* content will control height */
+    text-align: left;
+}
+
+.container img {
+    display: block;
+    margin: 0 auto 15px;
+    width: 100px;
+}
+
+.container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* two columns */
+    gap: 20px 40px;
+}
+
+form div {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+input, textarea {
+    padding: 8px;
+    border: 2px solid black;
+    border-radius: 6px;
+    font-size: 14px;
+    width: 100%;
+    resize: vertical;
+}
+
+button {
+    grid-column: span 2;
+    padding: 10px;
+    background-color: black;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bolder;
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+button:hover {
+    background-color: black;
+    transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(255, 75, 43, 0.5);
+}
+
+p {
+    text-align: center;
+    margin-top: 15px;
+}
+
+a {
+    color: red;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+a:hover {
+    color:#e65050;
+    text-decoration: underline;
+}

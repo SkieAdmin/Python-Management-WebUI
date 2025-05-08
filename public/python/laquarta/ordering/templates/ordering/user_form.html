@@ -1,0 +1,33 @@
+{% extends "ordering/custom_admin_dashboard.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h1>{{ title }}</h1>
+    <form method="post">
+        {% csrf_token %}
+        
+        {% for field in form %}
+        <div class="form-group">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}
+            <small class="form-text text-muted">{{ field.help_text }}</small>
+            {% endif %}
+            {% for error in field.errors %}
+            <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+        
+        {% if 'edit' in request.path %}
+        <div class="form-group">
+            <label for="is_staff">Admin Status:</label>
+            <input type="checkbox" name="is_staff" id="is_staff" {% if user.is_staff %}checked{% endif %}>
+            <small class="form-text text-muted">Check this box to give admin privileges.</small>
+        </div>
+        {% endif %}
+        
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a href="{% url 'user_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

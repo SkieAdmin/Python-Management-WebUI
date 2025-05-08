@@ -1,0 +1,327 @@
+{% extends 'base.html' %}
+
+{% block title %}My Orders{% endblock %}
+
+{% block extra_css %}
+<style>
+    .my-orders-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+    
+    .my-orders-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .my-orders-title {
+        margin: 0;
+        color: var(--primary-color);
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .my-orders-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        overflow: hidden;
+    }
+    
+    .my-orders-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1.5rem;
+    }
+    
+    .my-orders-table th {
+        text-align: left;
+        padding: 1rem;
+        background-color: #f5f5f5;
+        border-bottom: 2px solid var(--border);
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+    
+    .my-orders-table td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+        vertical-align: middle;
+    }
+    
+    .my-orders-table tr:last-child td {
+        border-bottom: none;
+    }
+    
+    .my-orders-table tbody tr {
+        transition: all 0.2s ease;
+    }
+    
+    .my-orders-table tbody tr:hover {
+        background-color: #f9f9f9;
+    }
+    
+    .order-id {
+        font-family: monospace;
+        font-weight: 600;
+        background-color: #f5f5f5;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        color: var(--primary-color);
+    }
+    
+    .order-date {
+        white-space: nowrap;
+        color: var(--text-dark);
+        font-family: monospace;
+        font-size: 0.9rem;
+    }
+    
+    .order-total {
+        font-weight: 600;
+        color: #2e7d32;
+    }
+    
+    .order-status {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-align: center;
+        white-space: nowrap;
+    }
+    
+    .status-pending { background-color: #fff8e1; color: #f57c00; }
+    .status-accepted { background-color: #e3f2fd; color: #1976d2; }
+    .status-preparing { background-color: #f3e5f5; color: #9c27b0; }
+    .status-ready { background-color: #e8f5e9; color: #2e7d32; }
+    .status-completed { background-color: #e8f5e9; color: #2e7d32; }
+    .status-rejected { background-color: #ffebee; color: #d32f2f; }
+    .status-cancelled { background-color: #ffebee; color: #d32f2f; }
+    
+    .payment-status {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-align: center;
+        white-space: nowrap;
+    }
+    
+    .payment-unpaid { background-color: #ffebee; color: #d32f2f; }
+    .payment-processing { background-color: #fff8e1; color: #f57c00; }
+    .payment-paid { background-color: #e8f5e9; color: #2e7d32; }
+    
+    .btn-view {
+        background-color: #e3f2fd;
+        color: #1976d2;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+    
+    .btn-view:hover {
+        background-color: #bbdefb;
+        transform: translateY(-2px);
+    }
+    
+    .btn-pay {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+    
+    .btn-pay:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .empty-orders {
+        text-align: center;
+        padding: 3rem 2rem;
+    }
+    
+    .empty-orders-icon {
+        font-size: 4rem;
+        color: #e0e0e0;
+        margin-bottom: 1.5rem;
+    }
+    
+    .empty-orders-message {
+        font-size: 1.2rem;
+        color: var(--text-dark);
+        margin-bottom: 1rem;
+    }
+    
+    .empty-orders-submessage {
+        color: var(--text-muted);
+        margin-bottom: 2rem;
+    }
+    
+    .btn-browse {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        margin: 0 auto;
+    }
+    
+    .btn-browse:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+    }
+    
+    @media (max-width: 768px) {
+        .my-orders-card {
+            padding: 1.5rem;
+        }
+        
+        .my-orders-table {
+            display: block;
+            overflow-x: auto;
+        }
+        
+        .order-date, .order-status, .payment-status {
+            white-space: nowrap;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="my-orders-container">
+    <div class="my-orders-header">
+        <h1 class="my-orders-title">
+            <i class="fas fa-receipt"></i> My Orders
+        </h1>
+    </div>
+    
+    <div class="my-orders-card">
+        {% if orders %}
+            <table class="my-orders-table">
+                <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Payment</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                        <tr>
+                            <td><span class="order-id">#{{ order.id }}</span></td>
+                            <td class="order-date">{{ order.order_date|date:"M d, Y H:i" }}</td>
+                            <td class="order-total">${{ order.total_amount }}</td>
+                            <td>
+                                <span class="order-status status-{{ order.status }}">
+                                    {% if order.status == 'pending' %}
+                                        <i class="fas fa-clock"></i>
+                                    {% elif order.status == 'accepted' %}
+                                        <i class="fas fa-check-circle"></i>
+                                    {% elif order.status == 'preparing' %}
+                                        <i class="fas fa-pizza-slice"></i>
+                                    {% elif order.status == 'ready' %}
+                                        <i class="fas fa-box"></i>
+                                    {% elif order.status == 'completed' %}
+                                        <i class="fas fa-check-double"></i>
+                                    {% elif order.status == 'rejected' or order.status == 'cancelled' %}
+                                        <i class="fas fa-times-circle"></i>
+                                    {% endif %}
+                                    {{ order.get_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="payment-status payment-{{ order.payment_status }}">
+                                    {% if order.payment_status == 'unpaid' %}
+                                        <i class="fas fa-exclamation-circle"></i>
+                                    {% elif order.payment_status == 'processing' %}
+                                        <i class="fas fa-sync"></i>
+                                    {% elif order.payment_status == 'paid' %}
+                                        <i class="fas fa-check-circle"></i>
+                                    {% endif %}
+                                    {{ order.get_payment_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="{% url 'order_detail' order.id %}" class="btn-view">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                    {% if order.payment_status == 'unpaid' %}
+                                        <a href="{% url 'make_payment' order.id %}" class="btn-pay">
+                                            <i class="fas fa-credit-card"></i> Pay
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="empty-orders">
+                <div class="empty-orders-icon">
+                    <i class="fas fa-receipt"></i>
+                </div>
+                <p class="empty-orders-message">You haven't placed any orders yet</p>
+                <p class="empty-orders-submessage">Browse our delicious menu and place your first order!</p>
+                <a href="{% url 'menu' %}" class="btn-browse">
+                    <i class="fas fa-pizza-slice"></i> Browse Menu
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

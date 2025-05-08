@@ -1,0 +1,317 @@
+{% extends 'base.html' %}
+
+{% block title %}Register{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color: #d32f2f;
+        --primary-dark: #b71c1c;
+        --primary-light: #ef5350;
+        --text-dark: #333333;
+        --text-light: #ffffff;
+        --gray-light: #e0e0e0;
+        --gray-medium: #9e9e9e;
+        --gray-dark: #616161;
+        --danger: #f44336;
+        --success: #4caf50;
+    }
+
+    .auth-container {
+        max-width: 500px;
+        margin: 2rem auto;
+    }
+    
+    .auth-card {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        border-top: 4px solid var(--primary-color);
+        max-width: 450px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .auth-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .auth-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+    }
+    
+    .auth-subtitle {
+        color: var(--gray-medium);
+        font-size: 1rem;
+    }
+    
+    .form-field {
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+    
+    .form-field label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: var(--text-dark);
+    }
+    
+    .form-field input {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 1px solid var(--gray-light);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background-color: #fff;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-field input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+    }
+    
+    .form-field input::placeholder {
+        color: var(--gray-medium);
+    }
+    
+    .form-field.error input {
+        border-color: var(--danger);
+    }
+    
+    .form-error {
+        color: var(--danger);
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+        display: block;
+    }
+    
+    .form-help {
+        color: var(--gray-medium);
+        font-size: 0.75rem;
+        margin-top: 0.25rem;
+        display: block;
+        font-style: italic;
+    }
+    
+    .form-actions {
+        margin-top: 2rem;
+        text-align: center;
+    }
+    
+    .auth-btn {
+        width: 100%;
+        padding: 0.8rem;
+        font-size: 1rem;
+        letter-spacing: 0.5px;
+        background-color: var(--primary-color);
+        color: var(--text-light);
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+    }
+    
+    .auth-btn:hover {
+        background-color: var(--primary-dark);
+    }
+    
+    .auth-link {
+        display: block;
+        text-align: center;
+        margin-top: 1.5rem;
+        color: var(--gray-medium);
+        font-size: 0.95rem;
+    }
+    
+    .auth-link a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s ease;
+    }
+    
+    .auth-link a:hover {
+        color: var(--primary-dark);
+        text-decoration: underline;
+    }
+    
+    .required-field::after {
+        content: '*';
+        color: var(--danger);
+        margin-left: 4px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1 class="auth-title">Create Account</h1>
+            <p class="auth-subtitle">Join Pizza Galour to start ordering delicious pizzas</p>
+        </div>
+        
+        {% if form.non_field_errors %}
+        <div class="form-error" style="text-align: center; margin-bottom: 1.5rem;">
+            {% for error in form.non_field_errors %}
+                {{ error }}<br>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <form method="post" novalidate>
+            {% csrf_token %}
+            
+            {% for field in form %}
+                <div class="form-field {% if field.errors %}error{% endif %}">
+                    {% if field.name == 'username' or field.name == 'email' or field.name == 'first_name' or field.name == 'last_name' or field.name == 'password1' or field.name == 'password2' %}
+                        {{ field }}
+                        {% if field.errors %}
+                            <span class="form-error">{{ field.errors.0 }}</span>
+                        {% endif %}
+                    {% else %}
+                        <label for="{{ field.id_for_label }}" {% if field.field.required %}class="required-field"{% endif %}>{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <span class="form-error">{{ field.errors.0 }}</span>
+                        {% endif %}
+                        {% if field.help_text %}
+                            <span class="form-help">{{ field.help_text }}</span>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            {% endfor %}
+            
+            <div class="form-actions">
+                <button type="submit" class="auth-btn">Create Account</button>
+                <div class="auth-link">
+                    Already have an account? <a href="{% url 'login' %}">Sign in</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+
+        const usernameField = document.querySelector('input[name="username"]');
+        if (usernameField) {
+            usernameField.placeholder = 'Username';
+            const helpText = 'Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.';
+            usernameField.title = helpText;
+            
+
+            const formField = usernameField.closest('.form-field');
+            const helpSpan = document.createElement('span');
+            helpSpan.className = 'form-help';
+            helpSpan.textContent = helpText;
+            formField.appendChild(helpSpan);
+        }
+        
+        const emailField = document.querySelector('input[name="email"]');
+        if (emailField) emailField.placeholder = 'Email Address';
+        
+        const password1Field = document.querySelector('input[name="password1"]');
+        if (password1Field) {
+            password1Field.placeholder = 'Password';
+            const helpText = 'Your password must contain at least 8 characters and can\'t be entirely numeric.';
+            password1Field.title = helpText;
+            
+        
+            const formField = password1Field.closest('.form-field');
+            const helpSpan = document.createElement('span');
+            helpSpan.className = 'form-help';
+            helpSpan.textContent = helpText;
+            formField.appendChild(helpSpan);
+        }
+        
+        const password2Field = document.querySelector('input[name="password2"]');
+        if (password2Field) {
+            password2Field.placeholder = 'Confirm Password';
+            const helpText = 'Enter the same password as before, for verification.';
+            password2Field.title = helpText;
+            
+            const formField = password2Field.closest('.form-field');
+            const helpSpan = document.createElement('span');
+            helpSpan.className = 'form-help';
+            helpSpan.textContent = helpText;
+            formField.appendChild(helpSpan);
+        }
+        
+        const firstNameField = document.querySelector('input[name="first_name"]');
+        if (firstNameField) firstNameField.placeholder = 'First Name';
+        
+        const lastNameField = document.querySelector('input[name="last_name"]');
+        if (lastNameField) lastNameField.placeholder = 'Last Name';
+        
+        const phoneField = document.querySelector('input[name="phone"]');
+        if (phoneField) phoneField.placeholder = 'Phone Number';
+        
+        const addressField = document.querySelector('input[name="address"]');
+        if (addressField) addressField.placeholder = 'Address';
+
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                let hasError = false;
+                const requiredFields = form.querySelectorAll('input[required]');
+                
+                requiredFields.forEach(field => {
+                    const formField = field.closest('.form-field');
+                    const errorSpan = formField.querySelector('.form-error');
+                    
+                    if (!field.value.trim()) {
+                        e.preventDefault();
+                        hasError = true;
+                        formField.classList.add('error');
+                        
+                        if (!errorSpan) {
+                            const newErrorSpan = document.createElement('span');
+                            newErrorSpan.className = 'form-error';
+                            newErrorSpan.textContent = 'This field is required.';
+                            formField.appendChild(newErrorSpan);
+                        }
+                    } else {
+                        formField.classList.remove('error');
+                        if (errorSpan && errorSpan.textContent === 'This field is required.') {
+                            errorSpan.remove();
+                        }
+                    }
+                });
+                
+
+                if (password1Field && password2Field && !hasError) {
+                    if (password1Field.value !== password2Field.value) {
+                        e.preventDefault();
+                        const formField = password2Field.closest('.form-field');
+                        formField.classList.add('error');
+                        
+                        const errorSpan = formField.querySelector('.form-error');
+                        if (errorSpan) {
+                            errorSpan.textContent = 'Passwords do not match.';
+                        } else {
+                            const newErrorSpan = document.createElement('span');
+                            newErrorSpan.className = 'form-error';
+                            newErrorSpan.textContent = 'Passwords do not match.';
+                            formField.appendChild(newErrorSpan);
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

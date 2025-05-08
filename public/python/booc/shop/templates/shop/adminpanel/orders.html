@@ -1,0 +1,53 @@
+{% extends 'shop/adminpanel/base.html' %}
+
+{% block content %}
+  <!-- Header Section with Color -->
+  <div style="display: flex; justify-content: space-between; align-items: center; background-color: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+    <h1 style="margin: 0; color: #343a40;">
+      <i class="fas fa-shopping-cart text-primary"></i> Orders
+    </h1>
+    <button class="btn btn-success btn-sm"
+            onclick="openModal('{% url 'shop_admin:order_add_modal' %}', 'Add Order')">
+      <i class="fas fa-plus-circle"></i> Add Order
+    </button>
+  </div>
+
+  <!-- Orders Table -->
+  <table class="table table-bordered table-striped">
+    <thead class="thead-dark">
+      <tr>
+        <th>ID</th>
+        <th>Products</th>
+        <th>Customer</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for o in orders %}
+      <tr>
+        <td>{{ o.id }}</td>
+        <td>{{ o.product.name }}</td>
+        <td>{{ o.customer_name }}</td>
+        <td>{{ o.get_status_display }}</td>
+        <td>
+          <button class="btn btn-warning btn-sm"
+                  onclick="openModal('{% url 'shop_admin:order_edit_modal' o.pk %}', 'Edit Order')">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button class="btn btn-danger btn-sm"
+                  onclick="if(confirm('Delete order #{{ o.id }}?')) location.href='{% url 'shop_admin:order_delete' o.pk %}'">
+            <i class="fas fa-trash"></i>
+          </button>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="5" class="text-center text-muted py-3">
+          No orders found.
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

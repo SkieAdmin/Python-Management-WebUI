@@ -1,0 +1,323 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="icon" href="/static/images/logos.png" type="image/png">
+    <title>Menu</title>
+    <style>
+        /* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header Styles */
+header {
+    margin-bottom: 30px;
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 2px solid red;
+}
+
+h2 {
+    color: black;
+    text-shadow: 1px 1px 0 green;
+    font-size: 1.8rem;
+}
+
+/* Navigation Buttons */
+.logout-btn, .view-order-btn, .view-profile-btn {
+    display: inline-block;
+    margin: 10px 10px 20px 0;
+    padding: 8px 15px;
+    background-color:red;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.logout-btn:hover, .view-order-btn:hover, .view-profile-btn:hover {
+    background-color: green;
+    transform: translateY(-2px);
+}
+
+/* Menu List */
+.menu-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+    list-style: none;
+}
+
+.menu-list li {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 7.1);
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.menu-list li:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.menu-list h4 {
+    padding: 15px 15px 5px;
+    color: black;
+     text-shadow: 1px 1px 0 green;
+    font-size: 1.3rem;
+}
+
+.menu-list p {
+    padding: 0 15px;
+    margin-bottom: 10px;
+    color: black;
+}
+
+.menu-list p:nth-of-type(2) {
+    font-weight: bold;
+    color: red;
+     text-shadow: 1px 1px 0 green;
+    font-size: 1.2rem;
+}
+
+.menu-item-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+}
+
+.menu-list a {
+    display: block;
+    background-color: red;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.menu-list a:hover {
+    background-color: green;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .header-container {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    h2 {
+        margin-top: 10px !important;
+        font-size: 1.5rem;
+    }
+    
+    .menu-list {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .menu-list {
+        grid-template-columns: 1fr;
+    }
+    
+    .logout-btn, .view-order-btn, .view-profile-btn {
+        display: block;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+}
+.menu-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.menu-item {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background-color: #fff;
+}
+
+.menu-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.menu-item.unavailable {
+    opacity: 0.7;
+    background-color: #f8f8f8;
+    border: 1px dashed #ccc;
+}
+
+.menu-item-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.menu-item-info {
+    padding: 15px;
+    flex-grow: 1;
+}
+
+.menu-item-name {
+    margin-top: 0;
+    color: #333;
+    font-size: 1.2rem;
+}
+
+.menu-item-description {
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.menu-item-price {
+    font-weight: bold;
+    color: #e63946;
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+}
+
+.menu-item-image-container {
+    height: 200px;
+    overflow: hidden;
+}
+
+.menu-item-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.menu-item:hover .menu-item-image {
+    transform: scale(1.05);
+}
+
+.no-image-placeholder {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #f5f5f5;
+    color: #aaa;
+}
+
+.no-image-placeholder i {
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+
+.menu-item-actions {
+    margin-top: auto;
+}
+
+.order-button {
+    display: inline-block;
+    background-color: #4caf50;
+    color: white;
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.order-button:hover {
+    background-color: #388e3c;
+}
+
+.unavailable-label {
+    display: inline-block;
+    background-color: #f44336;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-container">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <img src="{% static 'images/logos.png' %}" alt="Logo" style="width: 150px;">
+                    <h2 style="margin: 0;">Jaimes Lechon Bayug Menu | Order to Pick Up</h2>
+                </div>
+            </div>
+        </header>
+        <a href="{% url 'logout' %}" class="logout-btn">Log out🏃🚪</a>
+        <a href="{% url 'order_history' %}" class="view-order-btn">View Order 🛒</a>
+        <a href="{% url 'reservation_package' %}" class="view-order-btn">Reserve Package📦</a>
+       <a href="{% url 'view_profile' %}" class="view-profile-btn">View Profile👩🏻‍💼</a>
+       <a href="{% url 'my_payment_proofs' %}" class="view-order-btn">My Payment Proofs🧾</a>
+
+
+        
+     <ul class="menu-list">
+    {% for item in items %}
+        <li class="menu-item {% if not item.available %}unavailable{% endif %}">
+            <div class="menu-item-content">
+                <div class="menu-item-info">
+                    <h4 class="menu-item-name">{{ item.name }}</h4>
+                    <p class="menu-item-description">{{ item.description }}</p>
+                    <p class="menu-item-price">₱{{ item.price }}</p>
+                    
+                    <div class="menu-item-actions">
+                        {% if item.available %}
+                            <a href="{% url 'order' item.id %}" class="order-button">
+                                <i class="fas fa-shopping-cart"></i> Order Now
+                            </a>
+                        {% else %}
+                            <span class="unavailable-label">
+                                <i class="fas fa-ban"></i> Currently Unavailable
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="menu-item-image-container">
+                    {% if item.image %}
+                        <img src="{{ item.image.url }}" alt="{{ item.name }}" class="menu-item-image">
+                    {% else %}
+                        <div class="no-image-placeholder">
+                            <i class="fas fa-image"></i>
+                            <p>No image available</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </li>
+    {% endfor %}
+</ul>

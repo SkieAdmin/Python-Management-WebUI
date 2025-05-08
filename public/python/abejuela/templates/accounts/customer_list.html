@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Customer List{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card">
+        <h2 style="margin-bottom: 1.5rem;">Customer List</h2>
+        
+        {% if customers %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Address</th>
+                        <th>Joined</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for customer in customers %}
+                        <tr>
+                            <td>{{ customer.id }}</td>
+                            <td>{{ customer.user.get_full_name|default:customer.user.username }}</td>
+                            <td>{{ customer.user.email }}</td>
+                            <td>{{ customer.phone|default:"-" }}</td>
+                            <td>{{ customer.address|default:"-"|truncatechars:30 }}</td>
+                            <td>{{ customer.created_at|date:"M d, Y" }}</td>
+                            <td>
+                                <a href="{% url 'customer_orders' %}?customer={{ customer.id }}" class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.9rem;">Orders</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No customers found.</p>
+        {% endif %}
+        
+        <div style="margin-top: 1.5rem;">
+            <a href="{% url 'dashboard' %}" class="btn">Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

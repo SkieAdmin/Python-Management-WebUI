@@ -1,0 +1,355 @@
+{% extends 'base.html' %}
+
+{% block title %}Reports{% endblock %}
+
+{% block extra_css %}
+<style>
+    .reports-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+    
+    .reports-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2.5rem;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
+    
+    .reports-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin: 0;
+        font-family: 'Playfair Display', serif;
+    }
+    
+    .report-actions {
+        display: flex;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+    }
+    
+    .report-btn {
+        padding: 0.7rem 1.2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+    
+    .report-btn-primary {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+    }
+    
+    .report-btn-primary:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+    }
+    
+    .report-btn-secondary {
+        background-color: white;
+        color: var(--text-dark);
+        border: 1px solid var(--border);
+    }
+    
+    .report-btn-secondary:hover {
+        background-color: #f5f5f5;
+        transform: translateY(-2px);
+    }
+    
+    .reports-card {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        overflow: hidden;
+    }
+    
+    .reports-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .reports-table th {
+        background-color: #f9f9f9;
+        padding: 1rem 1.5rem;
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-dark);
+        border-bottom: 1px solid var(--border);
+        white-space: nowrap;
+    }
+    
+    .reports-table td {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid var(--border);
+        color: var(--text-dark);
+    }
+    
+    .reports-table tr:last-child td {
+        border-bottom: none;
+    }
+    
+    .reports-table tr:hover {
+        background-color: #f9f9f9;
+    }
+    
+    .report-type {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+    .report-type-sales {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+    }
+    
+    .report-type-inventory {
+        background-color: #e3f2fd;
+        color: #1976d2;
+    }
+    
+    .report-type-payment {
+        background-color: #fff8e1;
+        color: #f57c00;
+    }
+    
+    .report-view-btn {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 0.4rem 1rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        transition: all 0.3s ease;
+    }
+    
+    .report-view-btn:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+    }
+    
+    .empty-state {
+        padding: 3rem;
+        text-align: center;
+    }
+    
+    .empty-icon {
+        font-size: 3rem;
+        color: #e0e0e0;
+        margin-bottom: 1rem;
+    }
+    
+    .empty-text {
+        color: var(--text-muted);
+        margin-bottom: 1.5rem;
+        font-size: 1.1rem;
+    }
+    
+    .report-id {
+        font-family: monospace;
+        font-weight: 600;
+        background-color: #f5f5f5;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+    }
+    
+    .report-date {
+        white-space: nowrap;
+    }
+    
+    .report-tabs {
+        display: flex;
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border);
+        overflow-x: auto;
+        padding-bottom: 1px;
+    }
+    
+    .report-tab {
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+        position: relative;
+    }
+    
+    .report-tab.active {
+        color: var(--primary-color);
+    }
+    
+    .report-tab.active::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: var(--primary-color);
+    }
+    
+    .report-tab:hover {
+        color: var(--primary-color);
+    }
+    
+    @media (max-width: 768px) {
+        .reports-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .reports-table {
+            display: block;
+            overflow-x: auto;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="reports-container">
+    <div class="reports-header">
+        <h1 class="reports-title">Reports</h1>
+        <div class="report-actions">
+            <a href="{% url 'generate_sales_report' %}" class="report-btn report-btn-primary">
+                <i class="fas fa-chart-line"></i> Sales Report
+            </a>
+            <a href="{% url 'generate_inventory_report' %}" class="report-btn report-btn-secondary">
+                <i class="fas fa-boxes"></i> Inventory Report
+            </a>
+            <a href="{% url 'generate_payment_report' %}" class="report-btn report-btn-secondary">
+                <i class="fas fa-file-invoice-dollar"></i> Payment Report
+            </a>
+        </div>
+    </div>
+    
+    <div class="report-tabs">
+        <div class="report-tab active">All Reports</div>
+        <div class="report-tab">Sales Reports</div>
+        <div class="report-tab">Inventory Reports</div>
+        <div class="report-tab">Payment Reports</div>
+    </div>
+    
+    <div class="reports-card">
+        {% if reports %}
+            <table class="reports-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Type</th>
+                        <th>Date Range</th>
+                        <th>Generated By</th>
+                        <th>Generated At</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for report in reports %}
+                        <tr>
+                            <td><span class="report-id">{{ report.id }}</span></td>
+                            <td>{{ report.title }}</td>
+                            <td>
+                                <span class="report-type {% if report.report_type == 'sales' %}report-type-sales{% elif report.report_type == 'inventory' %}report-type-inventory{% elif report.report_type == 'payment' %}report-type-payment{% endif %}">
+                                    {{ report.get_report_type_display }}
+                                </span>
+                            </td>
+                            <td class="report-date">{{ report.start_date|date:"M d, Y" }} - {{ report.end_date|date:"M d, Y" }}</td>
+                            <td>{{ report.generated_by.username }}</td>
+                            <td class="report-date">{{ report.generated_at|date:"M d, Y H:i" }}</td>
+                            <td>
+                                <a href="{% url 'view_report' report.id %}" class="report-view-btn">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <p class="empty-text">No reports found.</p>
+                <div class="report-actions">
+                    <a href="{% url 'generate_sales_report' %}" class="report-btn report-btn-primary">
+                        <i class="fas fa-plus"></i> Create Your First Report
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Tab functionality
+        const tabs = document.querySelectorAll('.report-tab');
+        const tableRows = document.querySelectorAll('.reports-table tbody tr');
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active class from all tabs
+                tabs.forEach(t => t.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                this.classList.add('active');
+                
+                // Filter table rows based on selected tab
+                const tabText = this.textContent.trim().toLowerCase();
+                
+                if (tabText === 'all reports') {
+                    // Show all rows
+                    tableRows.forEach(row => {
+                        row.style.display = '';
+                    });
+                } else {
+                    // Filter rows based on report type
+                    const reportType = tabText.replace(' reports', '').trim();
+                    
+                    tableRows.forEach(row => {
+                        const typeCell = row.querySelector('td:nth-child(3)');
+                        const type = typeCell.textContent.trim().toLowerCase();
+                        
+                        if (type.includes(reportType)) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                }
+            });
+        });
+        
+        // Add hover effect to table rows
+        tableRows.forEach(row => {
+            row.addEventListener('mouseover', function() {
+                this.style.backgroundColor = '#f9f9f9';
+                this.style.transition = 'background-color 0.3s ease';
+            });
+            
+            row.addEventListener('mouseout', function() {
+                this.style.backgroundColor = '';
+            });
+        });
+    });
+</script>
+{% endblock %}

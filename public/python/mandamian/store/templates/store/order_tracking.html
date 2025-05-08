@@ -1,0 +1,426 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block title %}Order Tracking - Lourgie Sari-Sari Store{% endblock %}
+
+{% block content %}
+<div class="tracking-container">
+    <div class="tracking-header">
+        <h2>Order Tracking</h2>
+    </div>
+
+    <div class="orders-list">
+        {% for order in orders %}
+        <div class="order-card" data-order-id="{{ order.id }}">
+            <div class="order-header">
+                <div class="order-info">
+                    <h3>Order #{{ order.id }}</h3>
+                    <p class="order-date">{{ order.created_at|date:"M d, Y H:i" }}</p>
+                </div>
+                <div class="order-status">
+                    <span class="status-badge {{ order.status|lower }}">{{ order.get_status_display }}</span>
+                </div>
+            </div>
+            <div class="order-items">
+                {% for item in order.transactionitem_set.all %}
+                <div class="order-item">
+                    <div class="item-name">{{ item.product.name }}</div>
+                    <div class="item-quantity">x{{ item.quantity }}</div>
+                    <div class="item-price">₱{{ item.price }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="order-total">
+                <span>Total:</span>
+                <span class="total-amount">₱{{ order.total_amount }}</span>
+            </div>
+            <div class="order-actions">
+                <button class="btn view-details-btn" onclick="viewOrderDetails('{{ order.id }}')">View Details</button>
+                {% if order.status == 'IN_TRANSIT' %}
+                <button class="btn receive-btn" onclick="markAsReceived('{{ order.id }}')">Mark as Received</button>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <div class="no-orders">
+            <p>You don't have any orders yet.</p>
+            <a href="{% url 'products' %}" class="shop-now-btn">Shop Now</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Order Details Modal -->
+<div id="orderDetailsModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <div id="orderDetailsContent"></div>
+    </div>
+</div>
+
+<style>
+    .tracking-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .tracking-header {
+        margin-bottom: 30px;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 10px;
+    }
+
+    .orders-list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .order-card {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .order-info h3 {
+        margin: 0 0 5px;
+    }
+
+    .order-date {
+        color: #7f8c8d;
+        margin: 0;
+    }
+
+    .status-badge {
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 14px;
+        color: white;
+    }
+
+    .status-badge.pending { background-color: #f39c12; }
+    .status-badge.completed { background-color: #2ecc71; }
+    .status-badge.cancelled { background-color: #e74c3c; }
+    .status-badge.in_transit { background-color: #3498db; }
+    .status-badge.delivered { background-color: #27ae60; }
+
+    .order-items {
+        margin-bottom: 15px;
+    }
+
+    .order-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #f5f5f5;
+    }
+
+    .order-item:last-child {
+        border-bottom: none;
+    }
+
+    .item-name {
+        flex: 1;
+    }
+
+    .item-quantity {
+        width: 60px;
+        text-align: center;
+    }
+
+    .item-price {
+        width: 80px;
+        text-align: right;
+    }
+
+    .order-total {
+        display: flex;
+        justify-content: space-between;
+        font-weight: bold;
+        padding: 10px 0;
+        border-top: 1px solid #eee;
+        margin-bottom: 15px;
+    }
+
+    .order-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 500;
+    }
+
+    .view-details-btn {
+        background-color: #3498db;
+        color: white;
+    }
+
+    .receive-btn {
+        background-color: #2ecc71;
+        color: white;
+    }
+
+    .no-orders {
+        text-align: center;
+        padding: 40px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .shop-now-btn {
+        display: inline-block;
+        margin-top: 15px;
+        padding: 10px 20px;
+        background: #3498db;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+    }
+
+    /* Modal styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.5);
+    }
+
+    .modal-content {
+        background-color: white;
+        margin: 10% auto;
+        padding: 20px;
+        border-radius: 8px;
+        width: 80%;
+        max-width: 600px;
+        position: relative;
+    }
+
+    .close-modal {
+        position: absolute;
+        right: 20px;
+        top: 10px;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    /* Delivery tracking styles */
+    .delivery-tracking {
+        margin-top: 20px;
+    }
+
+    .tracking-timeline {
+        margin-top: 15px;
+        position: relative;
+        padding-left: 30px;
+    }
+
+    .timeline-item {
+        position: relative;
+        padding-bottom: 20px;
+    }
+
+    .timeline-item:before {
+        content: '';
+        position: absolute;
+        left: -30px;
+        top: 0;
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background-color: #3498db;
+        z-index: 1;
+    }
+
+    .timeline-item:after {
+        content: '';
+        position: absolute;
+        left: -23px;
+        top: 15px;
+        width: 2px;
+        height: 100%;
+        background-color: #ddd;
+    }
+
+    .timeline-item:last-child:after {
+        display: none;
+    }
+
+    .timeline-item.active:before {
+        background-color: #2ecc71;
+    }
+
+    .timeline-date {
+        font-size: 12px;
+        color: #7f8c8d;
+    }
+
+    .timeline-content {
+        margin-top: 5px;
+    }
+</style>
+
+<script>
+    function viewOrderDetails(orderId) {
+        fetch(`/order/${orderId}/details/`)
+            .then(response => response.json())
+            .then(data => {
+                const modal = document.getElementById('orderDetailsModal');
+                const content = document.getElementById('orderDetailsContent');
+                
+                let deliveryInfo = '';
+                if (data.delivery) {
+                    let timelineItems = '';
+                    
+                    // Create timeline items based on status
+                    const statuses = [
+                        { status: 'PENDING', label: 'Order Placed', date: data.created_at },
+                        { status: 'PROCESSING', label: 'Processing Order', date: data.processing_date },
+                        { status: 'IN_TRANSIT', label: 'Out for Delivery', date: data.delivery.created_at },
+                        { status: 'DELIVERED', label: 'Delivered', date: data.delivery.delivery_date }
+                    ];
+                    
+                    let currentStatusIndex = statuses.findIndex(s => s.status === data.status);
+                    if (currentStatusIndex === -1) currentStatusIndex = 0;
+                    
+                    statuses.forEach((item, index) => {
+                        const isActive = index <= currentStatusIndex;
+                        const hasDate = item.date ? true : false;
+                        
+                        timelineItems += `
+                            <div class="timeline-item ${isActive ? 'active' : ''}">
+                                <div class="timeline-date">${hasDate ? item.date : ''}</div>
+                                <div class="timeline-content">${item.label}</div>
+                            </div>
+                        `;
+                    });
+                    
+                    deliveryInfo = `
+                        <div class="delivery-tracking">
+                            <h4>Delivery Status</h4>
+                            <div class="tracking-timeline">
+                                ${timelineItems}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Build order items HTML
+                let itemsHtml = '';
+                data.items.forEach(item => {
+                    itemsHtml += `
+                        <div class="order-item">
+                            <div class="item-name">${item.product_name}</div>
+                            <div class="item-quantity">x${item.quantity}</div>
+                            <div class="item-price">₱${item.price}</div>
+                        </div>
+                    `;
+                });
+                
+                content.innerHTML = `
+                    <h3>Order #${data.id} Details</h3>
+                    <div class="order-date">Placed on: ${data.created_at}</div>
+                    <div class="order-status">
+                        Status: <span class="status-badge ${data.status.toLowerCase()}">${data.status_display}</span>
+                    </div>
+                    
+                    <h4>Items</h4>
+                    <div class="order-items">
+                        ${itemsHtml}
+                    </div>
+                    
+                    <div class="order-summary">
+                        <div class="summary-row">
+                            <span>Subtotal:</span>
+                            <span>₱${data.subtotal}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Delivery Fee:</span>
+                            <span>₱${data.delivery_fee}</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Total:</span>
+                            <span>₱${data.total_amount}</span>
+                        </div>
+                    </div>
+                    
+                    ${deliveryInfo}
+                    
+                    <div class="payment-info">
+                        <h4>Payment Information</h4>
+                        <p><strong>Method:</strong> ${data.payment_method}</p>
+                        <p><strong>Status:</strong> ${data.payment_status}</p>
+                        ${data.reference_id ? `<p><strong>Reference ID:</strong> ${data.reference_id}</p>` : ''}
+                    </div>
+                `;
+                
+                modal.style.display = 'block';
+                
+                // Close modal when clicking on X
+                document.querySelector('.close-modal').onclick = function() {
+                    modal.style.display = 'none';
+                };
+                
+                // Close modal when clicking outside
+                window.onclick = function(event) {
+                    if (event.target == modal) {
+                        modal.style.display = 'none';
+                    }
+                };
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to load order details');
+            });
+    }
+    
+    function markAsReceived(orderId) {
+        if (confirm('Are you sure you want to mark this order as received?')) {
+            fetch(`/order/${orderId}/received/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Order marked as received!');
+                    location.reload();
+                } else {
+                    alert(data.error || 'Failed to update order status');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while updating the order');
+            });
+        }
+    }
+</script>
+
+{% csrf_token %}
+{% endblock %}

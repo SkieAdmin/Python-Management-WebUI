@@ -1,0 +1,960 @@
+{% load static %}
+{% load tz %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="/static/images/logos.png" type="image/png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>admin</title>
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        /* Body and Layout */
+        body {
+            background-color: #0f1218;
+            color: #e4e6eb;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Wrapper */
+        .wrapper {
+            display: flex;
+            width: 100%;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, white 0%, white 100%);
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.3);
+            color: #e4e6eb;
+            padding: 25px 20px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: relative;
+            z-index: 10;
+            transition: all 0.3s ease;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("{% static 'images/sidebar-pattern.png' %}");
+            opacity: 0.03;
+            pointer-events: none;
+        }
+        
+        .sidebar-header {
+            margin-bottom: 40px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .sidebar-header::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), red);
+        }
+        
+        /* Sidebar Logo */
+        .sidebar-logo {
+            width: 70px;
+            height: 70px;
+            object-fit: contain;
+            margin-bottom: 10px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
+            transition: transform 0.3s ease;
+        }
+        
+        .sidebar-logo:hover {
+            transform: scale(1.05);
+        }
+        
+        .sidebar-header h2 {
+            font-size: 22px;
+            color: black;
+            margin-top: 10px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 0 green;
+        }
+        
+        /* Sidebar Links */
+        .sidebar-links {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 10px;
+        }
+        
+        .sidebar-links li {
+            margin-bottom: 5px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-links li::before {
+            content: '';
+            position: absolute;
+            left: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 8px;
+            background: #3a7bd5;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .sidebar-links li:hover::before {
+            width: 12px;
+        }
+        
+        .sidebar-links a {
+            text-shadow: 1px 1px 0 black;
+            text-decoration: none;
+            color: black;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            padding: 12px 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            font-weight: bold;
+            overflow: hidden;
+        }
+        
+        .sidebar-links a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #3a7bd5, #3a6073);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+            border-radius: 8px;
+        }
+        
+        .sidebar-links a:hover {
+            color: red;
+            transform: translateX(5px);
+        }
+        
+        .sidebar-links a:hover::before {
+            opacity: 0.1;
+        }
+        
+        .sidebar-links a i {
+            margin-right: 10px;
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+        
+        /* Logout Button in Sidebar */
+        .logout-container {
+            margin-top: auto;
+            padding-top: 20px;
+            position: relative;
+        }
+        
+        .logout-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        }
+        
+        .logout-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 25px;
+            background: linear-gradient(90deg, black, black);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 16px;
+            width: 100%;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(255, 75, 43, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .logout-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.7s ease;
+        }
+        
+        .logout-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 75, 43, 0.4);
+        }
+        
+        .logout-button:hover::before {
+            left: 100%;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            background-color:#0f1218;
+            position: relative;
+            overflow-y: auto;
+            height: 100vh;
+        }
+        
+        .main-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(58, 123, 213, 0.1), transparent 70%);
+            border-radius: 50%;
+            filter: blur(50px);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        /* Content Header */
+        .content-header {
+            color: #e4e6eb;
+            margin-bottom: 25px;
+            font-size: 28px;
+            font-weight: 600;
+            position: relative;
+            display: inline-block;
+             text-shadow: 1px 1px 0 red;
+        }
+        
+        .content-header::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: red;
+            border-radius: 3px;
+        }
+        
+        /* Gallery Container */
+        .gallery-container {
+            background:transparent;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+        
+        .gallery-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("{% static 'images/card-pattern.png' %}");
+            opacity: 0.03;
+            pointer-events: none;
+        }
+
+          .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("{% static 'images/logos.png' %}");
+            opacity: 0.10;
+            pointer-events: none;
+        }
+        
+        
+        .gallery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 15px;
+        }
+        
+        .gallery-title {
+            font-size: 20px;
+            color: #e4e6eb;
+            font-weight: 600;
+        }
+        
+        /* Search Container */
+        .search-container {
+            margin-bottom: 20px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(15, 18, 24, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #e4e6eb;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #3a7bd5;
+            box-shadow: 0 0 0 2px rgba(58, 123, 213, 0.2);
+        }
+        
+        .search-input::placeholder {
+            color: rgba(228, 230, 235, 0.5);
+        }
+        
+        /* Filter Controls */
+        .filter-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-button {
+            padding: 10px 20px;
+            background: rgba(15, 18, 24, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #e4e6eb;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-button:hover {
+            background: rgba(58, 123, 213, 0.1);
+            border-color: rgba(58, 123, 213, 0.3);
+        }
+        
+        .filter-button.active {
+            background: linear-gradient(90deg, #3a7bd5, #3a6073);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 10px rgba(58, 123, 213, 0.3);
+        }
+        
+        /* Image Grid */
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+        
+        /* Image Card */
+        .image-card {
+            background: rgba(15, 18, 24, 0.4);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        
+        .image-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
+            border-color: rgba(58, 123, 213, 0.3);
+        }
+        
+        .image-container {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 1/1;
+        }
+        
+        .receipt-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+            cursor: pointer;
+        }
+        
+        .image-card:hover .receipt-image {
+            transform: scale(1.05);
+        }
+        
+        .source-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            z-index: 1;
+        }
+        
+            
+        
+        .customer-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #e4e6eb;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .item-details {
+            font-size: 14px;
+            color: white;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .date-info {
+            font-size: 12px;
+            color: white;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+                    }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 100;
+            overflow: auto;
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal-content {
+            display: block;
+            max-width: 80%;
+            max-height: 80vh;
+            margin: 50px auto;
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-details {
+            background: linear-gradient(135deg, rgba(26, 31, 44, 0.9), rgba(19, 23, 34, 0.9));
+            color: #e4e6eb;
+            padding: 20px;
+            max-width: 80%;
+            margin: 0 auto;
+            border-radius: 0 0 12px 12px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: none;
+        }
+        
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #e4e6eb;
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 101;
+        }
+        
+        .close:hover {
+            color: #ff3b30;
+            transform: scale(1.1);
+        }
+        
+        /* Badge Styles */
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: 5px;
+        }
+        
+        .reservation-badge {
+            background-color: red;
+            color:white;
+        }
+        
+        .order-badge {
+            background-color: green;
+            color: white;
+        }
+        
+        /* No Images Message */
+        .no-images {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(15, 18, 24, 0.4);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: rgba(228, 230, 235, 0.7);
+            font-size: 16px;
+        }
+        
+        /* Tab Styles */
+        .tabs-container {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .tab {
+            padding: 12px 20px;
+            background: transparent;
+            color: rgba(228, 230, 235, 0.7);
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .tab::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #3a7bd5, #3a6073);
+            transition: width 0.3s ease;
+        }
+        
+        .tab:hover {
+            color: #e4e6eb;
+        }
+        
+        .tab.active {
+            color: #3a7bd5;
+        }
+        
+        .tab.active::after {
+            width: 100%;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        /* Back Button */
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 20px;
+            background: rgba(15, 18, 24, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #e4e6eb;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-button:hover {
+            background: rgba(58, 123, 213, 0.1);
+            border-color: rgba(58, 123, 213, 0.3);
+            transform: translateY(-3px);
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes zoom {
+            from { transform: scale(0.1); }
+            to { transform: scale(1); }
+        }
+        
+        /* Animation for sidebar links */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .sidebar-links li {
+            animation: fadeIn 0.5s ease forwards;
+            opacity: 0;
+        }
+        
+        .sidebar-links li:nth-child(1) { animation-delay: 0.1s; }
+        .sidebar-links li:nth-child(2) { animation-delay: 0.2s; }
+        .sidebar-links li:nth-child(3) { animation-delay: 0.3s; }
+        .sidebar-links li:nth-child(4) { animation-delay: 0.4s; }
+        .sidebar-links li:nth-child(5) { animation-delay: 0.5s; }
+        .sidebar-links li:nth-child(6) { animation-delay: 0.6s; }
+        .sidebar-links li:nth-child(7) { animation-delay: 0.7s; }
+        
+        /* Active menu item */
+        .sidebar-links a.active {
+            background: rgba(58, 123, 213, 0.1);
+            color: red;
+            border-left: 3px solid #3a7bd5;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 240px;
+            }
+            
+            .image-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .wrapper {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 15px;
+            }
+            
+            .sidebar-links {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+            }
+            
+            .sidebar-links li {
+                margin-bottom: 0;
+            }
+            
+            .sidebar-links a {
+                padding: 10px;
+                font-size: 14px;
+            }
+            
+            .logout-container {
+                margin-top: 20px;
+            }
+            
+            .main-content {
+                height: auto;
+                padding: 20px;
+            }
+            
+            .image-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 15px;
+            }
+            
+            .filter-controls {
+                flex-wrap: wrap;
+            }
+            
+            .filter-button {
+                flex: 1;
+                min-width: 80px;
+                text-align: center;
+                padding: 8px 10px;
+                font-size: 13px;
+            }
+            
+            .modal-content, .modal-details {
+                max-width: 95%;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .image-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 10px;
+            }
+            
+            .gallery-container {
+                padding: 15px;
+            }
+            
+            .content-header {
+                font-size: 24px;
+            }
+            
+            .gallery-title {
+                font-size: 18px;
+            }
+            
+            .customer-name {
+                font-size: 14px;
+            }
+            
+            .item-details {
+                font-size: 12px;
+            }
+            
+            .date-info {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <img src="{% static 'images/logos.png' %}" alt="Admin Dashboard Logo" class="sidebar-logo">
+                <h2>Admin Dashboard</h2>
+            </div>
+            <ul class="sidebar-links">
+                <li><a href="{% url 'menu_list' %}"><span class="emoji">📋</span> Manage Menu Items</a></li>
+                <li><a href="{% url 'manage_orders' %}"><span class="emoji">🛒</span> Manage Orders</a></li>
+                <li><a href="/custom-admin/reservation/manage/"><span class="emoji">📦</span> Manage Reservations</a></li>
+                <li><a href="{% url 'order_list' %}"><span class="emoji">📑</span> List of Orders</a></li>
+                <li><a href="{% url 'user_list' %}"><span class="emoji">👨🏻‍💻</span> Manage Users</a></li>
+                <li><a href="{% url 'reservation_list' %}"><span class="emoji">🗓️</span> Reservation List</a></li>
+                <li><a href="{% url 'all_remarks_gallery' %}" class="active"><span class="emoji">💵</span> Payment Proof</a></li>
+            </ul>
+            <div class="logout-container">
+                <a href="{% url 'logout' %}" class="logout-button"><span class="emoji">🚪</span> Logout</a>
+            </div>
+        </nav>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <h1 class="content-header">User Remarks Gallery</h1>
+            
+            
+            <div class="gallery-container">
+                <div class="gallery-header">
+                    <h3 class="gallery-title">All GCash Receipt Images</h3>
+                </div>
+                
+                <div class="search-container">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Search by customer name...">
+                </div>
+                
+                <div class="filter-controls">
+                </div>
+                
+                <!-- Image Grid -->
+                <div class="image-grid">
+                    {% if reservations %}
+                        {% for r in reservations %}
+                            {% if r.gcash_screenshot %}
+                                <div class="image-card" data-status="{{ r.payment_status|lower }}" data-type="reservation">
+                                    <div class="image-container">
+                                        <img src="{{ r.gcash_screenshot.url }}" alt="GCash Receipt" class="receipt-image" 
+                                             onclick="zoomImage(this, '{{ r.customer.profile.full_name }}', 'Reservation: {{ r.kilos }} kg | {{ r.get_package_deal_display }}', '{{ r.date_time|localtime }}', 'Reservation')">
+                                        <span class="source-badge reservation-badge">Reservation</span>
+                                    </div>
+                                    <div class="image-info">
+                                        <div class="customer-name">{{ r.customer.profile.full_name }}</div>
+                                        <div class="item-details">{{ r.kilos }} kg | {{ r.get_package_deal_display }}</div>
+                                        <div class="item-details">Status: {{ r.payment_status|title }}</div>
+                                        <div class="date-info">{{ r.date_time|localtime }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    
+                    {% if orders %}
+                        {% for o in orders %}
+                            {% if o.gcash_screenshot %}
+                                <div class="image-card" data-status="{{ o.payment_status|lower }}" data-type="order">
+                                    <div class="image-container">
+                                        <img src="{{ o.gcash_screenshot.url }}" alt="GCash Receipt" class="receipt-image" 
+                                             onclick="zoomImage(this, '{{ o.customer.username }}', 'Order: {{ o.item.name }} ({{ o.quantity }})', '{{ o.date_time|localtime }}', 'Order')">
+                                        <span class="source-badge order-badge">Order</span>
+                                    </div>
+                                    <div class="image-info">
+                                        <div class="customer-name">{{ o.customer.username }}</div>
+                                        <div class="item-details">{{ o.item.name }} ({{ o.quantity }})</div>
+                                        <div class="item-details">Status: {{ o.payment_status }}</div>
+                                        <div class="date-info">{{ o.date_time|localtime }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    
+                    {% if not reservations and not orders %}
+                        <div class="no-images">
+                            <p>No receipt images found</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Modal for enlarged image -->
+            <div id="imageModal" class="modal">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <img class="modal-content" id="modalImage">
+                <div class="modal-details" id="modalDetails"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Image zoom functionality
+        function zoomImage(img, customer, item, date, type) {
+            var modal = document.getElementById("imageModal");
+            var modalImg = document.getElementById("modalImage");
+            var modalDetails = document.getElementById("modalDetails");
+            
+            modal.style.display = "block";
+            modalImg.src = img.src;
+            modalDetails.innerHTML = `
+                <strong>${customer}</strong><br>
+                ${item}<br>
+                ${date}<br>
+                <span class="badge ${type.toLowerCase()}-badge">${type}</span>
+            `;
+        }
+        
+        function closeModal() {
+            var modal = document.getElementById("imageModal");
+            modal.style.display = "none";
+        }
+        
+        // Close modal when clicking outside the image
+        window.onclick = function(event) {
+            var modal = document.getElementById("imageModal");
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+        
+        // Filter functionality
+        document.querySelectorAll('.filter-button').forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all filter buttons
+                document.querySelectorAll('.filter-button').forEach(b => b.classList.remove('active'));
+                // Add active class to clicked button
+                button.classList.add('active');
+                
+                const filter = button.getAttribute('data-filter');
+                const cards = document.querySelectorAll('.image-card');
+                
+                cards.forEach(card => {
+                    if (filter === 'all') {
+                        card.style.display = 'block';
+                    } else {
+                        const status = card.getAttribute('data-status').toLowerCase();
+                        if (status === filter) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    }
+                });
+            });
+        });
+        
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', () => {
+            const searchTerm = searchInput.value.toLowerCase();
+            const cards = document.querySelectorAll('.image-card');
+            
+            cards.forEach(card => {
+                const customerName = card.querySelector('.customer-name').textContent.toLowerCase();
+                if (customerName.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+        
+        // Animation for content elements
+        document.addEventListener('DOMContentLoaded', function() {
+            const galleryContainer = document.querySelector('.gallery-container');
+            const imageCards = document.querySelectorAll('.image-card');
+            
+            galleryContainer.style.animation = 'fadeInUp 0.5s ease forwards';
+            
+            imageCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                setTimeout(() => {
+                    card.style.animation = 'fadeInUp 0.5s ease forwards';
+                }, 100 + (index * 50));
+            });
+        });
+    </script>
+</body>
+</html>

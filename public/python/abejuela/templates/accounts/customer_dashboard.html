@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}My Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 style="margin-bottom: 1.5rem;">Welcome, {{ user.first_name|default:user.username }}</h1>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+        <div class="card" style="text-align: center; padding: 1.5rem;">
+            <h3>Order Pizza</h3>
+            <p style="margin: 1rem 0;">Browse our delicious pizza menu and place an order</p>
+            <a href="{% url 'menu' %}" class="btn">View Menu</a>
+        </div>
+        
+        <div class="card" style="text-align: center; padding: 1.5rem;">
+            <h3>My Orders</h3>
+            <p style="margin: 1rem 0;">View your order history and track current orders</p>
+            <a href="{% url 'customer_orders' %}" class="btn">View Orders</a>
+        </div>
+        
+        <div class="card" style="text-align: center; padding: 1.5rem;">
+            <h3>My Profile</h3>
+            <p style="margin: 1rem 0;">Update your profile information</p>
+            <a href="{% url 'profile' %}" class="btn">Edit Profile</a>
+        </div>
+    </div>
+    
+    <div class="card">
+        <h2 style="margin-bottom: 1rem;">Recent Orders</h2>
+        
+        {% if recent_orders %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Payment</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in recent_orders %}
+                        <tr>
+                            <td>{{ order.id }}</td>
+                            <td>{{ order.order_date|date:"M d, Y H:i" }}</td>
+                            <td>${{ order.total_amount }}</td>
+                            <td>{{ order.get_status_display }}</td>
+                            <td>{{ order.get_payment_status_display }}</td>
+                            <td>
+                                <a href="{% url 'order_detail' order.id %}" class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.9rem;">View</a>
+                                {% if order.payment_status == 'unpaid' %}
+                                    <a href="{% url 'make_payment' order.id %}" class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.9rem;">Pay</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>You haven't placed any orders yet. <a href="{% url 'menu' %}">Browse our menu</a> to place your first order!</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

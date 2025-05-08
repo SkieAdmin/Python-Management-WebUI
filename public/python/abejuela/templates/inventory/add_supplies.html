@@ -1,0 +1,342 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Supplies{% endblock %}
+
+{% block extra_css %}
+<style>
+    .supply-form-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+    
+    .supply-form-card {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .supply-form-header {
+        margin-bottom: 2rem;
+        position: relative;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .supply-form-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin: 0;
+        font-family: 'Playfair Display', serif;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+        outline: none;
+    }
+    
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    
+    .btn-add {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-add:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+    }
+    
+    .btn-cancel {
+        background-color: white;
+        color: var(--text-dark);
+        border: 1px solid var(--border);
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+    
+    .btn-cancel:hover {
+        background-color: #f5f5f5;
+        transform: translateY(-2px);
+    }
+    
+    .form-error {
+        color: #d32f2f;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+    }
+    
+    .form-help {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+    }
+    
+    .form-section {
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        border-left: 3px solid var(--primary-color);
+    }
+    
+    .form-section-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--text-dark);
+        display: flex;
+        align-items: center;
+    }
+    
+    .form-section-title i {
+        margin-right: 0.5rem;
+        color: var(--primary-color);
+    }
+    
+    .form-row {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .form-col {
+        flex: 1;
+    }
+    
+    .form-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background-color: rgba(var(--primary-rgb), 0.1);
+        color: var(--primary-color);
+        border-radius: 50%;
+        margin-right: 1rem;
+    }
+    
+    .form-field-group {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-field-content {
+        flex: 1;
+    }
+    
+    @media (max-width: 768px) {
+        .supply-form-card {
+            padding: 1.5rem;
+        }
+        
+        .form-actions {
+            flex-direction: column;
+        }
+        
+        .form-row {
+            flex-direction: column;
+            gap: 0;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="supply-form-container">
+    <div class="supply-form-card">
+        <div class="supply-form-header">
+            <h2 class="supply-form-title">Add New Supply</h2>
+        </div>
+        
+        <form method="post" id="supplyForm">
+            {% csrf_token %}
+            
+            <div class="form-section">
+                <h3 class="form-section-title"><i class="fas fa-truck-loading"></i> Supply Details</h3>
+                
+                <div class="form-field-group">
+                    <div class="form-icon">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <div class="form-field-content">
+                        <div class="form-group">
+                            <label for="{{ form.inventory.id_for_label }}">{{ form.inventory.label }}</label>
+                            {{ form.inventory }}
+                            {% if form.inventory.errors %}
+                                <div class="form-error">{{ form.inventory.errors }}</div>
+                            {% endif %}
+                            {% if form.inventory.help_text %}
+                                <div class="form-help">{{ form.inventory.help_text }}</div>
+                            {% endif %}
+                            <div class="form-help">Select the inventory item you're adding supplies for</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-field-group">
+                    <div class="form-icon">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <div class="form-field-content">
+                        <div class="form-group">
+                            <label for="{{ form.supplier_name.id_for_label }}">{{ form.supplier_name.label }}</label>
+                            {{ form.supplier_name }}
+                            {% if form.supplier_name.errors %}
+                                <div class="form-error">{{ form.supplier_name.errors }}</div>
+                            {% endif %}
+                            {% if form.supplier_name.help_text %}
+                                <div class="form-help">{{ form.supplier_name.help_text }}</div>
+                            {% endif %}
+                            <div class="form-help">Enter the name of the supplier providing this inventory</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3 class="form-section-title"><i class="fas fa-info-circle"></i> Quantity & Cost Information</h3>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-field-group">
+                            <div class="form-icon">
+                                <i class="fas fa-cubes"></i>
+                            </div>
+                            <div class="form-field-content">
+                                <div class="form-group">
+                                    <label for="{{ form.quantity_supplied.id_for_label }}">{{ form.quantity_supplied.label }}</label>
+                                    {{ form.quantity_supplied }}
+                                    {% if form.quantity_supplied.errors %}
+                                        <div class="form-error">{{ form.quantity_supplied.errors }}</div>
+                                    {% endif %}
+                                    {% if form.quantity_supplied.help_text %}
+                                        <div class="form-help">{{ form.quantity_supplied.help_text }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-col">
+                        <div class="form-field-group">
+                            <div class="form-icon">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                            <div class="form-field-content">
+                                <div class="form-group">
+                                    <label for="{{ form.cost.id_for_label }}">{{ form.cost.label }}</label>
+                                    {{ form.cost }}
+                                    {% if form.cost.errors %}
+                                        <div class="form-error">{{ form.cost.errors }}</div>
+                                    {% endif %}
+                                    {% if form.cost.help_text %}
+                                        <div class="form-help">{{ form.cost.help_text }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-field-group">
+                    <div class="form-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="form-field-content">
+                        <div class="form-group">
+                            <label for="{{ form.supply_date.id_for_label }}">{{ form.supply_date.label }}</label>
+                            {{ form.supply_date }}
+                            {% if form.supply_date.errors %}
+                                <div class="form-error">{{ form.supply_date.errors }}</div>
+                            {% endif %}
+                            {% if form.supply_date.help_text %}
+                                <div class="form-help">{{ form.supply_date.help_text }}</div>
+                            {% endif %}
+                            <div class="form-help">Date when the supply was received</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn-add">
+                    <i class="fas fa-plus"></i> Add Supply
+                </button>
+                <a href="{% url 'supplies_list' %}" class="btn-cancel">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set default date to today
+        const today = new Date();
+        const dateField = document.querySelector('input[type="date"]');
+        if (dateField) {
+            dateField.valueAsDate = today;
+        }
+        
+        // Add focus effects to form controls
+        const formControls = document.querySelectorAll('.form-control');
+        formControls.forEach(control => {
+            control.addEventListener('focus', function() {
+                this.closest('.form-field-group').style.transform = 'translateX(5px)';
+                this.closest('.form-field-group').style.transition = 'transform 0.3s ease';
+            });
+            
+            control.addEventListener('blur', function() {
+                this.closest('.form-field-group').style.transform = 'translateX(0)';
+            });
+        });
+    });
+</script>
+{% endblock %}

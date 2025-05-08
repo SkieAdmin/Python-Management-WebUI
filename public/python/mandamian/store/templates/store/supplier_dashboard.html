@@ -1,0 +1,248 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="supplier-dashboard">
+    <div class="dashboard-header">
+        <h2>Supplier Dashboard</h2>
+        <div class="notification-badge" id="notification-count">{{ pending_count }}</div>
+    </div>
+
+    <div class="stock-requests">
+        <h3>Stock Requests</h3>
+        <div class="request-filters">
+            <button class="filter-btn active" data-status="all">All</button>
+            <button class="filter-btn" data-status="pending">Pending</button>
+            <button class="filter-btn" data-status="in-transit">In Transit</button>
+            <button class="filter-btn" data-status="delivered">Delivered</button>
+        </div>
+
+        <div class="request-list">
+            {% for request in stock_requests %}
+            <div class="request-card" data-status="{{ request.status|lower }}">
+                <div class="request-header">
+                    <h4>{{ request.product.name }}</h4>
+                    <span class="status {{ request.status|lower }}">{{ request.status }}</span>
+                </div>
+                <div class="request-details">
+                    <p><strong>Quantity:</strong> {{ request.quantity }}</p>
+                    <p><strong>Requested By:</strong> {{ request.requested_by.username }}</p>
+                    <p><strong>Date:</strong> {{ request.created_at|date:"M d, Y" }}</p>
+                    <p><strong>Notes:</strong> {{ request.notes|default:"No notes" }}</p>
+                </div>
+                <div class="request-actions">
+                    {% if request.status == 'PENDING' %}
+                    <button class="btn accept-btn" data-request-id="{{ request.id }}">Accept</button>
+                    <button class="btn reject-btn" data-request-id="{{ request.id }}">Reject</button>
+                    {% elif request.status == 'APPROVED' %}
+                    <button class="btn start-delivery-btn" data-request-id="{{ request.id }}">Start Delivery</button>
+                    {% elif request.status == 'IN_TRANSIT' %}
+                    <button class="btn complete-delivery-btn" data-request-id="{{ request.id }}">Mark as Delivered</button>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <p class="no-requests">No stock requests available.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .supplier-dashboard {
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .dashboard-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 30px;
+    }
+
+    .notification-badge {
+        background-color: #ff4444;
+        color: white;
+        border-radius: 50%;
+        padding: 5px 10px;
+        font-size: 14px;
+    }
+
+    .request-filters {
+        margin-bottom: 20px;
+    }
+
+    .filter-btn {
+        padding: 8px 16px;
+        margin-right: 10px;
+        border: none;
+        border-radius: 4px;
+        background-color: #f0f0f0;
+        cursor: pointer;
+    }
+
+    .filter-btn.active {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    .request-card {
+        background-color: white;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .request-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .status {
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    .status.pending { background-color: #ffd700; }
+    .status.approved { background-color: #90EE90; }
+    .status.in_transit { background-color: #87CEEB; }
+    .status.delivered { background-color: #98FB98; }
+    .status.cancelled { background-color: #ffcccb; }
+
+    .request-details {
+        margin-bottom: 15px;
+    }
+
+    .request-details p {
+        margin: 5px 0;
+    }
+
+    .request-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 500;
+    }
+
+    .accept-btn {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    .reject-btn {
+        background-color: #ff4444;
+        color: white;
+    }
+
+    .start-delivery-btn {
+        background-color: #2196F3;
+        color: white;
+    }
+
+    .complete-delivery-btn {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    .no-requests {
+        text-align: center;
+        padding: 20px;
+        color: #666;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Filter functionality
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const requestCards = document.querySelectorAll('.request-card');
+
+    filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const status = button.dataset.status;
+            
+            // Update active button
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+
+            // Filter cards
+            requestCards.forEach(card => {
+                if (status === 'all' || card.dataset.status === status) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+
+    // Action buttons functionality
+    function handleRequestAction(action, requestId) {
+        fetch(`/supplier/request/${action}/${requestId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.reload();
+            } else {
+                alert(data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        });
+    }
+
+    // CSRF token helper
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Add event listeners for action buttons
+    document.querySelectorAll('.accept-btn').forEach(btn => {
+        btn.addEventListener('click', () => handleRequestAction('accept', btn.dataset.requestId));
+    });
+
+    document.querySelectorAll('.reject-btn').forEach(btn => {
+        btn.addEventListener('click', () => handleRequestAction('reject', btn.dataset.requestId));
+    });
+
+    document.querySelectorAll('.start-delivery-btn').forEach(btn => {
+        btn.addEventListener('click', () => handleRequestAction('start-delivery', btn.dataset.requestId));
+    });
+
+    document.querySelectorAll('.complete-delivery-btn').forEach(btn => {
+        btn.addEventListener('click', () => handleRequestAction('complete-delivery', btn.dataset.requestId));
+    });
+});
+</script>
+{% endblock %}

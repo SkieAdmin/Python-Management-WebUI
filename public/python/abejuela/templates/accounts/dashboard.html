@@ -1,0 +1,357 @@
+{% extends 'base.html' %}
+
+{% block title %}Staff Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-container {
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .dashboard-header {
+        margin-bottom: 2rem;
+        position: relative;
+    }
+    
+    .dashboard-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+    }
+    
+    .dashboard-subtitle {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+    }
+    
+    .stat-card {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        padding: 1.8rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    }
+    
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: var(--primary-color);
+    }
+    
+    .stat-icon {
+        font-size: 2rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+        opacity: 0.8;
+    }
+    
+    .stat-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.8rem;
+        color: var(--text-dark);
+    }
+    
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+        line-height: 1;
+    }
+    
+    .stat-btn {
+        display: inline-block;
+        padding: 0.7rem 1.5rem;
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .stat-btn:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+    }
+    
+    .reports-card {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        padding: 1.8rem;
+    }
+    
+    .reports-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 1.2rem;
+        color: var(--text-dark);
+        text-align: center;
+    }
+    
+    .reports-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+    }
+    
+    .report-btn {
+        display: block;
+        padding: 0.8rem 1.2rem;
+        background-color: white;
+        color: var(--text-dark);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        text-align: left;
+    }
+    
+    .report-btn:hover {
+        background-color: #f9f9f9;
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+    }
+    
+    .report-btn i {
+        margin-right: 0.5rem;
+        color: var(--primary-color);
+    }
+    
+    .orders-card {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        padding: 1.8rem;
+        margin-bottom: 2rem;
+    }
+    
+    .orders-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .orders-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin: 0;
+    }
+    
+    .orders-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .orders-table th {
+        text-align: left;
+        padding: 1rem;
+        background-color: #f5f5f5;
+        color: var(--text-dark);
+        font-weight: 600;
+        border-bottom: 2px solid var(--border);
+    }
+    
+    .orders-table td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+        color: var(--text-dark);
+    }
+    
+    .orders-table tr:hover {
+        background-color: #f9f9f9;
+    }
+    
+    .status-pending {
+        color: #f57c00;
+        font-weight: 600;
+    }
+    
+    .status-completed {
+        color: #4caf50;
+        font-weight: 600;
+    }
+    
+    .status-cancelled {
+        color: #f44336;
+        font-weight: 600;
+    }
+    
+    .payment-paid {
+        color: #4caf50;
+        font-weight: 600;
+    }
+    
+    .payment-unpaid {
+        color: #f44336;
+        font-weight: 600;
+    }
+    
+    .payment-processing {
+        color: #2196f3;
+        font-weight: 600;
+    }
+    
+    .action-btn {
+        display: inline-block;
+        padding: 0.4rem 0.8rem;
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+    
+    .action-btn:hover {
+        background-color: var(--primary-dark);
+    }
+    
+    @media (max-width: 768px) {
+        .dashboard-container {
+            padding: 1rem;
+        }
+        
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .orders-table {
+            font-size: 0.9rem;
+        }
+        
+        .orders-table th,
+        .orders-table td {
+            padding: 0.8rem 0.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">Staff Dashboard</h1>
+        <p class="dashboard-subtitle">Welcome back, {{ request.user.get_full_name|default:request.user.username }}! Here's an overview of your restaurant operations.</p>
+    </div>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-clipboard-list"></i>
+            </div>
+            <h3 class="stat-title">Pending Orders</h3>
+            <div class="stat-value">{{ pending_orders }}</div>
+            <a href="{% url 'order_list' %}" class="stat-btn">View Orders</a>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-credit-card"></i>
+            </div>
+            <h3 class="stat-title">Payments Processing</h3>
+            <div class="stat-value">{{ payment_processing }}</div>
+            <a href="{% url 'order_list' %}" class="stat-btn">View Orders</a>
+        </div>
+        
+        <div class="reports-card">
+            <h3 class="reports-title">Generate Reports</h3>
+            <div class="reports-grid">
+                <a href="{% url 'generate_sales_report' %}" class="report-btn">
+                    <i class="fas fa-chart-line"></i> Sales Report
+                </a>
+                <a href="{% url 'generate_inventory_report' %}" class="report-btn">
+                    <i class="fas fa-boxes"></i> Inventory Report
+                </a>
+                <a href="{% url 'generate_payment_report' %}" class="report-btn">
+                    <i class="fas fa-file-invoice-dollar"></i> Payment Report
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="orders-card">
+        <div class="orders-header">
+            <h2 class="orders-title">Recent Orders</h2>
+        </div>
+        
+        {% if recent_orders %}
+            <table class="orders-table">
+                <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>Customer</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Payment</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in recent_orders %}
+                        <tr>
+                            <td>{{ order.id }}</td>
+                            <td>{{ order.customer.user.username }}</td>
+                            <td>{{ order.order_date|date:"M d, Y H:i" }}</td>
+                            <td>${{ order.total_amount }}</td>
+                            <td>
+                                <span class="status-{% if order.status == 'pending' %}pending{% elif order.status == 'completed' %}completed{% elif order.status == 'cancelled' %}cancelled{% endif %}">
+                                    {{ order.get_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="payment-{% if order.payment_status == 'paid' %}paid{% elif order.payment_status == 'unpaid' %}unpaid{% elif order.payment_status == 'processing' %}processing{% endif %}">
+                                    {{ order.get_payment_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{% url 'order_detail' order.id %}" class="action-btn">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div style="text-align: center; padding: 2rem;">
+                <i class="fas fa-clipboard-list" style="font-size: 2.5rem; color: #e0e0e0; margin-bottom: 1rem;"></i>
+                <p style="color: var(--text-muted);">No recent orders found.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

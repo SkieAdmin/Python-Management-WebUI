@@ -1,0 +1,194 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Home - Lourgie Sari-Sari Store{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero">
+    <div class="hero-content">
+        <h1>Welcome to Lourgie's Sari-Sari Store</h1>
+        <p class="hero-subtitle">Your One-Stop Shop for Daily Essentials</p>
+        {% if not user.is_authenticated %}
+            <div class="hero-buttons">
+                <a href="{% url 'register' %}" class="btn btn-primary">Get Started</a>
+                <a href="{% url 'login' %}" class="btn btn-secondary">Sign In</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="features">
+    <div class="feature-card">
+        <i class="feature-icon">🛒</i>
+        <h3>Wide Selection</h3>
+        <p>From groceries to household items, find everything you need</p>
+    </div>
+    <div class="feature-card">
+        <i class="feature-icon">⚡</i>
+        <h3>Quick Service</h3>
+        <p>Fast and efficient checkout process</p>
+    </div>
+    <div class="feature-card">
+        <i class="feature-icon">💰</i>
+        <h3>Best Prices</h3>
+        <p>Competitive prices on all our products</p>
+    </div>
+</div>
+
+<!-- Dashboard Section -->
+<div class="dashboard-section">
+    
+    {% if user.is_authenticated %}
+        <h2>Hello, {{ user.username }}!</h2>
+        {% if user.role == 'CUSTOMER' %}
+            <p>Browse our products and manage your payments.</p>
+            <div style="margin-top: 1rem;">
+                <a href="{% url 'products' %}" class="btn">View Products</a>
+                <a href="{% url 'payment_history' %}" class="btn">Payment History</a>
+            </div>
+        {% elif user.role == 'STAFF' %}
+            <p>Manage inventory, transactions, and payments.</p>
+            <div style="margin-top: 1rem;">
+                <a href="{% url 'inventory' %}" class="btn">Manage Inventory</a>
+                <a href="{% url 'transactions' %}" class="btn">View Transactions</a>
+                <a href="{% url 'payments' %}" class="btn">Manage Payments</a>
+            </div>
+        {% elif user.role == 'ADMIN' %}
+            <p>Access all administrative functions.</p>
+            <div style="margin-top: 1rem;">
+                <a href="{% url 'inventory' %}" class="btn">Manage Inventory</a>
+                <a href="{% url 'transactions' %}" class="btn">View Transactions</a>
+                <a href="{% url 'payments' %}" class="btn">Manage Payments</a>
+                <a href="{% url 'audit' %}" class="btn">View Audit Logs</a>
+                <a href="{% url 'user_management' %}" class="btn">Manage Users</a>
+            </div>
+        {% elif user.role == 'SUPPLIER' %}
+            <p>Track your supply deliveries.</p>
+            <div style="margin-top: 1rem;">
+                <a href="{% url 'supply_status' %}" class="btn">Supply Status</a>
+            </div>
+        {% endif %}
+    {% else %}
+        <p>Please login or register to access our services.</p>
+        <div style="margin-top: 1rem;">
+            <a href="{% url 'login' %}" class="btn">Login</a>
+            <a href="{% url 'register' %}" class="btn">Register</a>
+        </div>
+    {% endif %}
+</div>
+
+{% if user.is_authenticated and user.role == 'CUSTOMER' %}
+<div class="card">
+    <h2>Latest Products</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; margin-top: 1rem;">
+        {% for product in products|slice:":4" %}
+        <div style="background: #f9f9f9; padding: 1rem; border-radius: 4px;">
+            <h3>{{ product.name }}</h3>
+            <p>₱{{ product.price }}</p>
+            {% if product.stock > 0 %}
+                <p style="color: green;">In Stock</p>
+            {% else %}
+                <p style="color: red;">Out of Stock</p>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+<style>
+    .hero {
+        background: linear-gradient(rgba(135, 206, 235, 0.9), rgba(95, 158, 160, 0.9));
+        color: white;
+        padding: 4rem 2rem;
+        text-align: center;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    }
+
+    .hero-content h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .hero-subtitle {
+        font-size: 1.25rem;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+    }
+
+    .btn-primary {
+        background-color: #fff;
+        color: #87ceeb;
+    }
+
+    .btn-secondary {
+        background-color: transparent;
+        border: 2px solid #fff;
+    }
+
+    .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .feature-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .feature-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        display: block;
+    }
+
+    .feature-card h3 {
+        color: #87ceeb;
+        margin-bottom: 0.5rem;
+    }
+
+    .feature-card p {
+        color: #666;
+    }
+
+    .dashboard-section {
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    @media (max-width: 768px) {
+        .hero-content h1 {
+            font-size: 2rem;
+        }
+
+        .features {
+            grid-template-columns: 1fr;
+        }
+
+        .hero-buttons {
+            flex-direction: column;
+        }
+    }
+</style>

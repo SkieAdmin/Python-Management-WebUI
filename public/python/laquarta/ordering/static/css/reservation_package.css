@@ -1,0 +1,178 @@
+/* Reset and Base Styling */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+     font-family: 'Courier New', monospace; /* Receipt-like font */
+    background-image: url('/static/images/uu.jpg');
+       backdrop-filter: blur(2px);
+    background-size: cover;;
+    padding: 40px;
+    color: #333;
+    animation: fadeIn 1s ease;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(40px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Container */
+.container {
+     background: linear-gradient(to top,black, transparent,white);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 7.2);
+    max-width: 1000px;
+    margin: auto;
+    animation: slideUp 0.8s ease;
+}
+
+/* Header */
+.container > div {
+    margin-bottom: 25px;
+}
+
+h2 {
+    color: black;
+    font-weight: bold;
+    text-shadow: 1px 1px 0 white;
+}
+
+h3 {
+    margin: 25px 0 10px;
+    font-size: 22px;
+    color: black;
+}
+
+/* Back Button */
+.back-btn {
+    display: inline-block;
+    margin-bottom: 20px;
+    text-decoration: none;
+    padding: 10px 20px;
+    background-color: #d80000;
+    color: #fff;
+    font-weight: bold;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background-color: #b60000;
+    transform: scale(1.05);
+}
+
+/* Table Styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    animation: fadeIn 1s ease;
+}
+
+table th, table td {
+    border: 2px solid black;
+    padding: 12px;
+    text-align: center;
+
+}
+
+table th {
+    background-color: red;
+    color: white;
+    text-shadow: 2px 1px 0 black;
+}
+
+table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+table tr:hover {
+    background-color: #ffe3e3;
+    transition: background 0.3s;
+}
+
+/* Form Styling */
+form {
+    margin-top: 20px;
+}
+
+form p {
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 8px;
+    color: white;
+
+}
+
+select, input, button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+select:focus, input:focus {
+    border-color: #d80000;
+    outline: none;
+       transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(255, 75, 43, 0.5);
+}
+
+/* Price Display */
+#price-display {
+    margin-top: 10px;
+    padding: 12px;
+    background-color: white;
+    border: 2px dashed red;
+    color: red;
+    font-size: 20px;
+    text-align: center;
+    border-radius: 10px;
+}
+
+/* Buttons */
+button {
+    background-color: #d80000;
+    color: white;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    border-radius: 25px;
+    transition: background 0.3s, transform 0.2s;
+}
+
+button:hover {
+    background-color: black;
+    transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(255, 75, 43, 0.5);
+}
+
+/* Action Links */
+a {
+    color: #d80000;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: underline;
+}

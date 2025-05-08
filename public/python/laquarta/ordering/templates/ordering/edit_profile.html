@@ -1,0 +1,244 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="/static/images/logos.png" type="image/png">
+    <meta charset="UTF-8">
+    <title>Edit Profile</title>
+    <style>
+        /* Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+    line-height: 1.6;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Main Content Container */
+.main-content {
+    width: 100%;
+    max-width: 600px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 5.1);
+    padding: 30px;
+}
+
+/* Header Styles */
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid red;
+}
+
+.header-container h2 {
+    color:black;
+    text-shadow: 1px 1px 0 green;
+    font-size: 1.8rem;
+}
+
+.header-container img {
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+}
+
+/* Form Styles */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+form p {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: black;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid black;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+input:focus, textarea:focus {
+    outline: none;
+    border-color: green;
+    box-shadow: 0 0 5px rgba(211, 84, 0, 0.2);
+}
+
+textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* Error Messages */
+.errorlist {
+    color: #e74c3c;
+    list-style-type: none;
+    margin-top: 5px;
+    font-size: 0.9rem;
+}
+
+/* Button Styles */
+.edit-btn, .back-btn {
+    display: inline-block;
+    padding: 12px 25px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.3s ease;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.edit-btn {
+    background-color: red;
+    color: white;
+    border: none;
+    margin-bottom: 15px;
+}
+
+.edit-btn:hover {
+    background-color:green;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 5.1);
+}
+
+.back-btn {
+    background-color: red;
+    color: white;
+    border: none;
+}
+
+.back-btn:hover {
+    background-color: green;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 6.1);
+}
+
+/* Help Text */
+.helptext {
+    display: block;
+    color: #777;
+    font-size: 0.85rem;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+/* Required Field Indicator */
+label[for]::after {
+    content: "*";
+    color: #e74c3c;
+    margin-left: 4px;
+}
+
+/* Form Field Focus Animation */
+@keyframes focusField {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+}
+
+input:invalid:focus, textarea:invalid:focus {
+    animation: focusField 0.3s ease;
+    border-color: #e74c3c;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .main-content {
+        padding: 20px;
+    }
+    
+    .header-container {
+        flex-direction: column-reverse;
+        text-align: center;
+    }
+    
+    .header-container img {
+        margin-bottom: 15px;
+    }
+    
+    .edit-btn, .back-btn {
+        width: 100%;
+        margin-right: 0;
+    }
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.main-content {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Form Layout Enhancement */
+form p {
+    position: relative;
+}
+
+/* Form Success Message */
+.success-message {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+/* Form Field Icons */
+.field-icon {
+    position: absolute;
+    right: 15px;
+    top: 40px;
+    color: #aaa;
+}
+    </style>
+</head>
+<body>
+  <div class="main-content">
+    <!-- Container for text and image -->
+    <div class="header-container">
+        <h2>Edit Profile</h2>
+        <img src="{% static 'images/logos.png' %}" alt="Logo">
+    </div>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="edit-btn">Save Changes</button>
+        <a href="{% url 'profile' %}" class="back-btn">Cancel</a>
+    </form>
+    <br>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,492 @@
+{% extends 'core/staff_base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} - Iligan2L{% endblock %}
+{% block page_title %}Product Details{% endblock %}
+
+{% block extra_css %}
+<style>
+    .product-detail-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin-bottom: 30px;
+    }
+    
+    @media (max-width: 768px) {
+        .product-detail-container {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    .product-image-container {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--threads-border);
+        border-radius: 12px;
+        overflow: hidden;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 500px;
+        padding: 10px;
+    }
+    
+    .product-image {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transition: var(--threads-transition);
+        padding: 0;
+    }
+    
+    .product-info {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--threads-border);
+        border-radius: 12px;
+        padding: 25px;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .product-info h1 {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: var(--threads-text);
+        margin-bottom: 15px;
+    }
+    
+    .product-price {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--secondary-color);
+        margin-bottom: 20px;
+    }
+    
+    .product-description {
+        color: var(--threads-secondary-text);
+        margin-bottom: 20px;
+        line-height: 1.6;
+    }
+    
+    .product-meta {
+        margin-bottom: 20px;
+    }
+    
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+        color: var(--threads-secondary-text);
+    }
+    
+    .meta-item i {
+        color: var(--threads-secondary-text);
+        width: 20px;
+        text-align: center;
+    }
+    
+    .meta-item .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    
+    .badge-success {
+        background-color: rgba(46, 204, 113, 0.2);
+        color: var(--threads-success);
+    }
+    
+    .badge-danger {
+        background-color: rgba(231, 76, 60, 0.2);
+        color: var(--threads-danger);
+    }
+    
+    .quantity-selector {
+        margin-bottom: 20px;
+    }
+    
+    .quantity-selector label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--threads-text);
+        font-weight: 500;
+    }
+    
+    .quantity-control {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .quantity-btn {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--threads-border);
+        border-radius: 8px;
+        color: var(--threads-text);
+        font-size: 1rem;
+        cursor: pointer;
+        transition: var(--threads-transition);
+    }
+    
+    .quantity-btn:hover {
+        background-color: var(--threads-hover);
+    }
+    
+    .quantity-input {
+        width: 60px;
+        height: 36px;
+        background-color: rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--threads-border);
+        border-radius: 8px;
+        color: var(--threads-text);
+        text-align: center;
+        font-family: 'Poppins', sans-serif;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        margin-top: auto;
+    }
+    
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 20px;
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--threads-border);
+        border-radius: 8px;
+        color: var(--threads-text);
+        cursor: pointer;
+        font-weight: 500;
+        transition: var(--threads-transition);
+        text-decoration: none;
+        font-family: 'Poppins', sans-serif;
+        font-size: 0.95rem;
+    }
+    
+    .btn:hover {
+        background-color: var(--threads-hover);
+    }
+    
+    .btn-primary {
+        background-color: rgba(230, 126, 34, 0.2);
+        color: var(--secondary-color);
+        border: 1px solid rgba(230, 126, 34, 0.3);
+    }
+    
+    .btn-primary:hover {
+        background-color: rgba(230, 126, 34, 0.3);
+    }
+    
+    .out-of-stock-message {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 15px;
+        background-color: rgba(231, 76, 60, 0.1);
+        border-left: 4px solid var(--threads-danger);
+        border-radius: 8px;
+        color: var(--threads-danger);
+        margin-top: 20px;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--threads-text);
+        margin-bottom: 20px;
+        position: relative;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--threads-border);
+    }
+    
+    .related-products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+        margin-top: 30px;
+    }
+    
+    .product-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--threads-border);
+        border-radius: 12px;
+        overflow: hidden;
+        transition: var(--threads-transition);
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--threads-box-shadow);
+    }
+    
+    .product-card .product-image {
+        height: 200px;
+        width: 100%;
+        object-fit: cover;
+    }
+    
+    .product-card .product-details {
+        padding: 15px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .product-card .product-category {
+        font-size: 0.8rem;
+        color: var(--threads-secondary-text);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 5px;
+    }
+    
+    .product-card h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--threads-text);
+        margin-bottom: 10px;
+    }
+    
+    .product-card .product-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    
+    .product-card .product-price {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--secondary-color);
+        margin-bottom: 0;
+    }
+    
+    .product-card .product-actions {
+        margin-top: auto;
+    }
+    
+    .product-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        z-index: 2;
+    }
+    
+    .in-stock {
+        background-color: rgba(46, 204, 113, 0.2);
+        color: var(--threads-success);
+    }
+    
+    .out-of-stock {
+        background-color: rgba(231, 76, 60, 0.2);
+        color: var(--threads-danger);
+    }
+    
+    .back-button {
+        margin-bottom: 20px;
+        display: inline-flex;
+        align-items: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="back-button">
+    {% if request.user.role == 'Administrator' %}
+        <a href="{% url 'admin_dashboard' %}" class="btn">
+            <i class="fas fa-arrow-left"></i> Back to Products
+        </a>
+    {% else %}
+        <a href="{% url 'customer_dashboard' %}" class="btn">
+            <i class="fas fa-arrow-left"></i> Back to Products
+        </a>
+    {% endif %}
+</div>
+
+<div class="product-detail-container" data-aos="fade-up">
+    <div class="product-image-container">
+        {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+        {% else %}
+            <img src="{% static 'images/placeholder.jpg' %}" alt="{{ product.name }}" class="product-image">
+        {% endif %}
+        
+        {% if product.in_stock %}
+            <div class="product-badge in-stock">In Stock</div>
+        {% else %}
+            <div class="product-badge out-of-stock">Out of Stock</div>
+        {% endif %}
+    </div>
+    
+    <div class="product-info">
+        <h1>{{ product.name }}</h1>
+        <div class="product-price">₱{{ product.price }}</div>
+        
+        <div class="product-description">
+            {{ product.description }}
+        </div>
+        
+        <div class="product-meta">
+            <div class="meta-item">
+                <i class="fas fa-tag"></i>
+                <span>Category: {{ product.category|title }}</span>
+            </div>
+            
+            <div class="meta-item">
+                <i class="fas fa-box"></i>
+                <span>Unit: {{ product.unit }}</span>
+            </div>
+            
+            <div class="meta-item">
+                <i class="fas fa-cubes"></i>
+                <span>Stock Quantity: {{ product.stock_quantity }}</span>
+            </div>
+            
+            <div class="meta-item">
+                <i class="fas fa-sync-alt"></i>
+                <span>Last Restock: {{ product.last_restock_date }}</span>
+            </div>
+            
+            <div class="meta-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Status: 
+                    {% if product.in_stock %}
+                        <span class="badge badge-success"><i class="fas fa-check"></i> In Stock</span>
+                    {% else %}
+                        <span class="badge badge-danger"><i class="fas fa-times"></i> Out of Stock</span>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+        
+        {% if is_customer %}
+            {% if product.in_stock %}
+                <form method="post" action="{% url 'product_detail' product.id %}">
+                    {% csrf_token %}
+                    <div class="quantity-selector">
+                        <label for="quantity">Quantity:</label>
+                        <div class="quantity-control">
+                            <button type="button" class="quantity-btn minus" onclick="decrementQuantity('quantity')">-</button>
+                            <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ product.stock_quantity }}" class="quantity-input">
+                            <button type="button" class="quantity-btn plus" onclick="incrementQuantity('quantity', parseInt('{{ product.stock_quantity }}'))">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                        </button>
+                        <a href="{% url 'checkout_view' %}" class="btn">
+                            <i class="fas fa-bolt"></i> Buy Now
+                        </a>
+                    </div>
+                </form>
+            {% else %}
+                <div class="out-of-stock-message">
+                    <i class="fas fa-exclamation-circle"></i> This product is currently out of stock.
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="action-buttons">
+                <a href="{% url 'login' %}" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Login to Purchase
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if related_products %}
+<div data-aos="fade-up" data-aos-delay="100">
+    <h2 class="section-title">Related Products</h2>
+    
+    <div class="related-products-grid">
+        {% for related in related_products %}
+        <div class="product-card" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:100 }}">
+            <div class="product-image-container">
+                {% if related.image %}
+                    <img src="{{ related.image.url }}" alt="{{ related.name }}" class="product-image">
+                {% else %}
+                    <img src="{% static 'images/placeholder.jpg' %}" alt="{{ related.name }}" class="product-image">
+                {% endif %}
+            </div>
+            
+            <div class="product-details">
+                <div class="product-category">{{ related.category }}</div>
+                <h3>{{ related.name }}</h3>
+                
+                <div class="product-meta">
+                    <div class="product-price">₱{{ related.price }}</div>
+                    
+                    {% if related.in_stock %}
+                        <span class="badge badge-success"><i class="fas fa-check"></i> In Stock</span>
+                    {% else %}
+                        <span class="badge badge-danger"><i class="fas fa-times"></i> Out of Stock</span>
+                    {% endif %}
+                </div>
+                
+                <div class="product-actions">
+                    <a href="{% url 'product_detail' related.id %}" class="btn btn-primary">
+                        <i class="fas fa-info-circle"></i> View Details
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Quantity control functions
+    function incrementQuantity(inputId, maxStock) {
+        const input = document.getElementById(inputId);
+        const currentValue = parseInt(input.value);
+        if (currentValue < maxStock) {
+            input.value = currentValue + 1;
+        }
+    }
+
+    function decrementQuantity(inputId) {
+        const input = document.getElementById(inputId);
+        const currentValue = parseInt(input.value);
+        if (currentValue > 1) {
+            input.value = currentValue - 1;
+        }
+    }
+    
+    // Highlight the appropriate sidebar link
+    document.addEventListener('DOMContentLoaded', function() {
+        // If we're viewing as admin, highlight the Products link
+        const productsLink = document.getElementById('sidebar-admin-dashboard');
+        if (productsLink) {
+            const sidebarLinks = document.querySelectorAll('.sidebar .nav-links a');
+            sidebarLinks.forEach(l => l.classList.remove('active'));
+            productsLink.classList.add('active');
+        }
+    });
+</script>
+{% endblock %}

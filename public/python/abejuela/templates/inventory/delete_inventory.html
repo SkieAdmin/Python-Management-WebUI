@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Inventory Item{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card">
+        <h2 style="margin-bottom: 1.5rem;">Delete Inventory Item</h2>
+        
+        <div class="alert alert-danger">
+            <p><strong>Warning:</strong> Are you sure you want to delete "{{ inventory.name }}"? This action cannot be undone.</p>
+        </div>
+        
+        <div style="margin-top: 1.5rem;">
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn" style="background-color: #d32f2f;">Delete</button>
+                <a href="{% url 'inventory_list' %}" class="btn btn-secondary" style="margin-left: 0.5rem;">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

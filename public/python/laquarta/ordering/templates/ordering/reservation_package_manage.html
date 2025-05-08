@@ -1,0 +1,421 @@
+{% load static %}
+{% load tz %} 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="/static/images/logos.png" type="image/png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin</title>
+    <style>
+        :root {
+            --primary-color: #e74c3c;
+            --secondary-color: #f39c12;
+            --success-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --warning-color: #f1c40f;
+            --info-color: #3498db;
+            --dark-color: #0f1218;
+            --darker-color: #070a0e;
+            --light-color: #ecf0f1;
+            --gray-color: #95a5a6;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--dark-color);
+            color: #fff;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        /* Container */
+        .container {
+            width: 100%;
+            margin: 0 auto;
+        }
+        
+        /* Header Styles */
+        .header-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid red;
+        }
+        
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            border-radius: 50%;
+            box-shadow: var(--box-shadow);
+            padding: 5px;
+            background-color: white;
+        }
+        
+        .header-container h2 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: white;
+        }
+        
+        /* Back Button */
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 8px 16px;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            margin-bottom: 20px;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .back-button:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+        }
+        
+        /* Table Container */
+        .table-container {
+            background-color: var(--darker-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            width: 100%;
+            overflow-x: auto; /* Only enable horizontal scroll if absolutely necessary */
+        }
+        
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        
+        thead {
+            background-color: black;
+        }
+        
+        th {
+            padding: 8px 6px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--light-color);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        td {
+            padding: 8px 6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            vertical-align: middle;
+            color: #ddd;
+        }
+        
+        tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+        
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* Form Elements - Compact */
+        select, input[type="number"] {
+            width: 100%;
+            padding: 4px 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            background-color: var(--dark-color);
+            color: #fff;
+            font-family: inherit;
+            font-size: 0.8rem;
+        }
+        
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 4px center;
+            background-size: 10px;
+            padding-right: 20px;
+        }
+        
+        /* Buttons - Compact */
+        button, .action-button {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        button[type="submit"] {
+            background-color: var(--primary-color);
+            color: white;
+            margin-right: 4px;
+        }
+        
+        .action-button {
+            background-color: var(--danger-color);
+            color: white;
+            text-decoration: none;
+        }
+        
+        /* Image Thumbnail */
+        .image-zoom-container img {
+            width: 25px;
+            height: 25px;
+            object-fit: cover;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        /* Special Column Styles */
+        .price-column {
+            font-weight: bold;
+            color: var(--light-color);
+        }
+        
+        .no-receipt {
+            color: #888;
+            font-size: 0.75rem;
+            font-style: italic;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 80%;
+            max-height: 80vh;
+        }
+        
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            z-index: 1001;
+        }
+        
+        /* Error Messages */
+        .form-errors {
+            background-color: rgba(231, 76, 60, 0.1);
+            border-left: 4px solid var(--danger-color);
+            color: var(--danger-color);
+            padding: 12px;
+            border-radius: var(--border-radius);
+            margin-top: 20px;
+        }
+        
+        /* Column width adjustments for better fit */
+        th:nth-child(1), td:nth-child(1) { width: 40px; } /* ID */
+        th:nth-child(2), td:nth-child(2) { width: 120px; } /* Full Name */
+        th:nth-child(3), td:nth-child(3) { width: 60px; } /* Kilos */
+        th:nth-child(4), td:nth-child(4) { width: 80px; } /* Package */
+        th:nth-child(5), td:nth-child(5) { width: 100px; } /* Delivery Option */
+        th:nth-child(6), td:nth-child(6) { width: 90px; } /* Delivery Date */
+        th:nth-child(7), td:nth-child(7) { width: 90px; } /* Date/Time */
+        th:nth-child(8), td:nth-child(8) { width: 80px; } /* Status */
+        th:nth-child(9), td:nth-child(9) { width: 90px; } /* Payment Status */
+        th:nth-child(10), td:nth-child(10) { width: 70px; } /* Price */
+        th:nth-child(11), td:nth-child(11) { width: 90px; } /* GCash Reference */
+        th:nth-child(12), td:nth-child(12) { width: 60px; } /* GCash Receipt */
+        th:nth-child(13), td:nth-child(13) { width: 90px; } /* Action */
+    </style>
+</head>
+<body>
+   <div class="container">
+        <div class="header-container">
+            <img src="{% static 'images/logos.png' %}" alt="Reservation Icon" class="header-icon">
+            <h2>Jaimes Lechon Bayug | Manage Reservation</h2>
+        </div>
+        
+        <a href="{% url 'custom_admin_dashboard' %}" class="back-button">Back</a>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Kilos</th>
+                        <th>Package</th>
+                        <th>Delivery</th>
+                        <th>Del. Date</th>
+                        <th>Date/Time</th>
+                        <th>Status</th>
+                        <th>Payment</th>
+                        <th>Price</th>
+                        <th>GCash Ref</th>
+                        <th>Receipt</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in reservations %}
+                    <tr>
+                        <td><strong>{{ r.id }}</strong></td>
+                        <td>{{ r.customer.profile.full_name }}</td>
+                        <td>{{ r.kilos }} kg</td>
+                        <td>{{ r.get_package_deal_display }}</td>
+                       <td>
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="reservation_id" value="{{ r.id }}">
+        <select name="delivery_option" {% if r.payment_status == "paid" %}disabled{% endif %}>
+            <option value="pickup" {% if r.delivery_option == "pickup" %}selected{% endif %}>Pick-up</option>
+            <option value="door" {% if r.delivery_option == "door" %}selected{% endif %}>Door</option>
+        </select>
+    </td>
+    <td>{{ r.delivery_date }}</td>
+    <td>{{ r.date_time|localtime }}</td>
+    <td>
+        <select name="status" {% if r.payment_status == "paid" %}disabled{% endif %}>
+            <option value="pending" {% if r.status == "pending" %}selected{% endif %}>Pending</option>
+            <option value="approved" {% if r.status == "approved" %}selected{% endif %}>Approved</option>
+        </select>
+    </td>
+    <td>
+        <select name="payment_status" {% if r.payment_status == "paid" %}disabled{% endif %}>
+            <option value="unpaid" {% if r.payment_status == "unpaid" %}selected{% endif %}>Unpaid</option>
+            <option value="paid" {% if r.payment_status == "paid" %}selected{% endif %}>Paid</option>
+        </select>
+    </td>
+    <td class="price-column">
+        <input type="number" name="price" value="{{ r.price }}" min="0" step="100" required {% if r.payment_status == "paid" %}disabled{% endif %}>
+    </td>
+    <td>
+        {% if r.gcash_reference %}
+            {{ r.gcash_reference }}
+        {% else %}
+            <span class="no-receipt">None</span>
+        {% endif %}
+    </td>
+    <td>
+        {% if r.gcash_screenshot %}
+            <div class="image-zoom-container">
+                <img src="{{ r.gcash_screenshot.url }}" alt="GCash" onclick="zoomImage(this)" />
+            </div>
+        {% else %}
+            <span class="no-receipt">None</span>
+        {% endif %}
+    </td>
+    <td>
+        {% if r.payment_status != "paid" %} 
+            <button type="submit">Update</button>
+        {% endif %}
+        <a href="{% url 'delete_reservation' r.id %}" class="action-button" onclick="return confirm('Delete this reservation?');">Del</a>
+        </form>
+    </td>
+</tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        {% if form.errors %}
+        <div class="form-errors">
+            <ul>
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Modal for enlarged image -->
+    <div id="imageModal" class="modal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+    
+    <script>
+        function zoomImage(img) {
+            var modal = document.getElementById("imageModal");
+            var modalImg = document.getElementById("modalImage");
+            modal.style.display = "block";
+            modalImg.src = img.src;
+            
+            // Prevent scrolling when modal is open
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal() {
+            var modal = document.getElementById("imageModal");
+            modal.style.display = "none";
+            
+                        // Re-enable scrolling
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Close modal when clicking outside the image
+        window.onclick = function(event) {
+            var modal = document.getElementById("imageModal");
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+        
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

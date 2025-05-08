@@ -1,0 +1,360 @@
+{% extends 'pos/base.html' %}
+
+{% load static %}
+
+{% block title %}Update Inventory - {{ product.name }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'pos/css/products.css' %}">
+<style>
+:root {
+  --bg-color: #1e1816;
+  --card-bg: #493628;
+  --text-color: #E4E0E1;
+  --accent-color: #D6C0B3;
+  --border-color: #AB886D;
+  --hover-bg: #5d4434;
+  --primary-color: #AB886D;
+  --secondary-color: #D6C0B3;
+  --danger-color: #D9534F;
+  --input-bg: #2e221a;
+  --input-border: #84654d;
+  --input-focus-border: #AB886D;
+}
+
+body {
+  background: var(--bg-color);
+  color: var(--text-color);
+}
+
+.inventory-card {
+  background-color: var(--card-bg);
+  border-radius: 0.7em;
+  box-shadow: 0 2px 22px rgba(50, 25, 5, 0.14);
+  padding: 2rem 2rem 1.2rem 2rem;
+  margin: 2rem auto 1.5rem auto;
+  color: var(--text-color);
+  border: 1.5px solid var(--border-color);
+  max-width: 540px;
+}
+
+.product-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.product-image {
+  width: 80px;
+  height: 80px;
+  background-color: #2e221a;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-color);
+  font-size: 2rem;
+  margin-right: 1rem;
+  box-shadow: 0 1px 6px rgba(30,20,10,0.16);
+}
+
+.product-details h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+  color: var(--accent-color);
+}
+.product-details p {
+  margin: 0;
+  color: var(--accent-color);
+  font-size: 1.05em;
+}
+
+.current-stock {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: .5em;
+}
+
+.stock-label {
+  font-weight: 600;
+  color: var(--accent-color);
+}
+
+.stock-badge {
+  font-weight: 600;
+  border-radius: 0.28em;
+  padding: 0.28em 1em;
+  font-size: 1.11em;
+  letter-spacing: 0.04em;
+  border: 1.2px solid;
+}
+.in-stock {
+  color: #206a2a; background: #c7f7cf; border-color: #24782f;
+}
+.low-stock {
+  color: #91612c; background: #fff6dc; border-color: #ecb243;
+}
+.out-of-stock {
+  color: #ad2520; background: #ffe8e8; border-color: #cf3830;
+}
+
+.adjustment-controls {
+  background-color: #35271d;
+  border-radius: 0.5rem;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1.5rem;
+  border: 1.3px solid var(--border-color);
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.form-group {
+  flex: 1;
+  margin-bottom: 1.35rem;
+}
+.form-group label {
+  display: block;
+  margin-bottom: 0.38em;
+  font-weight: 600;
+  color: var(--accent-color);
+  letter-spacing: 0.02em;
+  font-size: 1.06em;
+}
+
+.form-control,
+input[type="text"], input[type="number"], select, textarea {
+  width: 100%;
+  font-size: 1.08em;
+  color: var(--text-color);
+  background: var(--input-bg);
+  border: 1.3px solid var(--input-border);
+  border-radius: 0.33em;
+  padding: 0.62em 0.75em;
+  margin-top: .07em;
+  transition: background 0.19s, border-color 0.14s, box-shadow 0.14s;
+  box-shadow: 0 2px 7px rgba(70,40,15,0.08);
+  box-sizing: border-box;
+  appearance: none;
+}
+.form-control:focus,
+input[type="text"]:focus, input[type="number"]:focus, textarea:focus, select:focus {
+  outline: none;
+  background: var(--hover-bg);
+  border-color: var(--input-focus-border);
+}
+
+.form-error {
+  color: var(--danger-color);
+  font-size: 0.97rem;
+  margin-top: 0.35rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1.1em;
+  justify-content: flex-end;
+  margin-top: 1.4rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.btn, .btn-primary, .btn-secondary, .btn-outline-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.62em 1.4em;
+  border-radius: 0.35em;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  font-size: 1.04em;
+  transition: background 0.14s, color 0.12s, border 0.12s;
+  cursor: pointer;
+  box-shadow: 0 2px 7px rgba(124,80,22,0.06);
+}
+
+.btn-primary {
+  background: var(--primary-color);
+  color: var(--bg-color);
+  border: 1.2px solid var(--primary-color);
+}
+.btn-primary:hover, .btn-primary:focus {
+  background: var(--hover-bg);
+  color: var(--accent-color);
+  border-color: var(--hover-bg);
+}
+
+.btn-secondary, .btn-outline-secondary {
+  background: transparent;
+  color: var(--accent-color);
+  border: 1.1px solid var(--accent-color);
+}
+.btn-secondary:hover, .btn-secondary:focus, .btn-outline-secondary:hover, .btn-outline-secondary:focus {
+  background: var(--hover-bg);
+  color: var(--secondary-color);
+  border-color: var(--secondary-color);
+}
+
+.alert {
+  padding: 0.87em 1.07em;
+  border-radius: 0.45em;
+  margin-bottom: 1em;
+  font-size: 1.02em;
+}
+.alert-success { background: #244d2b; color: #cde7c1; }
+.alert-danger  { background: var(--danger-color); color: #fff; }
+.alert-error   { background: var(--danger-color); color: #fff; }
+.alert-warning { background: #704519; color: #ffe3b3; }
+
+.history-title {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: var(--accent-color);
+  font-weight: 600;
+}
+.page-title{
+    color: #AB886D;
+}
+.history-empty {
+  text-align: center;
+  padding: 2rem;
+  background-color: #35271d;
+  border-radius: 0.5rem;
+  color: var(--accent-color);
+  font-size: 1.09em;
+}
+
+@media (max-width: 600px) {
+  .inventory-card {
+    padding: 1em 0.4em 0.8em 0.5em;
+    max-width: 99vw;
+  }
+  .form-row {
+    flex-direction: column;
+    gap: 0.55em;
+  }
+  .form-actions {
+    flex-direction: column;
+    gap: 0.55em;
+    align-items: stretch;
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <h1 class="page-title">Update Stock - {{ product.name }}</h1>
+    <div class="actions">
+        <a href="{% url 'product_list' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Products
+        </a>
+    </div>
+</div>
+<div class="content-body">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    <div class="inventory-card">
+        <div class="product-info">
+            <!-- <div class="product-image">
+                <i class="fas fa-coffee"></i>
+            </div> -->
+            <div class="product-details">
+                <h3>{{ product.name }}</h3>
+                <p>Category: {{ product.category.name }}</p>
+                <p>Price: ₱{{ product.price }}</p>
+            </div>
+        </div>
+        <div class="current-stock">
+            <span class="stock-label">Current Stock:</span>
+            {% if product.inventory.quantity_in_stock > 10 %}
+                <span class="stock-badge in-stock">{{ product.inventory.quantity_in_stock }}</span>
+            {% elif product.inventory.quantity_in_stock > 0 %}
+                <span class="stock-badge low-stock">{{ product.inventory.quantity_in_stock }}</span>
+            {% else %}
+                <span class="stock-badge out-of-stock">Out of stock</span>
+            {% endif %}
+        </div>
+        <form method="post" action="{% url 'update_inventory' product.id %}">
+            {% csrf_token %}
+            <div class="adjustment-controls">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_adjustment_type">Adjustment Type:</label>
+                        {{ form.adjustment_type }}
+                    </div>
+                    <div class="form-group">
+                        <label for="id_adjustment">Quantity:</label>
+                        {{ form.adjustment }}
+                    </div>
+                </div>
+                <div class="form-group" style="display: none;">
+                    <label for="id_quantity_in_stock">Current Stock:</label>
+                    {{ form.quantity_in_stock }}
+                </div>
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Update Stock
+                </button>
+            </div>
+        </form>
+    </div>
+    <h2 class="history-title">Stock Adjustment History</h2>
+<div class="history-empty">
+    {% if product.stockadjustment_set.count > 0 %}
+        <ul>
+            {% for adjustment in product.stockadjustment_set.all %}
+                <li>{{ adjustment.timestamp }}: {{ adjustment.adjustment_type }} {{ adjustment.quantity }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No stock adjustment history available yet.</p>
+    {% endif %}
+</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const adjustmentTypeSelect = document.getElementById('id_adjustment_type');
+        const adjustmentInput = document.getElementById('id_adjustment');
+        const currentStockInput = document.getElementById('id_quantity_in_stock');
+        updatePlaceholder();
+        adjustmentTypeSelect.addEventListener('change', updatePlaceholder);
+        function updatePlaceholder() {
+            const selectedValue = adjustmentTypeSelect.value;
+            switch(selectedValue) {
+                case 'add':
+                    adjustmentInput.placeholder = 'Enter quantity to add';
+                    break;
+                case 'remove':
+                    adjustmentInput.placeholder = 'Enter quantity to remove';
+                    break;
+                case 'set':
+                    adjustmentInput.placeholder = 'Enter new stock level';
+                    adjustmentInput.value = currentStockInput.value;
+                    break;
+            }
+        }
+    });
+</script>
+{% endblock %}

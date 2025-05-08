@@ -1,0 +1,420 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Iligan2L Login</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+<style>
+:root {
+  --primary-color: black;
+  --secondary-color: #E67E22;
+  --accent-color: #000000;
+  --light-color: orange;
+  --dark-color: #50432c;
+  --success-color: #2ECC71;
+  --danger-color: #E74C3C;
+  --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s ease;
+  --threads-bg: #101010;
+  --threads-card-bg: #101010;
+  --threads-text: #FFFFFF;
+  --threads-secondary-text: #999999;
+  --threads-border: #333333;
+  --threads-hover: rgba(255, 255, 255, 0.1);
+  --threads-success: #2ECC71;
+  --threads-danger: #E74C3C;
+  --threads-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  --threads-transition: all 0.2s ease;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body, html {
+  height: 100%;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background-color: var(--threads-bg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.auth-container {
+  display: flex;
+  width: 90%;
+  max-width: 800px;
+  height: auto;
+  min-height: 500px;
+  max-height: 90vh;
+  background: var(--threads-card-bg);
+  border-radius: 15px;
+  border: 1px solid var(--threads-border);
+  box-shadow: var(--threads-box-shadow);
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.6s ease forwards;
+  transition: all 0.5s ease;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-section {
+  flex: 1;
+  padding: 50px 40px;
+  color: var(--threads-text);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: all 0.5s ease;
+}
+
+.auth-tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--threads-border);
+  padding-bottom: 10px;
+}
+
+.auth-tab {
+  flex: 1;
+  text-align: center;
+  padding: 8px 0;
+  color: var(--threads-secondary-text);
+  text-decoration: none;
+  font-weight: 600;
+  position: relative;
+  transition: var(--threads-transition);
+}
+
+.auth-tab.active {
+  color: var(--threads-text);
+}
+
+.auth-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--threads-text);
+}
+
+.logo-section {
+  flex: 1;
+  background: rgba(255,255,255,0.03);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border-left: 1px solid var(--threads-border);
+  transition: all 0.5s ease;
+}
+
+.logo-container {
+  text-align: center;
+}
+
+.logo-container img {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 20px;
+  box-shadow: var(--threads-box-shadow);
+}
+
+.logo-container h1 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--threads-text);
+  margin-top: 15px;
+}
+
+.logo-container p {
+  color: var(--threads-secondary-text);
+  margin-top: 10px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.form-section h2 {
+  font-weight: 600;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 20px;
+  background: rgba(255,255,255,0.03);
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid var(--threads-border);
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.95rem;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: var(--threads-text);
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid var(--threads-border);
+  border-radius: 5px;
+  background: rgba(0,0,0,0.3);
+  color: var(--threads-text);
+  font-size: 1rem;
+  outline: none;
+  transition: var(--threads-transition);
+  margin-bottom: 5px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.form-group input::placeholder {
+  color: var(--threads-secondary-text);
+}
+
+.form-group input:focus {
+  background: rgba(0,0,0,0.5);
+  border-color: var(--threads-text);
+}
+
+button {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  border: none;
+  border-radius: 30px;
+  background: var(--threads-text);
+  color: var(--threads-bg);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--threads-transition);
+  box-shadow: var(--threads-box-shadow);
+  margin-top: 20px;
+  letter-spacing: 0.5px;
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+}
+
+button:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.9rem 1.5rem;
+  background-color: var(--threads-text);
+  color: var(--threads-bg);
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: var(--threads-transition);
+  border: none;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  box-shadow: var(--threads-box-shadow);
+  margin-top: 10px;
+  font-size: 0.95rem;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+.btn:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--threads-secondary-text);
+  border: 1px solid var(--threads-border);
+}
+
+.btn-secondary:hover {
+  background-color: var(--threads-hover);
+  color: var(--threads-text);
+}
+
+.btn-block {
+  display: block;
+  width: 100%;
+}
+
+.link a {
+  position: relative;
+  color: var(--threads-secondary-text);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: var(--threads-transition);
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.link a:hover {
+  color: var(--threads-text);
+}
+
+.link {
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+.messages {
+  margin-bottom: 1rem;
+  color: var(--threads-danger);
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .auth-container {
+    flex-direction: column-reverse;
+    max-height: none;
+  }
+  
+  .logo-section {
+    padding-bottom: 0;
+    padding-top: 15px;
+    border-left: none;
+    border-right: none;
+    border-bottom: 1px solid var(--threads-border);
+  }
+  
+  .logo-container img {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 10px;
+  }
+  
+  .logo-container h1 {
+    font-size: 1.3rem;
+    margin-bottom: 5px;
+  }
+  
+  .logo-container p {
+    font-size: 0.8rem;
+    margin-bottom: 5px;
+  }
+  
+  .form-group {
+    margin-bottom: 0.7rem;
+    padding: 10px;
+  }
+  
+  .form-group label {
+    font-size: 0.9rem;
+  }
+  
+  .form-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .auth-tabs {
+    margin-bottom: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-container {
+    width: 100%;
+    margin: 10px auto;
+    border-radius: 10px;
+  }
+  
+  .form-section, .logo-section {
+    padding: 15px 10px;
+  }
+  
+  .form-group {
+    padding: 8px;
+  }
+  
+  .form-group input {
+    padding: 10px;
+  }
+  
+  button {
+    padding: 0.8rem 1.2rem;
+    font-size: 1rem;
+  }
+}
+</style>
+</head>
+<body>
+<div class="auth-container" id="auth-container">
+  <div class="form-section">
+    <div class="auth-tabs" data-aos="fade-down" data-aos-delay="100" data-aos-duration="800">
+      <a href="{% url 'login' %}" class="auth-tab active">Login</a>
+      <a href="{% url 'register' %}" class="auth-tab">Register</a>
+    </div>
+    
+    <div class="messages">{% if messages %}{% for m in messages %}<p>{{ m }}</p>{% endfor %}{% endif %}</div>
+    
+
+    
+    <form method="post" action="{% url 'login' %}" class="login-form" data-aos="fade-up" data-aos-delay="300" data-aos-duration="800">
+      {% csrf_token %}
+      <div class="form-group" data-aos="fade-up" data-aos-delay="200" data-aos-duration="800">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" placeholder="Enter your username" required />
+      </div>
+      <div class="form-group" data-aos="fade-up" data-aos-delay="300" data-aos-duration="800">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Enter your password" required />
+      </div>
+      <button type="submit" data-aos="fade-up" data-aos-delay="400" data-aos-duration="800"><i class="fas fa-sign-in-alt"></i> LOGIN</button>
+      <div class="link" data-aos="fade-up" data-aos-delay="500" data-aos-duration="800">
+        <a href="{% url 'register' %}">New here? Create an account <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </form>
+  </div>
+  
+  <div class="logo-section">
+    <div class="logo-container">
+      <img src="{% static 'images/placeholder.jpg' %}" alt="Iligan2L Logo" data-aos="zoom-in" data-aos-delay="100">
+      <h1 data-aos="fade-up" data-aos-delay="200">Iligan2L</h1>
+      <p data-aos="fade-up" data-aos-delay="300">Construction Supply</p>
+      <a href="{% url 'home' %}" class="btn btn-secondary" data-aos="fade-up" data-aos-delay="400">
+          <i class="fas fa-home"></i> Back to Home
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- AOS JS for animations -->
+<script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  AOS.init({once: true});
+</script>
+</body>
+</html>

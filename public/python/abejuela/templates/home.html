@@ -1,0 +1,642 @@
+{% extends 'base.html' %}
+
+{% block title %}Pizza Galour - Authentic Italian Pizza{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Montserrat:wght@300;400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --primary-color: #d32f2f;
+        --primary-dark: #9a0007;
+        --primary-light: #ff6659;
+        --accent-color: #ffc107;
+        --text-dark: #212121;
+        --text-light: #ffffff;
+        --text-muted: #757575;
+        --background: #f9f9f9;
+        --surface: #ffffff;
+        --border: #e0e0e0;
+        --success: #4caf50;
+        --italian-green: #4caf50;
+        --italian-white: #ffffff;
+        --italian-red: #d32f2f;
+        --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        --section-padding: 5rem 0;
+    }
+
+    body {
+        font-family: 'Montserrat', sans-serif;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+    }
+
+ 
+    main {
+        padding: 0 !important;
+        max-width: none !important;
+        margin: 0 !important;
+        width: 100% !important;
+    }
+    
+ 
+    .content-wrapper {
+        margin-left: var(--sidebar-width) !important;
+    }
+    
+ 
+    .sidebar {
+        display: block !important;
+        transform: translateX(0) !important;
+        z-index: 1000;
+    }
+    
+
+    .mobile-header-toggle {
+        display: none !important;
+    }
+    
+    @media (max-width: 768px) {
+        .content-wrapper {
+            margin-left: 0 !important;
+        }
+        
+        
+        .sidebar {
+            transform: translateX(-100%) !important;
+        }
+        
+        .sidebar.active {
+            transform: translateX(0) !important;
+        }
+        
+       
+        .mobile-header-toggle {
+            display: block !important;
+        }
+        
+       
+        .mobile-header {
+            display: flex !important;
+        }
+    }
+
+    h1, h2, h3, h4, h5 {
+        font-family: 'Playfair Display', serif;
+        margin-top: 0;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+    }
+
+    .section {
+        padding: var(--section-padding);
+    }
+
+    .section-title {
+        text-align: center;
+        margin-bottom: 1rem;
+        font-size: 2.5rem;
+        font-weight: 600;
+        position: relative;
+    }
+
+    .section-title::after {
+        content: '';
+        display: block;
+        width: 80px;
+        height: 3px;
+        background: var(--primary-color);
+        margin: 1rem auto 0;
+    }
+
+    .section-subtitle {
+        text-align: center;
+        font-size: 1.2rem;
+        color: var(--text-muted);
+        max-width: 700px;
+        margin: 0 auto 3rem;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 0.8rem 1.8rem;
+        border-radius: 50px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        text-align: center;
+        font-size: 1rem;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        color: var(--text-light);
+        border: 2px solid var(--primary-color);
+    }
+
+    .btn-primary:hover {
+        background-color: var(--primary-dark);
+        border-color: var(--primary-dark);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-outline {
+        background-color: transparent;
+        color: var(--primary-color);
+        border: 2px solid var(--primary-color);
+    }
+
+    .btn-outline:hover {
+        background-color: var(--primary-color);
+        color: var(--text-light);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-large {
+        padding: 1rem 2.5rem;
+        font-size: 1.1rem;
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+  
+    .hero-section {
+        background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&auto=format&fit=crop&w=1500&q=80');
+        background-size: cover;
+        background-position: center;
+        color: var(--text-light);
+        position: relative;
+        min-height: 90vh;
+        display: flex;
+        align-items: center;
+    }
+
+    .hero-content {
+        max-width: 700px;
+        margin: 0 auto;
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .hero-badge {
+        display: inline-block;
+        background-color: var(--accent-color);
+        color: var(--text-dark);
+        font-weight: 700;
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+
+    .hero-title {
+        font-size: 4rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .hero-description {
+        font-size: 1.3rem;
+        margin-bottom: 2.5rem;
+        text-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    .italian-flag {
+        display: flex;
+        width: 60px;
+        height: 20px;
+        margin: 0 auto 1.5rem;
+        overflow: hidden;
+        border-radius: 2px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .italian-flag-green,
+    .italian-flag-white,
+    .italian-flag-red {
+        flex: 1;
+        height: 100%;
+    }
+
+    .italian-flag-green {
+        background-color: var(--italian-green);
+    }
+
+    .italian-flag-white {
+        background-color: var(--italian-white);
+    }
+
+    .italian-flag-red {
+        background-color: var(--italian-red);
+    }
+
+  
+    .featured-pizzas {
+        background-color: var(--surface);
+        padding: 5rem 0;
+    }
+
+    .pizza-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2.5rem;
+        margin-top: 3rem;
+    }
+
+    .pizza-card {
+        background-color: var(--surface);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: var(--card-shadow);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .pizza-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .pizza-image {
+        height: 250px;
+        width: 100%;
+        object-fit: cover;
+    }
+
+    .pizza-content {
+        padding: 1.5rem;
+    }
+
+    .pizza-title {
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+        color: var(--text-dark);
+    }
+
+    .pizza-price {
+        color: var(--primary-color);
+        font-weight: 700;
+        font-size: 1.4rem;
+        margin-bottom: 1rem;
+    }
+
+    .pizza-description {
+        color: var(--text-muted);
+        margin-bottom: 1.5rem;
+    }
+
+    .why-choose-us {
+        background-color: var(--background);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+    }
+
+    .feature-card {
+        background-color: var(--surface);
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: var(--card-shadow);
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .feature-icon {
+        font-size: 3rem;
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+    }
+
+    .feature-title {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        color: var(--text-dark);
+    }
+
+    .feature-description {
+        color: var(--text-muted);
+    }
+
+ 
+    .testimonials {
+        background-color: var(--surface);
+        position: relative;
+    }
+
+    .testimonials-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+
+    .testimonial-card {
+        background-color: var(--background);
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: var(--card-shadow);
+        position: relative;
+    }
+
+    .testimonial-quote {
+        font-size: 1.1rem;
+        color: var(--text-dark);
+        margin-bottom: 1.5rem;
+        font-style: italic;
+    }
+
+    .testimonial-author {
+        display: flex;
+        align-items: center;
+    }
+
+    .testimonial-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 1rem;
+        border: 3px solid var(--primary-color);
+    }
+
+    .testimonial-name {
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 0.2rem;
+    }
+
+    .testimonial-role {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .testimonial-rating {
+        color: var(--accent-color);
+        margin-top: 0.5rem;
+    }
+
+    
+    .cta-section {
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1571997478779-2adcbbe9ab2f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1500&q=80');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        color: var(--text-light);
+        text-align: center;
+        padding: 5rem 0;
+    }
+
+    .cta-content {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+    }
+
+    .cta-title {
+        font-size: 3rem;
+        margin-bottom: 1.5rem;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .cta-description {
+        font-size: 1.2rem;
+        margin-bottom: 2.5rem;
+        text-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    .cta-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+    }
+
+    .cta-info {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+
+
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 3rem;
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+        }
+
+        .cta-title {
+            font-size: 2.5rem;
+        }
+
+        .btn-group {
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+        }
+
+        .cta-title {
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<section class="hero-section">
+    <div class="container hero-content">
+        <div class="italian-flag">
+            <div class="italian-flag-green"></div>
+            <div class="italian-flag-white"></div>
+            <div class="italian-flag-red"></div>
+        </div>
+        <div class="hero-badge">Authentic Italian Pizza</div>
+        <h1 class="hero-title">Taste the Magic of Italy</h1>
+        <p class="hero-description">Handcrafted pizzas made with traditional recipes, premium ingredients, and baked in our wood-fired oven for that perfect authentic flavor.</p>
+        <div class="btn-group">
+            <a href="{% url 'menu' %}" class="btn btn-primary btn-large">Explore Our Menu</a>
+            <a href="#featured" class="btn btn-outline btn-large">Popular Pizzas</a>
+        </div>
+    </div>
+</section>
+
+<section id="featured" class="section featured-pizzas">
+    <div class="container">
+        <h2 class="section-title">Our Signature Pizzas</h2>
+        <p class="section-subtitle">Handcrafted with love using the finest ingredients and traditional techniques</p>
+        
+        <div class="pizza-grid">
+            <div class="pizza-card">
+                <img src="https://images.unsplash.com/photo-1595854341625-f33ee10dbf94?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Margherita Pizza" class="pizza-image">
+                <div class="pizza-content">
+                    <h3 class="pizza-title">Margherita</h3>
+                    <div class="pizza-price">$365</div>
+                    <p class="pizza-description">The classic Neapolitan pizza with San Marzano tomatoes, fresh mozzarella, basil, salt, and extra-virgin olive oil.</p>
+                    <a href="{% url 'menu' %}" class="btn btn-primary">Order Now</a>
+                </div>
+            </div>
+            
+            <div class="pizza-card">
+                <img src="https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Pepperoni Pizza" class="pizza-image">
+                <div class="pizza-content">
+                    <h3 class="pizza-title">Pepperoni</h3>
+                    <div class="pizza-price">$465</div>
+                    <p class="pizza-description">Our signature tomato sauce topped with mozzarella and crispy pepperoni slices for that perfect spicy kick.</p>
+                    <a href="{% url 'menu' %}" class="btn btn-primary">Order Now</a>
+                </div>
+            </div>
+            
+            <div class="pizza-card">
+                <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Quattro Formaggi" class="pizza-image">
+                <div class="pizza-content">
+                    <h3 class="pizza-title">Quattro Formaggi</h3>
+                    <div class="pizza-price">$575</div>
+                    <p class="pizza-description">A cheese lover's dream with mozzarella, gorgonzola, fontina, and parmigiano-reggiano on our perfect crust.</p>
+                    <a href="{% url 'menu' %}" class="btn btn-primary">Order Now</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center" style="margin-top: 3rem;">
+            <a href="{% url 'menu' %}" class="btn btn-outline btn-large">View Full Menu</a>
+        </div>
+    </div>
+</section>
+
+
+<section class="section why-choose-us">
+    <div class="container">
+        <h2 class="section-title">Why Choose Pizza Galour?</h2>
+        <p class="section-subtitle">We're passionate about creating the perfect pizza experience</p>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-leaf"></i>
+                </div>
+                <h3 class="feature-title">Fresh Ingredients</h3>
+                <p class="feature-description">We source our ingredients from local farmers daily. Our tomatoes are vine-ripened, our mozzarella made fresh, and our herbs picked at peak flavor.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-fire"></i>
+                </div>
+                <h3 class="feature-title">Wood-Fired Oven</h3>
+                <p class="feature-description">Our authentic Italian wood-fired oven reaches 800°F, creating that perfect crispy-yet-chewy crust with delicious charred spots that true pizza lovers crave.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-utensils"></i>
+                </div>
+                <h3 class="feature-title">Master Pizzaiolos</h3>
+                <p class="feature-description">Our pizza chefs trained in Naples, Italy, and bring generations of pizza-making expertise to every pie they craft. Watch them hand-toss your dough to perfection!</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section testimonials">
+    <div class="container">
+        <h2 class="section-title">What Our Customers Say</h2>
+        <p class="section-subtitle">Don't just take our word for it - hear from our satisfied customers</p>
+        
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <p class="testimonial-quote">"The Margherita pizza here is incredible! The crust has that perfect wood-fired char, and you can taste the freshness of the basil and tomatoes. It reminds me of the pizzas I had in Naples."</p>
+                <div class="testimonial-author">
+                    <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="Customer" class="testimonial-avatar">
+                    <div>
+                        <h4 class="testimonial-name">Maria Rodriguez</h4>
+                        <p class="testimonial-role">Loyal Customer since 2018</p>
+                        <div class="testimonial-rating">★★★★★</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testimonial-card">
+                <p class="testimonial-quote">"The Quattro Formaggi is a cheese lover's dream! I love watching the pizzaiolos hand-toss the dough through the open kitchen. This place is as authentic as it gets without flying to Italy."</p>
+                <div class="testimonial-author">
+                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Customer" class="testimonial-avatar">
+                    <div>
+                        <h4 class="testimonial-name">James Wilson</h4>
+                        <p class="testimonial-role">Food Blogger</p>
+                        <div class="testimonial-rating">★★★★★</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testimonial-card">
+                <p class="testimonial-quote">"I've tried pizza all over the city, and Pizza Galour is by far the best! The ingredients are always fresh, and the service is fantastic. Their specialty pizzas are a must-try!"</p>
+                <div class="testimonial-author">
+                    <img src="https://randomuser.me/api/portraits/women/42.jpg" alt="Customer" class="testimonial-avatar">
+                    <div>
+                        <h4 class="testimonial-name">Sarah Johnson</h4>
+                        <p class="testimonial-role">Pizza Enthusiast</p>
+                        <div class="testimonial-rating">★★★★★</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="cta-section">
+    <div class="cta-content">
+        <h2 class="cta-title">Experience Authentic Pizza</h2>
+        <p class="cta-description">Join us for dine-in to watch our pizzaiolos in action or order online for pickup/delivery. First-time customers get 15% off with code: PIZZALOVE</p>
+        <div class="cta-buttons">
+            <a href="{% url 'menu' %}" class="btn btn-primary btn-large">Order Online</a>
+            <a href="tel:+09977505813" class="btn btn-outline btn-large">Call: 09977505813</a>
+        </div>
+        <div class="cta-info">
+            <p><strong>Hours:</strong> Mon-Thu: 9am-10pm | Fri-Sat: 9am-11pm | Sun: 10am-10pm</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,10 @@
+<form method="post" enctype="multipart/form-data"
+      action="{% if editing %}{% url 'shop_admin:product_edit_modal' form.instance.pk %}{% else %}{% url 'shop_admin:product_add_modal' %}{% endif %}"
+      onsubmit="return saveModal(event);">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <div class="modal-footer">
+    <button type="button" class="btn-close" onclick="closeModal()">Cancel</button>
+    <button type="submit" class="btn"><i class="fas fa-save"></i> Save</button>
+  </div>
+</form>

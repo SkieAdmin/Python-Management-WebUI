@@ -1,0 +1,203 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Transactions - Lourgie Sari-Sari Store{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2 style="color: #87ceeb; margin-bottom: 1rem;">Transactions</h2>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Customer</th>
+                <th>Date</th>
+                <th>Total Amount</th>
+                <th>Status</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in transactions %}
+            <tr>
+                <td>#{{ transaction.id }}</td>
+                <td>{{ transaction.user.username }}</td>
+                <td>{{ transaction.created_at|date:"M d, Y H:i" }}</td>
+                <td>₱{{ transaction.total_amount }}</td>
+                <td>
+                    {% if transaction.status == 'PENDING' %}
+                        <span style="color: #f0ad4e;">⌛ Pending</span>
+                    {% elif transaction.status == 'COMPLETED' %}
+                        <span style="color: #5cb85c;">✓ Completed</span>
+                    {% else %}
+                        <span style="color: #d9534f;">✗ Cancelled</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <button class="btn" onclick="viewDetails('{{ transaction.id }}')">View Details</button>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">No transactions found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Transaction Details Modal -->
+<div id="transactionModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);">
+    <div class="card" style="position: relative; top: 50%; left: 50%; transform: translate(-50%, -50%); max-width: 600px;">
+        <h3>Transaction Details</h3>
+        <div id="transactionDetails">
+            Loading...
+        </div>
+        <button class="btn" style="margin-top: 1rem;" onclick="hideTransactionModal()">Close</button>
+    </div>
+</div>
+
+<script>
+function viewDetails(transactionId) {
+    const modal = document.getElementById('transactionModal');
+    const detailsDiv = document.getElementById('transactionDetails');
+    modal.style.display = 'block';
+    
+    // Show loading indicator
+    detailsDiv.innerHTML = '<div style="text-align: center;"><p>Loading transaction details...</p></div>';
+    
+    // Fetch transaction details
+    fetch(`/transaction/${transactionId}/details/`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Format and display transaction details
+            let html = `
+                <div class="transaction-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Transaction ID:</span>
+                        <span class="detail-value">#${data.id}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Customer:</span>
+                        <span class="detail-value">${data.customer}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Date:</span>
+                        <span class="detail-value">${data.created_at}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Status:</span>
+                        <span class="detail-value">${data.status_display}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Payment Method:</span>
+                        <span class="detail-value">${data.payment_method}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Payment Status:</span>
+                        <span class="detail-value">${data.payment_status}</span>
+                    </div>
+                    ${data.reference_id ? `
+                    <div class="detail-row">
+                        <span class="detail-label">Reference ID:</span>
+                        <span class="detail-value">${data.reference_id}</span>
+                    </div>
+                    ` : ''}
+                </div>
+                
+                <h4 style="margin-top: 1rem;">Items</h4>
+                <table style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            // Add items
+            data.items.forEach(item => {
+                html += `
+                    <tr>
+                        <td>${item.product_name}</td>
+                        <td>${item.quantity}</td>
+                        <td>₱${item.price.toFixed(2)}</td>
+                        <td>₱${item.total.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+            
+            // Add summary
+            html += `
+                    </tbody>
+                </table>
+                
+                <div class="transaction-summary" style="margin-top: 1rem;">
+                    <div class="detail-row">
+                        <span class="detail-label">Subtotal:</span>
+                        <span class="detail-value">₱${data.subtotal.toFixed(2)}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Delivery Fee:</span>
+                        <span class="detail-value">₱${data.delivery_fee.toFixed(2)}</span>
+                    </div>
+                    <div class="detail-row" style="font-weight: bold;">
+                        <span class="detail-label">Total Amount:</span>
+                        <span class="detail-value">₱${data.total_amount.toFixed(2)}</span>
+                    </div>
+                </div>
+            `;
+            
+            // Add delivery information if available
+            if (data.delivery) {
+                html += `
+                    <h4 style="margin-top: 1rem;">Delivery Information</h4>
+                    <div class="delivery-info">
+                        <div class="detail-row">
+                            <span class="detail-label">Status:</span>
+                            <span class="detail-value">${data.delivery.status}</span>
+                        </div>
+                        ${data.delivery.delivery_date ? `
+                        <div class="detail-row">
+                            <span class="detail-label">Delivery Date:</span>
+                            <span class="detail-value">${data.delivery.delivery_date}</span>
+                        </div>
+                        ` : ''}
+                        ${data.delivery.notes ? `
+                        <div class="detail-row">
+                            <span class="detail-label">Notes:</span>
+                            <span class="detail-value">${data.delivery.notes}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+            
+            detailsDiv.innerHTML = html;
+        })
+        .catch(error => {
+            detailsDiv.innerHTML = `<div style="color: red; text-align: center;">Error loading transaction details: ${error.message}</div>`;
+        });
+}
+
+function hideTransactionModal() {
+    document.getElementById('transactionModal').style.display = 'none';
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('transactionModal');
+    if (event.target == modal) {
+        hideTransactionModal();
+    }
+}
+</script>
+{% endblock %}

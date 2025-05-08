@@ -1,0 +1,228 @@
+{% extends 'pos/base.html' %}
+
+{% load custom_filters %}
+
+{% block content %}
+<div class="container">
+    <h2>📊 Sales Report</h2>
+    <!-- Filter Form -->
+    <form method="get" class="filter-form">
+        <label>From: <input type="date" name="start_date" value="{{ start_date }}" class="form-control"></label>
+        <label>To: <input type="date" name="end_date" value="{{ end_date }}" class="form-control"></label>
+        <button type="submit" class="btn btn-primary">Filter</button>
+    </form>
+    <hr>
+    <!-- Summary Section -->
+    <h3>📈 Summary ({{ start_date }} to {{ end_date }})</h3>
+    <div class="summary-box">
+        <ul>
+            <li><strong>Total Sales:</strong> ₱{{ total_sales }}</li>
+            <li><strong>Total Orders:</strong> {{ total_orders }}</li>
+            <li><strong>Average Order Value:</strong>
+                {% if total_orders > 0 %}
+                    ₱{{ total_sales|divide:total_orders|floatformat:2 }}
+                {% else %}
+                    ₱0.00
+                {% endif %}
+            </li>
+        </ul>
+    </div>
+    <!-- Top Selling Products Section -->
+    <h3>🏆 Top Selling Products</h3>
+    {% if top_products %}
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Qty Sold</th>
+                <th>Total Revenue</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in top_products %}
+            <tr>
+                <td>{{ item.product__name }}</td>
+                <td>{{ item.quantity_sold }}</td>
+                <td>₱{{ item.total_earned }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="no-data">No sales in this period.</p>
+    {% endif %}
+    <div class="button-group">
+        <a href="{% url 'dashboard_manager' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+        {# Uncomment this if you add an export feature! #}
+        {# <a href="#" class="btn export">Export to CSV</a> #}
+    </div>
+</div>
+
+<style>
+:root {
+  --bg-color: #1e1816;
+  --card-bg: #493628;
+  --text-color: #E4E0E1;
+  --text-light: #D6C0B3;
+  --border-color: #AB886D;
+  --hover-bg: #5d4434;
+  --primary-color: #AB886D;
+  --secondary-color: #D6C0B3;
+  --accent-color: #D6C0B3;
+  --danger-color: #D9534F;
+  --input-bg: #2e221a;
+  --input-border: #84654d;
+  --input-focus-border: #AB886D;
+}
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: Arial, sans-serif;
+  margin: 0; padding: 0;
+}
+.container {
+  max-width: 900px;
+  margin: 26px auto 20px auto;
+  padding: 32px 22px 26px 22px;
+  background: var(--card-bg);
+  box-shadow: 0 4px 18px rgba(0,0,0,0.095);
+  border-radius: 14px;
+}
+h2, h3 { text-align: center; color: var(--text-light);}
+hr {
+  border: none;
+  border-top: 1.8px solid var(--border-color);
+  margin: 28px 0;
+}
+.filter-form {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+.filter-form label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent-color);
+}
+.filter-form input[type="date"], .form-control {
+  padding: 0.44em 0.54em;
+  font-size: 1em;
+  border: 1.2px solid var(--input-border);
+  border-radius: 0.33em;
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  margin-left: 0.22em;
+  box-sizing: border-box;
+  transition: border-color 0.16s, background 0.18s;
+}
+.filter-form input[type="date"]:focus {
+  outline: none;
+  border-color: var(--input-focus-border);
+  background: var(--hover-bg);
+}
+
+.filter-form button, .btn, .btn-primary, .btn-secondary, .btn.export {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+  padding: 0.54em 1.3em;
+  border-radius: 0.31em;
+  font-weight: 600;
+  font-size: 1.03em;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.14s, color 0.12s, border 0.12s;
+}
+.btn-primary, .filter-form button {
+  background: var(--primary-color);
+  color: var(--bg-color);
+  border: 1.1px solid var(--primary-color);
+}
+.btn-primary:hover, .filter-form button:hover {
+  background: var(--hover-bg);
+  color: var(--accent-color);
+  border-color: var(--hover-bg);
+}
+.btn-secondary {
+  background: transparent;
+  color: var(--accent-color);
+  border: 1.1px solid var(--accent-color);
+}
+.btn-secondary:hover {
+  background: var(--hover-bg);
+  color: var(--secondary-color);
+  border-color: var(--secondary-color);
+}
+.btn.export {
+  background: var(--secondary-color);
+  color: var(--bg-color);
+}
+.btn.export:hover {
+  background: var(--hover-bg);
+  color: var(--accent-color);
+}
+.button-group {
+  text-align: center;
+  margin-top: 22px;
+}
+
+.summary-box {
+  padding: 18px 18px 8px 18px;
+  background: var(--hover-bg);
+  border: 1.2px solid var(--border-color);
+  border-radius: 10px;
+  margin-bottom: 24px;
+}
+.summary-box ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.summary-box li {
+  font-size: 17px;
+  margin-bottom: 9px;
+  color: var(--text-light);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 19px;
+  color: var(--text-color);
+}
+table th, table td {
+  border: 1px solid var(--border-color);
+  padding: 11px;
+  text-align: left;
+}
+table th {
+  background-color: var(--card-bg);
+  color: var(--accent-color);
+  font-weight: bold;
+}
+table tr:nth-child(even) {
+  background-color: var(--hover-bg);
+}
+table tr:hover {
+  background-color: var(--card-bg);
+}
+.no-data {
+  text-align: center;
+  font-size: 17px;
+  color: var(--text-light);
+  margin: 26px 0;
+}
+
+@media (max-width: 700px) {
+  .container { padding: 12px 2px; }
+  .filter-form { flex-direction: column; gap: 7px; }
+  .summary-box, table th, table td { font-size: 15px; }
+}
+</style>
+{% endblock %}

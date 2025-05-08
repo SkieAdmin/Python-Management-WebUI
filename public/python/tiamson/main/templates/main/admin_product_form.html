@@ -1,0 +1,25 @@
+{% extends 'main/admin_base.html' %}
+
+{% block content %}
+  <h1 style="font-size: 1.75rem; font-weight: 600; color: #2d3748; margin-bottom: 1rem;">
+    {{ title }}
+  </h1>
+
+  {% if confirm_delete %}
+    <div style="background: #fff3f3; padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
+      <p>Are you sure you want to delete <strong>{{ object.name }}</strong>?</p>
+      <form method="post" style="margin-top: 1rem;">
+        {% csrf_token %}
+        <button class="btn" style="margin-right: 0.5rem;">Yes, delete</button>
+        <a class="btn secondary" href="{% url 'admin_products' %}">Cancel</a>
+      </form>
+    </div>
+  {% else %}
+    <form method="post" enctype="multipart/form-data" style="background: #fff; padding: 1.5rem; border-radius: 0.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05); max-width: 600px;">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button class="btn" style="margin-right: 0.5rem;">Save</button>
+      <a class="btn secondary" href="{% url 'admin_products' %}">Cancel</a>
+    </form>
+  {% endif %}
+{% endblock %}

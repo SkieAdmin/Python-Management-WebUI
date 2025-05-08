@@ -1,0 +1,534 @@
+{% extends 'base.html' %}
+
+{% block title %}Update Payment Status{% endblock %}
+
+{% block extra_css %}
+<style>
+    .payment-update-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+    
+    .payment-update-card {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .payment-update-header {
+        margin-bottom: 2rem;
+        position: relative;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .payment-update-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin: 0;
+        font-family: 'Playfair Display', serif;
+    }
+    
+    .order-id {
+        font-family: monospace;
+        font-weight: 600;
+        background-color: #f5f5f5;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        color: var(--primary-color);
+    }
+    
+    .order-details {
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .order-detail-row {
+        display: flex;
+        margin-bottom: 0.8rem;
+        align-items: baseline;
+    }
+    
+    .order-detail-row:last-child {
+        margin-bottom: 0;
+    }
+    
+    .order-detail-label {
+        font-weight: 600;
+        color: var(--text-dark);
+        width: 160px;
+        flex-shrink: 0;
+    }
+    
+    .order-detail-value {
+        color: var(--text-dark);
+        flex: 1;
+    }
+    
+    .order-amount {
+        font-weight: 600;
+        color: #2e7d32;
+    }
+    
+    .order-status {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-align: center;
+    }
+    
+    .status-pending {
+        background-color: #fff8e1;
+        color: #f57c00;
+    }
+    
+    .status-accepted {
+        background-color: #e3f2fd;
+        color: #1976d2;
+    }
+    
+    .status-preparing {
+        background-color: #f3e5f5;
+        color: #9c27b0;
+    }
+    
+    .status-ready {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+    }
+    
+    .status-completed {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+    }
+    
+    .status-rejected, .status-cancelled {
+        background-color: #ffebee;
+        color: #d32f2f;
+    }
+    
+    .payment-status {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-align: center;
+    }
+    
+    .payment-unpaid {
+        background-color: #ffebee;
+        color: #d32f2f;
+    }
+    
+    .payment-processing {
+        background-color: #fff8e1;
+        color: #f57c00;
+    }
+    
+    .payment-paid {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+        outline: none;
+    }
+    
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    
+    .btn-update {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-update:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+    }
+    
+    .btn-cancel {
+        background-color: white;
+        color: var(--text-dark);
+        border: 1px solid var(--border);
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+    
+    .btn-cancel:hover {
+        background-color: #f5f5f5;
+        transform: translateY(-2px);
+    }
+    
+    .form-error {
+        color: #d32f2f;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+    }
+    
+    .payment-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+    
+    .payment-option {
+        padding: 0.4rem 0.8rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 1px solid var(--border);
+    }
+    
+    .payment-option:hover {
+        transform: translateY(-2px);
+    }
+    
+    .payment-history {
+        margin-top: 2.5rem;
+        border-top: 1px solid var(--border);
+        padding-top: 1.5rem;
+    }
+    
+    .payment-history-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .payment-history-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1.5rem;
+    }
+    
+    .payment-history-table th {
+        background-color: #f5f5f5;
+        padding: 0.8rem 1rem;
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-dark);
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .payment-history-table td {
+        padding: 0.8rem 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .payment-history-table tr:last-child td {
+        border-bottom: none;
+    }
+    
+    .payment-method {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .payment-method-icon {
+        width: 24px;
+        height: 24px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background-color: #f5f5f5;
+        color: var(--text-dark);
+    }
+    
+    .receipt-container {
+        margin-top: 1.5rem;
+    }
+    
+    .receipt-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .receipt-image {
+        max-width: 100%;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    @media (max-width: 768px) {
+        .payment-update-card {
+            padding: 1.5rem;
+        }
+        
+        .form-actions {
+            flex-direction: column;
+        }
+        
+        .order-detail-row {
+            flex-direction: column;
+        }
+        
+        .order-detail-label {
+            width: 100%;
+            margin-bottom: 0.3rem;
+        }
+        
+        .payment-history-table {
+            display: block;
+            overflow-x: auto;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="payment-update-container">
+    <div class="payment-update-card">
+        <div class="payment-update-header">
+            <h2 class="payment-update-title">Update Order <span class="order-id">#{{ order.id }}</span> Payment Status</h2>
+        </div>
+        
+        <div class="order-details">
+            <div class="order-detail-row">
+                <div class="order-detail-label">Customer:</div>
+                <div class="order-detail-value">{{ order.customer.user.get_full_name|default:order.customer.user.username }}</div>
+            </div>
+            
+            <div class="order-detail-row">
+                <div class="order-detail-label">Order Date:</div>
+                <div class="order-detail-value">{{ order.order_date|date:"M d, Y H:i" }}</div>
+            </div>
+            
+            <div class="order-detail-row">
+                <div class="order-detail-label">Total Amount:</div>
+                <div class="order-detail-value order-amount">${{ order.total_amount }}</div>
+            </div>
+            
+            <div class="order-detail-row">
+                <div class="order-detail-label">Order Status:</div>
+                <div class="order-detail-value">
+                    <span class="order-status status-{{ order.status }}">
+                        {{ order.get_status_display }}
+                    </span>
+                </div>
+            </div>
+            
+            <div class="order-detail-row">
+                <div class="order-detail-label">Current Payment:</div>
+                <div class="order-detail-value">
+                    <span class="payment-status payment-{{ order.payment_status }}">
+                        {{ order.get_payment_status_display }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <form method="post" id="updatePaymentForm">
+            {% csrf_token %}
+            
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="form-error">
+                            {{ field.errors }}
+                        </div>
+                    {% endif %}
+                    
+                    {% if field.name == 'payment_status' %}
+                        <div class="payment-options">
+                            <div class="payment-option payment-unpaid" data-value="unpaid">Unpaid</div>
+                            <div class="payment-option payment-processing" data-value="processing">Processing</div>
+                            <div class="payment-option payment-paid" data-value="paid">Paid</div>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            
+            <div class="form-actions">
+                <button type="submit" class="btn-update">
+                    <i class="fas fa-credit-card"></i> Update Payment Status
+                </button>
+                <a href="{% url 'order_detail' order.id %}" class="btn-cancel">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+        
+        {% if order.payments.all %}
+            <div class="payment-history">
+                <h3 class="payment-history-title">
+                    <i class="fas fa-history"></i> Payment History
+                </h3>
+                <table class="payment-history-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Method</th>
+                            <th>Reference</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in order.payments.all %}
+                            <tr>
+                                <td class="payment-date">{{ payment.transaction_date|date:"M d, Y H:i" }}</td>
+                                <td class="payment-amount order-amount">${{ payment.amount }}</td>
+                                <td>
+                                    <span class="payment-method">
+                                        <span class="payment-method-icon">
+                                            {% if payment.payment_method == 'cash' %}
+                                                <i class="fas fa-money-bill-wave"></i>
+                                            {% elif payment.payment_method == 'credit_card' %}
+                                                <i class="fas fa-credit-card"></i>
+                                            {% elif payment.payment_method == 'bank_transfer' %}
+                                                <i class="fas fa-university"></i>
+                                            {% else %}
+                                                <i class="fas fa-wallet"></i>
+                                            {% endif %}
+                                        </span>
+                                        {{ payment.get_payment_method_display }}
+                                    </span>
+                                </td>
+                                <td>{{ payment.reference_number|default:"-" }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+                {% for payment in order.payments.all %}
+                    {% if payment.receipt_image %}
+                        <div class="receipt-container">
+                            <h4 class="receipt-title">
+                                <i class="fas fa-file-invoice"></i> Receipt
+                            </h4>
+                            <img src="{{ payment.receipt_image.url }}" alt="Receipt" class="receipt-image">
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Quick payment status selection
+        const paymentOptions = document.querySelectorAll('.payment-option');
+        const paymentSelect = document.querySelector('select[name="payment_status"]');
+        
+        if (paymentOptions.length > 0 && paymentSelect) {
+            // Highlight the current payment status
+            const currentStatus = paymentSelect.value;
+            paymentOptions.forEach(option => {
+                if (option.getAttribute('data-value') === currentStatus) {
+                    option.style.borderColor = 'var(--primary-color)';
+                    option.style.borderWidth = '2px';
+                }
+            });
+            
+            // Add click handlers for payment options
+            paymentOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const value = this.getAttribute('data-value');
+                    paymentSelect.value = value;
+                    
+                    // Update visual selection
+                    paymentOptions.forEach(opt => {
+                        opt.style.borderColor = 'var(--border)';
+                        opt.style.borderWidth = '1px';
+                    });
+                    this.style.borderColor = 'var(--primary-color)';
+                    this.style.borderWidth = '2px';
+                });
+            });
+        }
+        
+        // Add focus effects to form controls
+        const formControls = document.querySelectorAll('.form-control');
+        formControls.forEach(control => {
+            control.addEventListener('focus', function() {
+                this.closest('.form-group').style.transform = 'translateX(5px)';
+                this.closest('.form-group').style.transition = 'transform 0.3s ease';
+            });
+            
+            control.addEventListener('blur', function() {
+                this.closest('.form-group').style.transform = 'translateX(0)';
+            });
+        });
+        
+        // Add hover effects to payment history rows
+        const historyRows = document.querySelectorAll('.payment-history-table tbody tr');
+        historyRows.forEach(row => {
+            row.addEventListener('mouseover', function() {
+                this.style.backgroundColor = '#f9f9f9';
+                this.style.transition = 'background-color 0.3s ease';
+            });
+            
+            row.addEventListener('mouseout', function() {
+                this.style.backgroundColor = '';
+            });
+        });
+    });
+</script>
+{% endblock %}

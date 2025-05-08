@@ -1,0 +1,22 @@
+{% extends 'core/register.html' %}
+{% block content %}
+<div class="register-container">
+    <h2>Admin Registration</h2>
+    <div class="messages">
+        {% if messages %}
+            {% for message in messages %}
+                <p class="{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    </div>
+    <form method="post" class="register-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-block">REGISTER AS ADMIN</button>
+    </form>
+    <div class="login-link">
+        <p>Already have an admin account?</p>
+        <a href="{% url 'login' %}" class="btn btn-secondary btn-block">Login Now <i class="fas fa-arrow-right"></i></a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,121 @@
+/* General Reset and Styling */
+body {
+    margin: 0;
+    font-family: 'Courier New', monospace; /* Receipt-like font */
+    background-image: url('/static/images/james.jpg');
+       backdrop-filter: blur(3px);
+    background-size: cover;  /* Adjusts the image to cover the entire background */
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    animation: fadeIn 1s ease-in;
+}
+
+/* Fade In Animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Container */
+.container {
+     background-image: linear-gradient(to left,white , transparent);
+    padding: 30px 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 3.15);
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
+    animation: slideIn 0.8s ease-in-out;
+}
+
+/* Slide In Animation */
+@keyframes slideIn {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Logo */
+.logo-container {
+    margin-bottom: 20px;
+    animation: zoomIn 0.8s ease;
+}
+
+@keyframes zoomIn {
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Description and Price */
+.container p {
+    font-size: 18px;
+    margin: 10px 0;
+    font-weight: bolder;
+}
+
+/* Form Styles */
+form {
+    margin-top: 20px;
+}
+
+label {
+    font-size: 16px;
+    display: block;
+    margin-bottom: 8px;
+}
+
+input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 2px solid black;
+    border-radius: 12px;
+    outline: none;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+}
+
+input[type="number"]:focus {
+    border-color: red;
+}
+
+/* Button */
+button {
+    margin-top: 15px;
+    padding: 12px 25px;
+    font-size: 16px;
+    color: white;
+    background-color: black;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+    background-color: red;
+    transform: scale(1.05);
+}
+/* Back to Menu Link */
+a[href="{% url 'menu' %}"] {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 10px 20px;
+    background-color: black;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 30px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    z-index: 10;
+}
+
+/* Hover effect */
+a[href="{% url 'menu' %}"]:hover {
+    background-color: #e65c00;
+    transform: scale(1.05);
+}

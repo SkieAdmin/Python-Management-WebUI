@@ -1,0 +1,240 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ground Coffee</title>
+  <link rel="stylesheet" href="{% static 'style.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    /* HOME */
+    .home-section {
+      height: 100vh;
+      background: url("{% static 'images/background.jpg' %}") center/cover fixed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #fff;
+    }
+    .home-content h1 {
+      font-size: 4rem;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+    }
+    .home-content p {
+      font-size: 1.5rem;
+      margin-top: .5rem;
+      text-shadow: 1px 1px 5px rgba(0,0,0,0.6);
+    }
+
+    /* ABOUT */
+    .about-section {
+      background: #fff;
+      padding: 80px 20px;
+    }
+    .about-section h2 {
+      text-align: center;
+      font-size: 3rem;
+      color: #6f4e37;
+      margin-bottom: 60px;
+      position: relative;
+    }
+    .about-section h2::after {
+      content: '';
+      display: block;
+      width: 100px;
+      height: 4px;
+      background: #6f4e37;
+      margin: 15px auto 0;
+      border-radius: 2px;
+    }
+
+    .about-item {
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      margin-bottom: 80px;
+      opacity: 0;
+      animation-duration: 1s;
+      animation-fill-mode: forwards;
+    }
+    /* Odd: slide from left */
+    .about-item:nth-child(odd) {
+      animation-name: slideInLeft;
+    }
+    /* Even: slide from right */
+    .about-item:nth-child(even) {
+      animation-name: slideInRight;
+    }
+
+    .about-img {
+      flex: 1 1 50%;
+      height: 300px;
+      overflow: hidden;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .about-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .about-img:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+    }
+
+    .about-text {
+      flex: 1 1 50%;
+    }
+    .about-text h3 {
+      font-size: 2rem;
+      margin-bottom: 15px;
+      color: #6f4e37;
+    }
+    .about-text p {
+      font-size: 1.1rem;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    @keyframes slideInLeft {
+      from { transform: translateX(-50px); opacity: 0; }
+      to   { transform: translateX(0);      opacity: 1; }
+    }
+    @keyframes slideInRight {
+      from { transform: translateX(50px); opacity: 0; }
+      to   { transform: translateX(0);     opacity: 1; }
+    }
+
+    /* SERVICES */
+    .services-section {
+      background: #f9f9f9;
+      padding: 60px 20px;
+      text-align: center;
+    }
+    .services-section h2 {
+      font-size: 2.5rem;
+      color: #6f4e37;
+      margin-bottom: 40px;
+    }
+    .services-cards {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+    }
+    .service-card {
+      background: #fff;
+      border-radius: 8px;
+      width: 200px;
+      padding: 30px 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      transition: transform 0.3s, box-shadow 0.3s;
+      text-align: center;
+    }
+    .service-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    .service-card i {
+      font-size: 2.5rem;
+      color: #6f4e37;
+      margin-bottom: 15px;
+    }
+    .service-card h3 { font-size: 1.2rem; margin-bottom: 10px; }
+    .service-card p  { font-size: .95rem; color: #666; }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .about-item {
+        flex-direction: column !important;
+        gap: 20px;
+      }
+      .about-text {
+        text-align: center;
+      }
+      .about-section { padding: 60px 10px; }
+      .about-section h2 { font-size: 2.5rem; }
+      .services-cards { flex-direction: column; }
+      .service-card { margin: auto; }
+    }
+  </style>
+</head>
+<body>
+
+  {% include 'shop/navbar.html' %}
+
+  <!-- Home -->
+  <section class="home-section">
+    <div class="home-content" style="animation: fadeIn 2s;">
+      <h1>Welcome to Ground Coffee</h1>
+      <p>Your journey to the perfect coffee begins here.</p>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about" class="about-section">
+    <h2>About Ground Coffee</h2>
+
+    <div class="about-item">
+      <div class="about-img">
+        <img src="{% static 'images/first.jpg' %}" alt="Coffee Bean Close-up">
+      </div>
+      <div class="about-text">
+        <h3>Expertly Crafted Espresso</h3>
+        <p>We use precision espresso machines and time-honored techniques to bring out the rich, full-bodied flavors in every shot.</p>
+      </div>
+    </div>
+
+    <div class="about-item">
+      <div class="about-text">
+        <h3>Matcha Moments</h3>
+        <p>Our matcha lattes are crafted with finely ground, ceremonial-grade green tea powder—whisked to perfection and poured with care. Enjoy a smooth, earthy flavor balanced by creamy texture and delicate latte art.</p>
+      </div>
+      <div class="about-img">
+        <img src="{% static 'images/2.jpg' %}" alt="Roasting Process">
+      </div>
+    </div>
+
+    <div class="about-item">
+      <div class="about-img">
+        <img src="{% static 'images/three.jpg' %}" alt="Barista Latte Art">
+      </div>
+      <div class="about-text">
+        <h3>The Art of the Perfect Cup</h3>
+        <p>Crafting the perfect cup is an art, and every pour tells a story. Here, the rich aroma of freshly brewed espresso meets the velvety texture of steamed milk, guided by the steady hand of a barista. It's a moment of precision, where passion and skill blend to create a symphony of flavors. From bean to cup, the journey is a testament to the dedication of those who believe in the simple pleasure of a truly exceptional coffee experience.</p>
+      </div>
+    </div>
+  </section>
+
+  {% include 'shop/footers.html' %}
+
+  <script>
+    // Trigger slide-in when items scroll into view
+    document.addEventListener('DOMContentLoaded', () => {
+      const items = document.querySelectorAll('.about-item');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.style.opacity = 1;
+            observer.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.2 });
+
+      items.forEach(item => observer.observe(item));
+    });
+  </script>
+</body>
+</html>

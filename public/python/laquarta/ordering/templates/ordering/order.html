@@ -1,0 +1,194 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="icon" href="/static/images/logos.png" type="image/png">
+    <title>Order Item</title>
+   <style>
+       /* Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+    line-height: 1.6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 5.1);
+    width: 100%;
+    max-width: 500px;
+    padding: 30px;
+    text-align: center;
+}
+
+/* Logo Styling */
+.logo-container {
+    margin-bottom: 25px;
+}
+
+.logo-container img {
+    max-width: 150px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Item Description and Price */
+p {
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+}
+
+p:first-of-type {
+    color: black;
+    padding: 0 15px;
+}
+
+p:nth-of-type(2) {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: red;
+    text-shadow: 1px 1px 0 green;
+    margin-bottom: 25px;
+}
+
+/* Form Styling */
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: black;
+    font-size: 1.1rem;
+}
+
+input[type="number"] {
+    width: 100%;
+    max-width: 200px;
+    padding: 12px;
+    margin-bottom: 25px;
+    border: 2px solid black;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    text-align: center;
+    transition: border-color 0.3s;
+}
+
+input[type="number"]:focus {
+    outline: none;
+    border-color: #d35400;
+}
+
+/* Remove spinner arrows from number input */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+button {
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    width: 100%;
+    max-width: 200px;
+}
+
+button:hover {
+    background-color: green;
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* Add a back button */
+.back-link {
+    display: inline-block;
+    margin-top: 20px;
+    color: #666;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.back-link:hover {
+    color: #d35400;
+    text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .container {
+        padding: 20px;
+    }
+    
+    p:first-of-type {
+        font-size: 1rem;
+    }
+    
+    p:nth-of-type(2) {
+        font-size: 1.3rem;
+    }
+    
+    input[type="number"], button {
+        max-width: 100%;
+    }
+}
+
+/* Add a subtle animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.container {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+   </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-container">
+    <img src="{% static 'images/logos.png' %}" alt="Login" style="width: 150px;">
+</div>
+        <p>{{ item.description }}</p>
+        <p>₱{{ item.price }}</p>
+
+        <form method="POST">
+            {% csrf_token %}
+            <label for="quantity">Quantity:</label>
+            <input type="number" name="quantity" min="1" required>
+            <button type="submit">Place Order</button>
+        </form>
+    </div>
+</body>
+</html>

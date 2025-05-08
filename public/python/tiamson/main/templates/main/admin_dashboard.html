@@ -1,0 +1,58 @@
+{% extends 'main/admin_base.html' %}
+
+{% block content %}
+  <h1 class="text-2xl font-semibold text-gray-800">Admin Dashboard</h1>
+
+  <div class="dashboard-cards" style="display: flex; gap: 1.5rem; margin-top: 1.5rem;">
+    <!-- Products Card -->
+    <div class="card" style="
+         flex: 1;
+         background: #ffffff;
+         padding: 2rem;
+         border-radius: 0.75rem;
+         box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+         text-align: center;
+       ">
+      <h2 style="font-size: 1.25rem; color: #2d3748; margin-bottom: 0.5rem;">
+        Total Products
+      </h2>
+      <p style="font-size: 3rem; font-weight: 700; color: #1a202c; margin: 0;">
+        {{ products_count }}
+      </p>
+    </div>
+
+    <!-- Orders Card -->
+    <div class="card" style="
+         flex: 1;
+         background: #ffffff;
+         padding: 2rem;
+         border-radius: 0.75rem;
+         box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+         text-align: center;
+       ">
+      <h2 style="font-size: 1.25rem; color: #2d3748; margin-bottom: 0.5rem;">
+        Total Orders
+      </h2>
+      <p style="font-size: 3rem; font-weight: 700; color: #1a202c; margin: 0;">
+        {{ orders_count }}
+      </p>
+    </div>
+
+    <!-- Revenue Card -->
+    <div class="card" style="
+         flex: 1;
+         background: #ffffff;
+         padding: 2rem;
+         border-radius: 0.75rem;
+         box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+         text-align: center;
+       ">
+      <h2 style="font-size: 1.25rem; color: #2d3748; margin-bottom: 0.5rem;">
+        Total Revenue
+      </h2>
+      <p style="font-size: 3rem; font-weight: 700; color: #1a202c; margin: 0;">
+        ₱{{ total_revenue|floatformat:2 }}
+      </p>
+    </div>
+  </div>
+{% endblock %}

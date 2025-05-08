@@ -1,0 +1,295 @@
+{% extends 'core/staff_base.html' %}
+{% load static %}
+
+{% block title %}Product Management{% endblock %}
+{% block page_title %}Product Management{% endblock %}
+
+{% block extra_css %}
+<style>
+    .category-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .category-filter {
+        display: inline-block;
+        padding: 8px 15px;
+        border-radius: 30px;
+        background-color: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--threads-border);
+        color: var(--threads-secondary-text);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: var(--threads-transition);
+    }
+    
+    .category-filter:hover {
+        background-color: var(--threads-hover);
+        color: var(--threads-text);
+    }
+    
+    .category-filter.active {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: var(--threads-text);
+        font-weight: 600;
+    }
+    
+    .product-item {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--threads-border);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 15px;
+        display: flex;
+        gap: 20px;
+        transition: var(--threads-transition);
+    }
+    
+    .product-item:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--threads-box-shadow);
+    }
+    
+    .product-item img {
+        width: 80px;
+        height: 80px;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+    
+    .product-item .details {
+        flex: 1;
+    }
+    
+    .product-item h3 {
+        margin-top: 0;
+        margin-bottom: 10px;
+        font-size: 1.1rem;
+        color: var(--threads-text);
+    }
+    
+    .product-item p {
+        margin: 5px 0;
+        font-size: 0.9rem;
+        color: var(--threads-secondary-text);
+    }
+    
+    .product-item .actions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        justify-content: center;
+    }
+    
+    .product-item .actions a {
+        color: var(--threads-secondary-text);
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: var(--threads-transition);
+    }
+    
+    .product-item .actions a:hover {
+        color: var(--threads-text);
+    }
+    
+    .product-item .actions a i {
+        font-size: 0.9rem;
+    }
+    
+    #addForm {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--threads-border);
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 25px;
+    }
+    
+    #addForm h2 {
+        margin-top: 0;
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--threads-text);
+        margin-bottom: 20px;
+    }
+    
+    form label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--threads-text);
+        font-weight: 500;
+    }
+    
+    form input[type="text"],
+    form input[type="number"],
+    form input[type="file"],
+    form textarea,
+    form select {
+        width: 100%;
+        padding: 12px 15px;
+        background-color: rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--threads-border);
+        border-radius: 8px;
+        color: var(--threads-text);
+        font-family: 'Poppins', sans-serif;
+        margin-bottom: 15px;
+    }
+    
+    form button {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 20px;
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--threads-border);
+        border-radius: 8px;
+        color: var(--threads-text);
+        cursor: pointer;
+        font-weight: 500;
+        transition: var(--threads-transition);
+    }
+    
+    form button:hover {
+        background-color: var(--threads-hover);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div id="addForm">
+        <h2>Add New Product</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="name">Product Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="price">Price</label>
+                    <input type="number" id="price" name="price" step="0.01" min="0" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="3" required></textarea>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category" name="category" required>
+                        <option value="">Select Category</option>
+                        <option value="cement">Cement</option>
+                        <option value="nails">Nails & Fasteners</option>
+                        <option value="lumber">Lumber</option>
+                        <option value="tools">Tools</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="unit">Unit</label>
+                    <input type="text" id="unit" name="unit" placeholder="e.g. kg, piece, etc." required>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="stock_quantity">Stock Quantity</label>
+                    <input type="number" id="stock_quantity" name="stock_quantity" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="reorder_level">Reorder Level</label>
+                    <input type="number" id="reorder_level" name="reorder_level" min="0" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="image">Product Image</label>
+                <input type="file" id="image" name="image">
+            </div>
+            
+            <button type="submit">
+                <i class="fas fa-plus-circle"></i> Add Product
+            </button>
+        </form>
+    </div>
+
+    <div class="category-filters">
+        <a href="{% url 'admin_dashboard' %}" class="category-filter {% if not current_category %}active{% endif %}">All Products</a>
+        <a href="{% url 'admin_dashboard' %}?category=cement" class="category-filter {% if current_category == 'cement' %}active{% endif %}">Cement</a>
+        <a href="{% url 'admin_dashboard' %}?category=nails" class="category-filter {% if current_category == 'nails' %}active{% endif %}">Nails & Fasteners</a>
+        <a href="{% url 'admin_dashboard' %}?category=lumber" class="category-filter {% if current_category == 'lumber' %}active{% endif %}">Lumber</a>
+        <a href="{% url 'admin_dashboard' %}?category=tools" class="category-filter {% if current_category == 'tools' %}active{% endif %}">Tools</a>
+    </div>
+    
+    <!-- Filter and Search Bar -->
+    <div class="filter-container">
+        <form method="get" action="{% url 'admin_dashboard' %}" class="filter-form">
+            <div class="search-group">
+                <input type="text" name="search" placeholder="Search products..." value="{{ search_term }}">
+                <button type="submit"><i class="fas fa-search"></i></button>
+            </div>
+            
+            <div class="filter-group">
+                <select name="category" onchange="this.form.submit()">
+                    <option value="">All Categories</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat }}" {% if current_category == cat %}selected{% endif %}>{{ cat|title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <select name="sort" onchange="this.form.submit()">
+                    <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Newest First</option>
+                    <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name (A-Z)</option>
+                    <option value="price_low" {% if sort_by == 'price_low' %}selected{% endif %}>Price (Low to High)</option>
+                    <option value="price_high" {% if sort_by == 'price_high' %}selected{% endif %}>Price (High to Low)</option>
+                </select>
+            </div>
+            
+            {% if search_term or current_category %}
+                <a href="{% url 'admin_dashboard' %}" class="clear-filters"><i class="fas fa-times"></i> Clear Filters</a>
+            {% endif %}
+        </form>
+    </div>
+
+    {% for product in products %}
+        <div class="product-item">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            {% else %}
+                <img src="{% static 'images/placeholder.jpg' %}" alt="No image">
+            {% endif %}
+            <div class="details">
+                <h3>{{ product.name }}</h3>
+                <p><strong>Price:</strong> ₱{{ product.price }}</p>
+                <p><strong>Description:</strong> {{ product.description|truncatechars:100 }}</p>
+                <p><strong>Category:</strong> {{ product.category }}</p>
+                <p><strong>Unit:</strong> {{ product.unit }}</p>
+                <p><strong>Quantity:</strong> {{ product.stock_quantity }}</p>
+                <p><strong>Reorder Level:</strong> {{ product.reorder_level }}</p>
+                <p><strong>Last Restock:</strong> {{ product.last_restock_date }}</p>
+                {% if product.in_stock %}
+                    <p style="color:var(--threads-success);"><i class="fas fa-check-circle"></i> <strong>In Stock</strong></p>
+                {% else %}
+                    <p style="color:var(--threads-danger);"><i class="fas fa-times-circle"></i> <strong>Out of Stock</strong></p>
+                {% endif %}
+            </div>
+            <div class="actions">
+                <a href="{% url 'product_detail' product.id %}"><i class="fas fa-info-circle"></i> View Details</a>
+                <a href="{% url 'edit_product' product.id %}"><i class="fas fa-edit"></i> Edit</a>
+                <a href="{% url 'delete_product' product.id %}" onclick="return confirm('Delete this product?');"><i class="fas fa-trash-alt"></i> Delete</a>
+            </div>
+        </div>
+    {% empty %}
+        <p>No products available.</p>
+    {% endfor %}
+{% endblock %}

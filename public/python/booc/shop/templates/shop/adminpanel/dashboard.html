@@ -1,0 +1,27 @@
+{% extends 'shop/adminpanel/base.html' %}
+{% block content %}
+  <h1><i class="fas fa-home"></i> Dashboard</h1>
+  <p>Welcome, {{ request.user.username }}!</p>
+  <div class="stats">
+    <div class="card"><h3>{{ products }}</h3><small>Products</small></div>
+    <div class="card"><h3>{{ orders }}</h3><small>Orders</small></div>
+    <div class="card"><h3>{{ payments }}</h3><small>Payments</small></div>
+  </div>
+
+  <h2>Recent Orders</h2>
+  <table>
+    <thead><tr><th>ID</th><th>Customer</th><th>Date</th><th>Status</th></tr></thead>
+    <tbody>
+      {% for o in recent_orders %}
+      <tr>
+        <td>{{ o.id }}</td>
+        <td>{{ o.customer_name }}</td>
+        <td>{{ o.ordered_at }}</td>
+        <td>{{ o.get_status_display }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4">No recent orders.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

@@ -1,0 +1,30 @@
+.status-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+}
+
+.status-badge.active {
+    background-color: #5cb85c;
+    color: white;
+}
+
+.status-badge.inactive {
+    background-color: #d9534f;
+    color: white;
+}
+
+/* Preview image when selecting a file */
+.image-preview {
+    max-width: 200px;
+    max-height: 200px;
+    margin-top: 0.5rem;
+}
+
+/* Style file input */
+input[type="file"] {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 100%;
+}

@@ -1,0 +1,378 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel - Payments</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Google Fonts: Montserrat -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome for icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      /* Coffee-inspired palette */
+      --clr-bg: #f5f5f5;
+      --clr-sidebar-start: #6f4e37;
+      --clr-sidebar-end: #d2b48c;
+      --clr-sidebar-text: #ffffff;
+      --clr-sidebar-hover: rgba(255,255,255,0.15);
+      --clr-accent: #8b4513;
+      --clr-accent-hover: #623218;
+      --clr-card: #ffffff;
+      --clr-text: #3e2723;
+      --clr-btn-bg: #c19a6b;
+      --clr-btn-text: #ffffff;
+      --clr-btn-hover: #a97458;
+      --clr-table-head: #3e2723;
+      --clr-table-head-text: #ffffff;
+      --clr-table-row-hover: #efebe9;
+      --radius: 10px;
+      --transition: 0.3s ease;
+      --shadow-soft: 0 4px 12px rgba(0,0,0,0.08);
+      --sidebar-width: 250px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%; height: 100%; background: var(--clr-bg);
+      font-family: 'Montserrat', sans-serif;
+      color: var(--clr-text);
+      overflow: hidden;
+    }
+
+    body { display: flex; }
+    a { text-decoration: none; color: inherit; font-family: 'Montserrat', sans-serif; }
+    button { font-family: 'Montserrat', sans-serif; cursor: pointer; border: none; }
+
+    /* Sidebar */
+    nav.sidebar {
+      position: fixed; top: 0; left: 0; bottom: 0;
+      width: var(--sidebar-width);
+      background: linear-gradient(135deg, var(--clr-sidebar-start), var(--clr-sidebar-end));
+      color: var(--clr-sidebar-text);
+      display: flex; flex-direction: column; padding: 2rem 1rem;
+      border-top-right-radius: var(--radius);
+      border-bottom-right-radius: var(--radius);
+      box-shadow: var(--shadow-soft);
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    nav.sidebar .brand {
+      display: flex; align-items: center; gap: 0.75rem; margin-bottom: 2rem;
+    }
+
+    nav.sidebar .brand img {
+      width: 40px; height: 40px; border-radius: 50%;
+    }
+
+    nav.sidebar .brand h2 {
+      font-size: 1.25rem; font-weight: 600;
+    }
+
+    nav.sidebar .nav {
+      flex: 1; display: flex; flex-direction: column; gap: 0.75rem;
+    }
+
+    nav.sidebar .nav a {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.75rem 1rem; border-radius: var(--radius);
+      transition: background var(--transition), transform var(--transition);
+      font-weight: 500;
+    }
+
+    nav.sidebar .nav a:hover {
+      background: var(--clr-sidebar-hover); transform: translateX(4px);
+    }
+
+    nav.sidebar .nav a.active {
+      background: var(--clr-accent);
+    }
+
+    nav.sidebar .logout {
+      margin-top: auto; padding: 0.75rem 1rem;
+      border-radius: var(--radius);
+      transition: background var(--transition);
+      font-weight: 500;
+    }
+
+    nav.sidebar .logout:hover {
+      background: rgba(139,69,19,0.2);
+    }
+
+    /* Main Content */
+    main.content {
+      margin-left: var(--sidebar-width);
+      flex: 1; padding: 2rem; height: 100vh; overflow-y: auto;
+    }
+
+    .page-header {
+      margin-bottom: 1.5rem;
+    }
+
+    .page-header h1 {
+      font-size: 1.8rem; margin-bottom: 0.25rem;
+      color: var(--clr-accent); font-weight: 600;
+    }
+
+    .page-header p {
+      font-size: 0.95rem; color: #5d4037;
+    }
+
+    /* Stats Cards */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1.5rem; margin-bottom: 2rem;
+    }
+
+    .card {
+      background: var(--clr-card); padding: 1.5rem;
+      border-radius: var(--radius); box-shadow: var(--shadow-soft);
+      text-align: center; transition: transform var(--transition), box-shadow var(--transition);
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    }
+
+    .card h3 {
+      font-size: 1.8rem; color: var(--clr-accent); margin-bottom: 0.3rem;
+      font-weight: 600;
+    }
+
+    .card small {
+      text-transform: uppercase; color: #777; font-size: 0.75rem;
+    }
+
+    /* Table */
+    table {
+      width: 100%; border-collapse: collapse; margin-top: 1.5rem;
+      background: var(--clr-card); border-radius: var(--radius); overflow: hidden;
+      box-shadow: var(--shadow-soft); font-family: 'Montserrat', sans-serif;
+    }
+
+    thead {
+      background: var(--clr-table-head);
+    }
+
+    thead th {
+      color: var(--clr-table-head-text); padding: 0.85rem 1rem; text-align: left;
+      font-weight: 600; font-size: 0.9rem;
+    }
+
+    tbody tr {
+      transition: background var(--transition);
+    }
+
+    tbody tr:nth-child(even) {
+      background: #fafafa;
+    }
+
+    tbody tr:hover {
+      background: var(--clr-table-row-hover);
+    }
+
+    td, th {
+      padding: 0.75rem 1rem; border-bottom: 1px solid #e0e0e0;
+      font-size: 0.9rem;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-block; padding: 0.6rem 1.2rem;
+      border-radius: var(--radius); font-weight: 500;
+      transition: background var(--transition), transform var(--transition);
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    .btn-primary {
+      background: var(--clr-btn-bg); color: var(--clr-btn-text);
+    }
+
+    .btn-primary:hover {
+      background: var(--clr-btn-hover); transform: translateY(-2px);
+    }
+
+    .btn-add {
+      background: var(--clr-accent); color: var(--clr-btn-text);
+    }
+
+    .btn-add:hover {
+      background: var(--clr-accent-hover); transform: translateY(-2px);
+    }
+
+    .btn-sm {
+      font-size: 0.8rem; padding: 0.4rem 0.8rem;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+      display: none; align-items: center; justify-content: center; z-index: 1000;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    .modal-dialog {
+      background: var(--clr-card); border-radius: var(--radius);
+      width: 90%; max-width: 520px; box-shadow: var(--shadow-soft);
+      overflow: hidden;
+    }
+
+    .modal-header {
+      background: var(--clr-sidebar-start); color: var(--clr-sidebar-text);
+      padding: 1rem; display: flex; justify-content: space-between; align-items: center;
+    }
+
+    .modal-body {
+      padding: 1.25rem;
+    }
+
+    .btn-close {
+      background: none; font-size: 1.2rem; color: var(--clr-sidebar-text);
+      transition: transform var(--transition);
+    }
+
+    .btn-close:hover {
+      transform: rotate(90deg);
+    }
+
+    @media (max-width: 900px) {
+      nav.sidebar {
+        width: 100%; height: auto; position: relative; flex-direction: row;
+        flex-wrap: wrap; padding: 1rem; border-radius: 0;
+      }
+
+      main.content {
+        margin-left: 0; padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="sidebar">
+    <div class="brand">
+      <img src="{% static 'images/logo.jpg' %}" alt="Logo">
+      <h2>Ground Coffee</h2>
+    </div>
+    <div class="nav">
+      <a href="{% url 'shop_admin:dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+        <i class="fas fa-home"></i> Dashboard
+      </a>
+      <a href="{% url 'shop_admin:product_list' %}" class="{% if request.resolver_match.url_name == 'product_list' %}active{% endif %}">
+        <i class="fas fa-box"></i> Products
+      </a>
+      <a href="{% url 'shop_admin:order_list' %}" class="{% if request.resolver_match.url_name == 'order_list' %}active{% endif %}">
+        <i class="fas fa-shopping-cart"></i> Orders
+      </a>
+      <a href="{% url 'shop_admin:payment_list' %}" class="{% if request.resolver_match.url_name == 'payment_list' %}active{% endif %}">
+        <i class="fas fa-credit-card"></i> Payments
+      </a>
+    </div>
+    <button class="logout" onclick="location.href='{% url 'shop_admin:logout' %}'">
+      <i class="fas fa-sign-out-alt"></i> Logout
+    </button>
+  </nav>
+
+  <main class="content">
+    {% block content %}
+      <div class="page-header">
+        <h1>Payments</h1>
+        <p>View and manage payment records quickly.</p>
+      </div>
+
+      <div style="margin-bottom:1.5rem;">
+        <button class="btn btn-add btn-sm" onclick="openModal('{% url 'shop_admin:payment_add' %}', 'Add New Payment')">
+          <i class="fas fa-plus"></i> Add Payment
+        </button>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Order</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for payment in payments %}
+          <tr>
+            <td>{{ payment.id }}</td>
+            <td>#{{ payment.order.id }}</td>
+            <td>${{ payment.amount }}</td>
+            <td>{{ payment.status }}</td>
+            <td>{{ payment.created_at|date:"Y-m-d H:i" }}</td>
+            <td>
+              <button class="btn btn-primary btn-sm" onclick="openModal('{% url 'shop_admin:payment_view' payment.id %}', 'View Payment')">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button class="btn btn-primary btn-sm" onclick="openModal('{% url 'shop_admin:payment_edit' payment.id %}', 'Edit Payment')">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-add btn-sm" onclick="openModal('{% url 'shop_admin:payment_delete' payment.id %}', 'Delete Payment')">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" style="text-align:center; color:#777; padding:2rem;">
+              No payments found.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endblock %}
+  </main>
+
+  <div id="ajaxModalBackdrop" class="modal-backdrop">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h5 id="ajaxModalLabel"></h5>
+        <button class="btn-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="ajaxModalBody"></div>
+    </div>
+  </div>
+
+  <script>
+    function openModal(url, title) {
+      document.getElementById('ajaxModalLabel').innerText = title;
+      document.getElementById('ajaxModalBody').innerHTML =
+        '<div style="text-align:center;padding:2rem;"><i class="fa fa-spinner fa-spin fa-2x"></i></div>';
+      document.getElementById('ajaxModalBackdrop').style.display = 'flex';
+      fetch(url, { headers:{ 'X-Requested-With':'XMLHttpRequest' } })
+        .then(r=>r.json())
+        .then(data=>{ document.getElementById('ajaxModalBody').innerHTML = data.html; });
+    }
+
+    function saveModal(e) {
+      e.preventDefault();
+      let form = e.target, data = new FormData(form);
+      fetch(form.action, { method:'POST', body:data, headers:{ 'X-Requested-With':'XMLHttpRequest' } })
+        .then(r=>r.json())
+        .then(resp=>{
+          if (resp.success) {
+            closeModal(); window.location.reload();
+          } else {
+            document.getElementById('ajaxModalBody').innerHTML = resp.html;
+          }
+        });
+      return false;
+    }
+
+    function closeModal() {
+      document.getElementById('ajaxModalBackdrop').style.display = 'none';
+    }
+  </script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

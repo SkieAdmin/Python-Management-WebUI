@@ -1,0 +1,24 @@
+<nav class="sidebar">
+  <h2><i class="fas fa-cogs"></i> Admin</h2>
+  <div class="nav">
+    <a href="{% url 'shop_admin:dashboard' %}"
+       class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+      <i class="fas fa-home"></i> Dashboard
+    </a>
+    <a href="{% url 'shop_admin:product_list' %}"
+       class="{% if request.resolver_match.url_name == 'product_list' %}active{% endif %}">
+      <i class="fas fa-box-open"></i> Products
+    </a>
+    <a href="{% url 'shop_admin:order_list' %}"
+       class="{% if request.resolver_match.url_name == 'order_list' %}active{% endif %}">
+      <i class="fas fa-shopping-cart"></i> Orders
+    </a>
+    <a href="{% url 'shop_admin:payment_list' %}"
+       class="{% if request.resolver_match.url_name == 'payment_list' %}active{% endif %}">
+      <i class="fas fa-credit-card"></i> Payments
+    </a>
+  </div>
+  <button class="logout" onclick="location.href='{% url 'shop_admin:logout' %}'">
+    <i class="fas fa-sign-out-alt"></i> Logout
+  </button>
+</nav>

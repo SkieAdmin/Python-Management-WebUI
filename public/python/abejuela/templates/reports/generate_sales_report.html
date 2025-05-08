@@ -1,0 +1,459 @@
+{% extends 'base.html' %}
+
+{% block title %}Generate Sales Report{% endblock %}
+
+{% block extra_css %}
+<style>
+    .report-form-container {
+        max-width: 900px;
+        margin: 2.5rem auto;
+    }
+    
+    .report-card {
+        background-color: white;
+        border-radius: 16px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+        padding: 0;
+        overflow: hidden;
+        margin-bottom: 2rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .report-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+    }
+    
+    .report-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, #b71c1c 100%);
+        color: white;
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .report-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 100%;
+        height: 200%;
+        background: rgba(255,255,255,0.1);
+        transform: rotate(45deg);
+        pointer-events: none;
+    }
+    
+    .report-title {
+        font-size: 2rem;
+        margin-bottom: 0.8rem;
+        font-weight: 700;
+        position: relative;
+        display: inline-block;
+    }
+    
+    .report-subtitle {
+        color: rgba(255,255,255,0.9);
+        font-size: 1.1rem;
+        max-width: 80%;
+        line-height: 1.5;
+    }
+    
+    .report-form {
+        padding: 2.5rem;
+    }
+    
+    .form-section {
+        margin-bottom: 2.5rem;
+    }
+    
+    .form-section-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .form-section-title i {
+        color: var(--primary-color);
+    }
+    
+    .form-row {
+        display: flex;
+        gap: 1.8rem;
+        margin-bottom: 1.8rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.8rem;
+        flex: 1;
+        position: relative;
+    }
+    
+    .form-group:last-child {
+        margin-bottom: 0;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.7rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        font-size: 0.95rem;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 1rem 1.2rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background-color: #f9f9f9;
+    }
+    
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 4px rgba(211, 47, 47, 0.1);
+        outline: none;
+        background-color: white;
+    }
+    
+    .form-control::placeholder {
+        color: #bdbdbd;
+    }
+    
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 2.5rem;
+        padding-top: 2rem;
+        border-top: 1px solid #eee;
+    }
+    
+    .form-actions-left {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+    
+    .form-actions-right {
+        display: flex;
+        gap: 1rem;
+    }
+    
+    .btn-generate {
+        background: linear-gradient(135deg, var(--primary-color) 0%, #b71c1c 100%);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        box-shadow: 0 4px 15px rgba(211, 47, 47, 0.3);
+    }
+    
+    .btn-generate:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(211, 47, 47, 0.4);
+    }
+    
+    .btn-generate:active {
+        transform: translateY(0);
+    }
+    
+    .btn-cancel {
+        background-color: transparent;
+        color: var(--text-dark);
+        border: 2px solid #e0e0e0;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-cancel:hover {
+        background-color: #f5f5f5;
+        border-color: #d0d0d0;
+    }
+    
+    .date-picker {
+        position: relative;
+    }
+    
+    .date-picker input[type="date"] {
+        padding-right: 3rem;
+    }
+    
+    .date-picker::after {
+        content: '';
+        position: absolute;
+        right: 1.2rem;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        width: 20px;
+        height: 20px;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23d32f2f"><path d="M19,4H17V3a1,1,0,0,0-2,0V4H9V3A1,1,0,0,0,7,3V4H5A3,3,0,0,0,2,7V19a3,3,0,0,0,3,3H19a3,3,0,0,0,3-3V7A3,3,0,0,0,19,4Zm1,15a1,1,0,0,1-1,1H5a1,1,0,0,1-1-1V10H20ZM20,8H4V7A1,1,0,0,1,5,6H7V7A1,1,0,0,0,9,7V6h6V7a1,1,0,0,0,2,0V6h2a1,1,0,0,1,1,1Z"/></svg>');
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+    
+    .form-hint {
+        display: block;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-top: 0.5rem;
+    }
+    
+    .form-required {
+        color: var(--primary-color);
+        margin-left: 0.2rem;
+    }
+    
+    .form-field-icon {
+        position: absolute;
+        left: 1.2rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--primary-color);
+    }
+    
+    .form-field-with-icon input {
+        padding-left: 3rem;
+    }
+    
+    .form-feedback {
+        margin-top: 0.5rem;
+        display: none;
+        color: #d32f2f;
+        font-size: 0.85rem;
+    }
+    
+    .form-feedback.visible {
+        display: block;
+    }
+    
+    .form-progress {
+        height: 6px;
+        background-color: #f5f5f5;
+        border-radius: 3px;
+        margin-bottom: 2rem;
+        overflow: hidden;
+    }
+    
+    .form-progress-bar {
+        height: 100%;
+        width: 0;
+        background: linear-gradient(90deg, var(--primary-color) 0%, #b71c1c 100%);
+        transition: width 0.5s ease;
+    }
+    
+    @media (max-width: 768px) {
+        .report-header {
+            padding: 1.5rem;
+        }
+        
+        .report-title {
+            font-size: 1.6rem;
+        }
+        
+        .report-form {
+            padding: 1.5rem;
+        }
+        
+        .form-row {
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .btn-generate, .btn-cancel {
+            padding: 0.8rem 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container report-form-container">
+    <div class="report-card">
+        <div class="report-header">
+            <h2 class="report-title">Generate Sales Report</h2>
+            <p class="report-subtitle">Create a comprehensive sales report to analyze your business performance over a specific time period. Track revenue, popular items, and sales trends.</p>
+        </div>
+        
+        <form method="post" class="report-form">
+            {% csrf_token %}
+            
+            <div class="form-progress">
+                <div class="form-progress-bar" id="formProgress"></div>
+            </div>
+            
+            <div class="form-section">
+                <h3 class="form-section-title"><i class="fas fa-file-alt"></i> Report Information</h3>
+                
+                <div class="form-group">
+                    <label for="title">Report Title <span class="form-required">*</span></label>
+                    <input type="text" name="title" id="title" class="form-control" placeholder="e.g. Monthly Sales Report - May 2025" required>
+                    <span class="form-hint">Choose a descriptive title that identifies the report purpose and time period</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea name="description" id="description" class="form-control" rows="3" placeholder="Add any notes or context for this report"></textarea>
+                    <span class="form-hint">Optional: Include any specific goals or notes about this report</span>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3 class="form-section-title"><i class="fas fa-calendar-alt"></i> Date Range</h3>
+                
+                <div class="form-row">
+                    <div class="form-group date-picker">
+                        <label for="start_date">Start Date <span class="form-required">*</span></label>
+                        <input type="date" name="start_date" id="start_date" class="form-control" required>
+                        <div class="form-feedback" id="startDateFeedback">Please select a valid start date</div>
+                    </div>
+                    
+                    <div class="form-group date-picker">
+                        <label for="end_date">End Date <span class="form-required">*</span></label>
+                        <input type="date" name="end_date" id="end_date" class="form-control" required>
+                        <div class="form-feedback" id="endDateFeedback">End date must be after start date</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <div class="form-actions-left">
+                    <i class="fas fa-lock"></i> Your report data is secure and private
+                </div>
+                <div class="form-actions-right">
+                    <a href="{% url 'report_list' %}" class="btn-cancel">Cancel</a>
+                    <button type="submit" class="btn-generate" id="generateBtn">
+                        <i class="fas fa-chart-line"></i> Generate Report
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Form elements
+        const form = document.querySelector('.report-form');
+        const titleInput = document.getElementById('title');
+        const descriptionInput = document.getElementById('description');
+        const startDateInput = document.getElementById('start_date');
+        const endDateInput = document.getElementById('end_date');
+        const generateBtn = document.getElementById('generateBtn');
+        const progressBar = document.getElementById('formProgress');
+        const startDateFeedback = document.getElementById('startDateFeedback');
+        const endDateFeedback = document.getElementById('endDateFeedback');
+        
+        // Set default dates (current month)
+        const today = new Date();
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+        const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        
+        startDateInput.valueAsDate = firstDay;
+        endDateInput.valueAsDate = lastDay;
+        
+        // Set default title based on month
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const defaultTitle = `Sales Report - ${monthNames[today.getMonth()]} ${today.getFullYear()}`;
+        titleInput.value = defaultTitle;
+        
+        // Update progress bar
+        function updateProgress() {
+            let progress = 0;
+            
+            if (titleInput.value.trim()) progress += 30;
+            if (descriptionInput.value.trim()) progress += 10;
+            if (startDateInput.value) progress += 25;
+            if (endDateInput.value) progress += 25;
+            if (validateDates(false)) progress += 10;
+            
+            progressBar.style.width = `${progress}%`;
+            
+            if (progress === 100) {
+                generateBtn.classList.add('ready');
+            } else {
+                generateBtn.classList.remove('ready');
+            }
+        }
+        
+        // Validate that end date is after start date
+        function validateDates(showFeedback = true) {
+            const startDate = new Date(startDateInput.value);
+            const endDate = new Date(endDateInput.value);
+            
+            // Reset feedback
+            startDateFeedback.classList.remove('visible');
+            endDateFeedback.classList.remove('visible');
+            
+            // Check if dates are valid
+            if (isNaN(startDate.getTime())) {
+                if (showFeedback) startDateFeedback.classList.add('visible');
+                return false;
+            }
+            
+            if (isNaN(endDate.getTime())) {
+                if (showFeedback) endDateFeedback.classList.add('visible');
+                return false;
+            }
+            
+            // Check if end date is after start date
+            if (endDate < startDate) {
+                if (showFeedback) endDateFeedback.classList.add('visible');
+                endDateInput.setCustomValidity('End date must be after start date');
+                return false;
+            } else {
+                endDateInput.setCustomValidity('');
+                return true;
+            }
+        }
+        
+        // Event listeners
+        titleInput.addEventListener('input', updateProgress);
+        descriptionInput.addEventListener('input', updateProgress);
+        startDateInput.addEventListener('change', function() {
+            validateDates();
+            updateProgress();
+        });
+        endDateInput.addEventListener('change', function() {
+            validateDates();
+            updateProgress();
+        });
+        
+        // Form submission
+        form.addEventListener('submit', function(e) {
+            if (!validateDates()) {
+                e.preventDefault();
+            } else {
+                // Show loading state
+                generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+                generateBtn.disabled = true;
+            }
+        });
+        
+        // Initialize progress
+        updateProgress();
+        
+        // Add animation to the form
+        setTimeout(() => {
+            document.querySelector('.report-card').classList.add('animated');
+        }, 100);
+    });
+</script>
+{% endblock %}

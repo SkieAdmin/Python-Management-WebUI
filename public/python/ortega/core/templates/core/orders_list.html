@@ -1,0 +1,155 @@
+{% extends 'core/staff_base.html' %}
+{% load static %}
+
+{% block title %}All Orders{% endblock %}
+{% block page_title %}All Orders{% endblock %}
+
+{% block extra_css %}
+    .orders-table {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--threads-border);
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
+    
+    .orders-table th {
+        background-color: rgba(255, 255, 255, 0.05);
+        color: var(--threads-text);
+        font-weight: 600;
+        text-align: left;
+        padding: 15px;
+        font-size: 0.9rem;
+    }
+    
+    .orders-table td {
+        padding: 15px;
+        border-top: 1px solid var(--threads-border);
+        color: var(--threads-secondary-text);
+        font-size: 0.9rem;
+    }
+    
+    .orders-table tr:hover td {
+        background-color: rgba(255, 255, 255, 0.02);
+    }
+    
+    .view-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--threads-border);
+        border-radius: 20px;
+        color: var(--threads-secondary-text);
+        text-decoration: none;
+        font-size: 0.8rem;
+        font-weight: 500;
+        transition: var(--threads-transition);
+    }
+    
+    .view-btn:hover {
+        background-color: var(--threads-hover);
+        color: var(--threads-text);
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    
+    .status-pending {
+        background-color: rgba(241, 196, 15, 0.2);
+        color: #f1c40f;
+    }
+    
+    .status-completed {
+        background-color: rgba(46, 204, 113, 0.2);
+        color: var(--threads-success);
+    }
+    
+    .status-cancelled {
+        background-color: rgba(231, 76, 60, 0.2);
+        color: var(--threads-danger);
+    }
+    
+    .filter-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .filter-tab {
+        display: inline-block;
+        padding: 8px 15px;
+        border-radius: 30px;
+        background-color: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--threads-border);
+        color: var(--threads-secondary-text);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: var(--threads-transition);
+    }
+    
+    .filter-tab:hover {
+        background-color: var(--threads-hover);
+        color: var(--threads-text);
+    }
+    
+    .filter-tab.active {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: var(--threads-text);
+        font-weight: 600;
+    }
+{% endblock %}
+
+{% block content %}
+    <div class="filter-tabs">
+        <a href="{% url 'all_orders' %}" class="filter-tab active">All Orders</a>
+        <a href="{% url 'pending_orders' %}" class="filter-tab">Pending Orders</a>
+        <a href="{% url 'completed_orders' %}" class="filter-tab">Completed Orders</a>
+    </div>
+
+    <table class="orders-table">
+        <thead>
+            <tr>
+                <th>Order #</th>
+                <th>Customer</th>
+                <th>Status</th>
+                <th>Total Amount</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ order.id }}</td>
+                <td>{{ order.customer.username }}</td>
+                <td>
+                    {% if order.status == 'Pending' %}
+                        <span class="status-badge status-pending">{{ order.status }}</span>
+                    {% elif order.status == 'Completed' %}
+                        <span class="status-badge status-completed">{{ order.status }}</span>
+                    {% elif order.status == 'Cancelled' %}
+                        <span class="status-badge status-cancelled">{{ order.status }}</span>
+                    {% else %}
+                        {{ order.status }}
+                    {% endif %}
+                </td>
+                <td>₱{{ order.total_amount }}</td>
+                <td>{{ order.order_date|date:'Y-m-d H:i' }}</td>
+                <td><a href="{% url 'order_detail' order.id %}" class="view-btn"><i class="fas fa-eye"></i> View</a></td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" style="text-align:center; padding: 30px;">No orders found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

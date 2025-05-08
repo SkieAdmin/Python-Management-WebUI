@@ -1,0 +1,53 @@
+{% extends 'shop/adminpanel/base.html' %}
+{% block content %}
+  <!-- Header with background and button styling -->
+  <div style="display: flex; justify-content: space-between; align-items: center; background-color: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+    <h1 style="margin: 0; color: #343a40;">
+      <i class="fas fa-credit-card text-success"></i> Payments
+    </h1>
+    <button class="btn btn-success btn-sm"
+            onclick="openModal('{% url 'shop_admin:payment_add_modal' %}', 'Add Payment')">
+      <i class="fas fa-plus-circle"></i> Add Payment
+    </button>
+  </div>
+
+  <!-- Payments Table -->
+  <table class="table table-striped table-bordered">
+    <thead class="table-dark">
+      <tr>
+        <th>ID</th>
+        <th>Order</th>
+        <th>Name</th>
+        <th>Date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in payments %}
+      <tr>
+        <td>{{ p.id }}</td>
+        <td>{{ p.order.id }}</td>
+        <td>{{ p.full_name }}</td>
+        <td>{{ p.created_at }}</td>
+        <td>
+          <button class="btn btn-primary btn-sm"
+                  onclick="openModal('{% url 'shop_admin:payment_edit_modal' p.pk %}', 'Edit Payment #{{ p.id }}')">
+            <i class="fas fa-edit"></i>
+          </button>
+          <a href="{% url 'shop_admin:payment_delete' p.pk %}"
+             class="btn btn-danger btn-sm"
+             onclick="return confirm('Delete payment #{{ p.id }}?');">
+            <i class="fas fa-trash"></i>
+          </a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="5" class="text-center text-muted py-3">
+          No payments found.
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

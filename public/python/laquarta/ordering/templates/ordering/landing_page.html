@@ -1,0 +1,593 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+     <link rel="icon" href="/static/images/logos.png" type="image/png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <title>Jaimes Lechon Bayug | Order to Pick-Up</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Great+Vibes&family=Pacifico&display=swap" rel="stylesheet">
+    
+    <!-- Your other head content -->
+</head>
+    <style>
+        /* Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #121212;
+    color: white;
+    overflow-x: hidden;
+}
+
+.main-container {
+    min-height: 100vh;
+    background-image: url('../images/dark-texture.jpg');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+/* Header and Navigation */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 50px;
+    background-color: white;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    width: 60px;
+    height: 60px;
+    margin-right: 10px;
+}
+
+.logo-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.logo-title {
+    
+    font-weight: bold;
+    font-size: 18px;
+    color: black;
+}
+
+.logo-subtitle {
+    font-size: 12px;
+    color: red;
+}
+
+.nav-menu {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+}
+
+.nav-menu a {
+    text-decoration: none;
+    color: black;
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 1px;
+    transition: color 0.3s ease;
+    position: relative;
+}
+
+.nav-menu a:hover, .nav-menu a.active {
+    color: red;
+}
+
+.nav-menu a.active:after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #FFD700;
+}
+
+.mobile-menu-toggle {
+    display: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Hero Section */
+.hero {
+    display: flex;
+    padding: 50px;
+    height: calc(100vh - 90px);
+    align-items: center;
+}
+
+.hero-content {
+    flex: 1;
+    max-width: 600px;
+}
+
+.hero-content h1 {
+    font-size: 64px;
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    font-style: italic;
+    text-shadow: 2px 2px 0 red;
+    font-family: 'Pacifico', cursive;
+}
+
+.hero-content p {
+    font-size: 26px;
+    line-height: 1.6;
+    color: #ccc;
+    margin-bottom: 40px;
+    max-width: 500px;
+}
+
+.cta-button {
+    display: inline-block;
+    background-color: #FFD700;
+    color: #121212;
+    padding: 15px 30px;
+    font-weight: bold;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+.cta-button:hover {
+    background-color: #FFC107;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Hero Images */
+.hero-images {
+    flex: 1;
+    position: relative;
+    height: 100%;
+}
+
+.food-image {
+    position: absolute;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 6.4);
+}
+
+.food-image-1 {
+    width: 400px;
+    height: 400px;
+    top: 25%;
+    right: 10%;
+    background-image: url('/static/images/lec22.png');
+    z-index: 3;
+}
+
+.food-image-2 {
+    width: 400px;
+    height: 400px;
+    top: 1%;
+    right: 40%;
+background-image: url('/static/images/paksiw.jpg');
+    z-index: 2;
+}
+
+.food-image-3 {
+    width: 450px;
+    height: 450px;
+    top: 50%;
+    right: 35%;
+    background-image: url('/static/images/uu.jpg');
+    z-index: 1;
+}
+
+/* Decorative Elements */
+.herb, .tomato {
+    position: absolute;
+    background-size: contain;
+    background-repeat: no-repeat;
+    z-index: 4;
+}
+
+.herb-1 {
+    width: 80px;
+    height: 80px;
+    top: 19%;
+    right: 5%;
+    background-image: url('../images/basil.png');
+    transform: rotate(20deg);
+}
+
+.herb-2 {
+    width: 60px;
+    height: 60px;
+    top: 60%;
+    right: 25%;
+    background-image: url('../images/basil.png');
+    transform: rotate(-15deg);
+}
+
+.herb-3 {
+    width: 50px;
+    height: 50px;
+    top: 30%;
+    right: 45%;
+    background-image: url('../images/basil.png');
+    transform: rotate(45deg);
+}
+
+.tomato-1 {
+    width: 40px;
+    height: 40px;
+    top: 25%;
+    right: 20%;
+    background-image: url('../images/cherry-tomato.png');
+}
+
+.tomato-2 {
+    width: 30px;
+    height: 30px;
+    top: 50%;
+    right: 15%;
+    background-image: url('../images/cherry-tomato.png');
+}
+
+/* Admin Login */
+.admin-login {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+    z-index: 100;
+}
+
+.admin-login:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+.admin-login img {
+    width: 24px;
+    height: 24px;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 992px) {
+    header {
+        padding: 20px;
+    }
+    
+    .nav-menu {
+        display: none;
+        position: absolute;
+        top: 90px;
+        left: 0;
+        width: 100%;
+        background-color: rgba(18, 18, 18, 0.95);
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 0;
+        gap: 20px;
+        z-index: 100;
+    }
+    
+    .nav-menu.active {
+        display: flex;
+    }
+    
+    .mobile-menu-toggle {
+        display: block;
+    }
+    
+    .hero {
+        flex-direction: column;
+        padding: 30px 20px;
+        height: auto;
+        gap: 50px;
+    }
+    
+    .hero-content {
+        text-align: center;
+    }
+    
+    .hero-content h1 {
+        font-size: 50px;
+    }
+    
+    .hero-content p {
+        margin: 0 auto 30px;
+    }
+    
+    .hero-images {
+        height: 500px;
+        width: 100%;
+    }
+    
+    .food-image-1 {
+        width: 250px;
+        height: 250px;
+        top: 10%;
+        right: 50%;
+        transform: translateX(50%);
+    }
+    
+    .food-image-2 {
+        width: 200px;
+        height: 200px;
+        top: 5%;
+        right: 20%;
+    }
+    
+    .food-image-3 {
+        width: 180px;
+        height: 180px;
+        top: 30%;
+        right: 65%;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-content h1 {
+        font-size: 39px;
+    }
+    
+    .food-image-1 {
+        width: 200px;
+        height: 200px;
+    }
+    
+    .food-image-2, .food-image-3 {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .herb, .tomato {
+        transform: scale(0.7);
+    }
+}
+/* Background Video Styles */
+.video-background {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+    z-index: -1;
+}
+
+#myVideo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    transform: translate(-50%, -50%);
+}
+
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Dark overlay for better text readability */
+}
+
+/* Update container background for better contrast with video */
+.container {
+    background-color: rgba(245, 245, 245, 0.85);
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+/* Update header styles for better visibility */
+.header-container {
+    background-color: white;
+    border-radius: 8px 8px 0 0;
+    padding: 15px;
+}
+
+/* Enhance menu items for better contrast against video background */
+.menu-list li {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+}
+
+.menu-list li:hover {
+    background-color: #fff;
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Style adjustments for buttons */
+.logout-btn, .view-order-btn, .view-profile-btn {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+/* Filipino-Themed Button (Lechon Colors) */
+a[href*="register"] {
+    display: inline-block;
+    padding: 12px 28px;
+    background-color: #D13212; /* Lechon reddish-brown color */
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(209, 50, 18, 0.3);
+    transition: all 0.3s ease;
+    border: 2px solid #D13212;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+a[href*="register"]::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -60%;
+    width: 200%;
+    height: 200%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: rotate(30deg);
+    transition: all 0.4s ease;
+}
+
+a[href*="register"]:hover {
+    background-color: #B52500;
+    border-color: #B52500;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(209, 50, 18, 0.4);
+}
+
+a[href*="register"]:hover::after {
+    left: 100%;
+}
+
+a[href*="register"]:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(209, 50, 18, 0.3);
+}
+
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <!-- Header and Navigation -->
+        <header>
+            <div class="logo">
+                <img src="{% static 'images/logos.png' %}" alt="Jaimes Lechon Bayug Logo">
+                <div class="logo-text">
+                    <span class="logo-title">JAIMES LECHON BAYUG</span>
+                    <span class="logo-subtitle">Order to Pick Up</span>
+                </div>
+            </div>
+            <!-- Background Video -->
+<div class="video-background">
+    <video autoplay muted loop id="myVideo">
+        <source src="{% static 'images/vid5.mp4' %}" type="video/mp4">
+    </video>
+    <div class="video-overlay"></div>
+</div>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="{% url 'login' %}">LOG IN</a></li>
+                    <li><a href="{% url 'landing_page' %}">HOME</a></li>
+                    <li><a href="{% url 'about_us' %}">ABOUT US</a></li>
+                    <li><a href="{% url 'contact_us' %}">CONTACTS</a></li>
+                </ul>
+            </nav>
+            
+            <div class="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </header>
+        
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1>BEST  TASTING<br>LECHON</h1>
+                <p>Tired of lining up when ordering one of the best lechon in Iligan City? There is a way to make your order easy Just follow the steps: ORDER ONLINE | PAY ONLINE | PICK UP. Also We Accept Reservation for Whole Lechon.</p>
+                <a href="{% url 'register' %}">Register Now!</a>
+            </div>
+            
+            <div class="hero-images">
+                <div class="food-image food-image-1"></div>
+                <div class="food-image food-image-2"></div>
+                <div class="food-image food-image-3"></div>
+                
+               
+            </div>
+        </section>
+    </div>
+    
+    <!-- Admin Login -->
+    <a href="{% url 'custom_admin_login' %}" class="admin-login">
+        <img src="{% static 'images/ad.png' %}" alt="Admin Login">
+    </a>
+    
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+    // Mobile Menu Toggle
+    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+    const navMenu = document.querySelector('.nav-menu');
+    
+    mobileMenuToggle.addEventListener('click', function() {
+        navMenu.classList.toggle('active');
+    });
+    
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('.mobile-menu-toggle') && !event.target.closest('.nav-menu')) {
+            navMenu.classList.remove('active');
+        }
+    });
+    
+    // Parallax effect for food images
+    window.addEventListener('mousemove', function(e) {
+        const x = e.clientX / window.innerWidth;
+        const y = e.clientY / window.innerHeight;
+        
+        const foodImages = document.querySelectorAll('.food-image');
+        const herbs = document.querySelectorAll('.herb');
+        const tomatoes = document.querySelectorAll('.tomato');
+        
+        foodImages.forEach(image => {
+            const speed = 20;
+            const xPos = (0.5 - x) * speed;
+            const yPos = (0.5 - y) * speed;
+            image.style.transform = `translate(${xPos}px, ${yPos}px)`;
+        });
+        
+        herbs.forEach(herb => {
+            const speed = 30;
+            const xPos = (0.5 - x) * speed;
+            const yPos = (0.5 - y) * speed;
+            herb.style.transform = `translate(${xPos}px, ${yPos}px) rotate(${herb.dataset.rotation || '0deg'})`;
+        });
+        
+        tomatoes.forEach(tomato => {
+            const speed = 25;
+            const xPos = (0.5 - x) * speed;
+            const yPos = (0.5 - y) * speed;
+            tomato.style.transform = `translate(${xPos}px, ${yPos}px)`;
+        });
+    });
+});
+    </script>
+</body>
+</html>

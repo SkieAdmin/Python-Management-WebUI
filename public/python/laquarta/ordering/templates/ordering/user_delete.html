@@ -1,0 +1,564 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <link rel="icon" href="/static/images/logos.png" type="image/png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete User - Admin Dashboard</title>
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        /* Body and Layout */
+        body {
+            background-color: #0f1218;
+            color: #e4e6eb;
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Wrapper */
+        .wrapper {
+            display: flex;
+            width: 100%;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, white 0%, white 100%);
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.3);
+            color: #e4e6eb;
+            padding: 25px 20px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: relative;
+            z-index: 10;
+            transition: all 0.3s ease;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("{% static 'images/logos.png' %}");
+            opacity: 0.10;
+            pointer-events: none;
+        }
+        
+        .sidebar-header {
+            margin-bottom: 40px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .sidebar-header::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), red);
+        }
+        
+        /* Sidebar Logo */
+        .sidebar-logo {
+            width: 70px;
+            height: 70px;
+            object-fit: contain;
+            margin-bottom: 10px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
+            transition: transform 0.3s ease;
+        }
+        
+        .sidebar-logo:hover {
+            transform: scale(1.05);
+        }
+        
+        .sidebar-header h2 {
+            font-size: 22px;
+            color: black;
+            margin-top: 10px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 0 green;
+        }
+        
+        /* Sidebar Links */
+        .sidebar-links {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 10px;
+        }
+        
+        .sidebar-links li {
+            margin-bottom: 5px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-links li::before {
+            content: '';
+            position: absolute;
+            left: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 8px;
+            background: #3a7bd5;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .sidebar-links li:hover::before {
+            width: 12px;
+        }
+        
+        .sidebar-links a {
+            text-shadow: 1px 1px 0 black;
+            text-decoration: none;
+            color: black;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            padding: 12px 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            font-weight: bold;
+            overflow: hidden;
+        }
+        
+        .sidebar-links a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #3a7bd5, #3a6073);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+            border-radius: 8px;
+        }
+        
+        .sidebar-links a:hover {
+            color: red;
+            transform: translateX(5px);
+        }
+        
+        .sidebar-links a:hover::before {
+            opacity: 0.1;
+        }
+        
+        .sidebar-links a i {
+            margin-right: 10px;
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+        
+        /* Logout Button in Sidebar */
+        .logout-container {
+            margin-top: auto;
+            padding-top: 20px;
+            position: relative;
+        }
+        
+        .logout-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        }
+        
+        .logout-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 25px;
+            background: linear-gradient(90deg, black, black);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 16px;
+            width: 100%;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(255, 75, 43, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .logout-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.7s ease;
+        }
+        
+        .logout-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 75, 43, 0.4);
+        }
+        
+        .logout-button:hover::before {
+            left: 100%;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            background-color: #0f1218;
+            position: relative;
+            overflow-y: auto;
+            height: 100vh;
+        }
+        
+        .main-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(58, 123, 213, 0.1), transparent 70%);
+            border-radius: 50%;
+            filter: blur(50px);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        h2 {
+            color: #e4e6eb;
+            margin-bottom: 25px;
+            font-size: 28px;
+            font-weight: 600;
+            position: relative;
+            display: inline-block;
+        }
+        
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: linear-gradient(90deg, #3a7bd5, #3a6073);
+            border-radius: 3px;
+        }
+        
+        /* Delete User Container */
+        .delete-container {
+            background: linear-gradient(135deg, rgba(26, 31, 44, 0.8), rgba(19, 23, 34, 0.8));
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            margin: 20px auto;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+        
+        .delete-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("{% static 'images/card-pattern.png' %}");
+            opacity: 0.03;
+            pointer-events: none;
+        }
+        
+        .alert-danger {
+            background: rgba(255, 59, 48, 0.1);
+            border-left: 4px solid #ff3b30;
+            color: #ff3b30;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .user-info {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+        
+        .user-info p {
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
+        }
+        
+        .user-info p:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        
+        .user-info strong {
+            color: #3a7bd5;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 10px;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(90deg, #ff3b30, #ff453a);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 59, 48, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(90deg, #3a7bd5, #3a6073);
+            color: white;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(58, 123, 213, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+        }
+        
+        .btn-danger:hover {
+            box-shadow: 0 6px 20px rgba(255, 59, 48, 0.4);
+        }
+        
+        .btn-secondary:hover {
+            box-shadow: 0 6px 20px rgba(58, 123, 213, 0.4);
+        }
+        
+        .content-header {
+            color: #e4e6eb;
+            margin-bottom: 25px;
+            font-size: 28px;
+            font-weight: 600;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .content-header::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: linear-gradient(90deg, #ff3b30, #ff453a);
+            border-radius: 3px;
+        }
+        
+        /* Icons for sidebar links */
+        .emoji {
+            font-size: 20px;
+            margin-right: 10px;
+        }
+        
+        /* Animation for sidebar links */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .sidebar-links li {
+            animation: fadeIn 0.5s ease forwards;
+            opacity: 0;
+        }
+        
+        .sidebar-links li:nth-child(1) { animation-delay: 0.1s; }
+        .sidebar-links li:nth-child(2) { animation-delay: 0.2s; }
+        .sidebar-links li:nth-child(3) { animation-delay: 0.3s; }
+        .sidebar-links li:nth-child(4) { animation-delay: 0.4s; }
+        .sidebar-links li:nth-child(5) { animation-delay: 0.5s; }
+        
+        /* Action buttons container */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 240px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .wrapper {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 15px;
+            }
+            
+            .sidebar-links {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+            }
+            
+            .sidebar-links li {
+                margin-bottom: 0;
+            }
+            
+            .sidebar-links a {
+                padding: 10px;
+                font-size: 14px;
+            }
+            
+            .logout-container {
+                margin-top: 20px;
+            }
+            
+            .main-content {
+                height: auto;
+                padding: 20px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .btn {
+                margin: 5px 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <img src="{% static 'images/logos.png' %}" alt="Admin Dashboard Logo" class="sidebar-logo">
+                <h2>Admin Dashboard</h2>
+            </div>
+            <ul class="sidebar-links">
+                <li><a href="{% url 'menu_list' %}"><span class="emoji">📋</span> Manage Menu Items</a></li>
+                <li><a href="{% url 'manage_orders' %}"><span class="emoji">🛒</span> Manage Orders</a></li>
+                              <li><a href="/custom-admin/reservation/manage/"><span class="emoji">📦</span> Manage Reservations</a></li>
+                <li><a href="{% url 'order_list' %}"><span class="emoji">📑</span> List of Orders</a></li>
+                <li><a href="{% url 'user_list' %}"><span class="emoji">👨🏻‍💻</span> Manage Users</a></li>
+                <li><a href="{% url 'reservation_list' %}"><span class="emoji">🗓️</span> Reservation List</a></li>
+                <li><a href="{% url 'all_remarks_gallery' %}"><span class="emoji">💵</span> Payment Proof</a></li>
+            </ul>
+            <div class="logout-container">
+                <a href="{% url 'logout' %}" class="logout-button"><span class="emoji">🚪</span> Logout</a>
+            </div>
+        </nav>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <h2 class="content-header">Delete User</h2>
+            
+            <!-- Delete Confirmation -->
+            <div class="delete-container">
+                <div class="alert-danger">
+                    <p><strong>Warning:</strong> You are about to delete this user. This action cannot be undone.</p>
+                </div>
+                
+                <div class="user-info">
+                    <p>
+                        <strong>Username:</strong>
+                        <span>{{ user.username }}</span>
+                    </p>
+                    <p>
+                        <strong>Email:</strong>
+                        <span>
+                            {% if user.profile.email_address %}
+                                {{ user.profile.email_address }}
+                            {% else %}
+                                {{ user.email|default:"" }}
+                            {% endif %}
+                        </span>
+                    </p>
+                    <p>
+                        <strong>Full Name:</strong>
+                        <span>
+                            {% if user.profile %}
+                                {{ user.profile.full_name }}
+                            {% else %}
+                                {{ user.first_name }} {{ user.last_name }}
+                            {% endif %}
+                        </span>
+                    </p>
+                    <p>
+                        <strong>Role:</strong>
+                        <span>{% if user.is_staff %}Admin{% else %}User{% endif %}</span>
+                    </p>
+                    <p>
+                        <strong>Date Joined:</strong>
+                        <span>{{ user.date_joined|date:"M d, Y" }}</span>
+                    </p>
+                </div>
+                
+                <div class="action-buttons">
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger"><span class="emoji">⚠️</span> Yes, Delete User</button>
+                    </form>
+                    <a href="{% url 'user_list' %}" class="btn btn-secondary"><span class="emoji">↩️</span> Cancel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

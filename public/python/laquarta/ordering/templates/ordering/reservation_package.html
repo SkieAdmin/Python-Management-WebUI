@@ -1,0 +1,435 @@
+{% load static %}
+{% load tz %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{% static 'images/logos.png' %}" type="image/png">
+    <title>Reservation Package</title>
+    <style>
+        /* Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    background-color: #f9f5f5;
+    color: #333;
+    padding: 20px;
+}
+
+/* Container */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 5.1);
+    padding: 30px;
+}
+
+/* Header Styles */
+.container > div:first-of-type {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid red;
+}
+
+h2 {
+    color: black;
+    text-shadow: 1px 1px 0 green;
+    font-size: 1.8rem;
+}
+
+h3 {
+    color: black;
+    margin: 25px 0 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid red;
+}
+
+/* Back Button */
+.back-btn {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 10px 15px;
+    background-color: red;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background-color: green;
+    transform: translateY(-2px);
+}
+
+/* Table Styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid black;
+}
+
+th {
+    background-color: black;
+    color:white;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+tr:hover {
+    background-color: red;
+color: white;
+}
+
+/* Status Styling */
+td:nth-child(7), td:nth-child(8) {
+    font-weight: bold;
+}
+
+td:nth-child(7):contains("Pending") {
+    color: #f39c12;
+}
+
+td:nth-child(7):contains("Approved") {
+    color: #27ae60;
+}
+
+td:nth-child(7):contains("Rejected"), 
+td:nth-child(7):contains("Cancelled") {
+    color: #e74c3c;
+}
+
+td:nth-child(8):contains("Paid") {
+    color: #27ae60;
+}
+
+td:nth-child(8):contains("Unpaid") {
+    color: #e74c3c;
+}
+
+/* Action Links */
+td a {
+    display: inline-block;
+    padding: 6px 12px;
+    background-color: red;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+td a:hover {
+    background-color: #4ece4b;
+    transform: translateY(-2px);
+}
+
+/* Pay Now Link */
+td a[href*="pay_reservation"] {
+    background-color: #2ecc71;
+}
+
+td a[href*="pay_reservation"]:hover {
+    background-color: #27ae60;
+}
+
+/* Cancel Link */
+td a[href*="cancel"] {
+    background-color: black;
+}
+
+td a[href*="cancel"]:hover {
+    background-color: #c0392b;
+}
+
+/* Form Styles */
+form {
+    background-color: white;
+    padding: 25px;
+    border-radius: 8px;
+    margin-top: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+form p {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: black;
+}
+
+select, input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid black;
+    border-radius: 5px;
+    font-size: 1rem;
+    margin-bottom: 15px;
+    background-color: white;
+}
+
+select:focus, input:focus {
+    outline: none;
+    border-color: #d35400;
+    box-shadow: 0 0 5px rgba(211, 84, 0, 0.2);
+}
+
+/* Price Display */
+#price-display {
+    font-size: 1.5rem !important;
+    color:red;
+    text-shadow: 1px 1px 0 green;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #fff;
+    border: 2px dashed red;
+    display: inline-block;
+}
+
+/* Submit Button */
+button[type="submit"] {
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+button[type="submit"]:hover {
+    background-color:black;
+    transform: translateY(-2px);
+}
+
+button[type="submit"]:active {
+    transform: translateY(0);
+}
+
+/* No Reservations Message */
+p:contains("No reservations") {
+    padding: 20px;
+    background-color: #f8f4f0;
+    border-radius: 5px;
+    text-align: center;
+    color: #777;
+    font-style: italic;
+}
+
+/* Responsive Styles */
+@media (max-width: 900px) {
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+    
+    .container > div:first-of-type {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 10px !important;
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+    
+    .container {
+        padding: 15px;
+    }
+    
+    form {
+        padding: 15px;
+    }
+    
+    th, td {
+        padding: 8px 10px;
+        font-size: 0.9rem;
+    }
+    
+    h2 {
+        font-size: 1.3rem;
+    }
+    
+    #price-display {
+        font-size: 1.3rem !important;
+    }
+}
+
+/* Animation for price changes */
+@keyframes pricePulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.price-change {
+    animation: pricePulse 0.5s ease;
+}
+    </style>
+  <script type="text/javascript">
+    function updatePrice() {
+        var kilos = parseInt(document.getElementById("id_kilos").value || 0);
+        var deliveryOption = document.getElementById("delivery-option").value;
+        var priceElement = document.getElementById("price-display");
+
+        // Price mapping for kilos
+        var priceMapping = {
+            20:  7500,
+            30: 10000,
+            40: 12500,
+            50: 15000,
+            60: 17500,
+            70: 20000
+        };
+
+        // Get the price based on kilos
+        var price = priceMapping[kilos] || 0;
+
+        // Add delivery fee if "door" is selected
+        if (deliveryOption === "door") {
+            price += 500;
+        }
+
+        // Update the price display
+        priceElement.innerHTML = "₱" + price.toLocaleString();
+    }
+
+    // Initialize the price calculation and enforce min‐date on page load
+    window.onload = function () {
+        // 1) Price logic
+        updatePrice();
+        document.getElementById("id_kilos")
+                .addEventListener("change", updatePrice);
+        document.getElementById("delivery-option")
+                .addEventListener("change", updatePrice);
+
+        // 2) Enforce minimum selectable delivery_date = today
+        var dateInput = document.getElementById("id_delivery_date");
+        if (dateInput) {
+            // Compute YYYY-MM-DD for today
+            var today = new Date().toISOString().split('T')[0];
+            // Set the min attribute
+            dateInput.setAttribute('min', today);
+
+            // Optionally, if the field is empty, default it to today
+            if (!dateInput.value) {
+                dateInput.value = today;
+            }
+        }
+    };
+</script>
+</head>
+<body>
+    <a href="{% url 'menu' %}" class="back-btn">Back to Menu</a>
+    <div class="container">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <img src="{% static 'images/logos.png' %}" alt="Logo" style="width: 150px;">
+            <h2 style="margin: 0;">Jaimes Lechon Bayug Reservation</h2>
+        </div>
+
+        {% if reservations %}
+            <h3>Your Reservations:</h3>
+            <table>
+                <tr>
+                    <th>Kilos</th>
+                    <th>Price</th>
+                    <th>Date/Time</th>
+                    <th>Package Deal</th>
+                    <th>Delivery Option</th>
+                    <th>Delivery Date</th>
+                    <th>Status</th>
+                    <th>Payment Status</th>
+                    <th>Action</th>
+                    <th>Cancellation</th>
+                </tr>
+                {% for reservation in reservations %}
+                <tr>
+                    <td>{{ reservation.kilos }} kg</td>
+                    <td>₱{{ reservation.price }}</td>
+                    <td>{{ reservation.date_time|localtime }}</td>
+                    <td>{{ reservation.get_package_deal_display }}</td>
+                    <td>{{ reservation.get_delivery_option_display }}</td>
+                    <td>{{ reservation.delivery_date }}</td>
+                    <td>{{ reservation.status }}</td>
+                    <td>{{ reservation.payment_status }}</td>
+                    <td>
+                        {% if reservation.status|lower == "approved" and reservation.payment_status|lower == "unpaid" %}
+                            <a href="{% url 'pay_reservation' reservation.id %}">Pay Now</a>
+                        {% elif reservation.status|lower == "approved" and reservation.payment_status|lower == "paid" %}
+                            Paid
+                        {% else %}
+                            ---
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'cancel_reservation' reservation.id %}" onclick="return confirm('Are you sure you want to cancel this reservation?');">Cancel</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <p>No reservations found.</p>
+        {% endif %}
+
+        <!-- Reservation Form -->
+        <h3>Make a New Reservation</h3>
+        <form method="post">
+            {% csrf_token %}
+            
+            <p>{{ form.kilos.label_tag }} {{ form.kilos }}</p>
+            <p>{{ form.package_deal.label_tag }} {{ form.package_deal }}</p>
+            <p>{{ form.delivery_date.label_tag }} {{ form.delivery_date }}</p>
+
+            <!-- Delivery Option -->
+            <label for="delivery-option">Delivery Option:</label>
+            <select id="delivery-option" name="delivery_option" required>
+                <option value="pickup">Pick-up</option>
+                <option value="door">Door-to-door (+₱500)</option>
+            </select>
+
+            <br><br>
+
+            <!-- Show the dynamic price here -->
+            <div id="price-display" style="font-weight: bold; font-size: 18px;">₱0</div>
+
+            <br>
+
+            <button type="submit">Submit Reservation</button>
+        </form>
+    </div>
+</body>
+</html>

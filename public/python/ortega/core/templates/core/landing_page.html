@@ -1,0 +1,1030 @@
+{% load static %}  <!-- Load static files -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Iligan2L Construction Supply - Your one-stop shop for quality construction materials and tools" />
+  <meta name="keywords" content="construction, supply, tools, cement, nails, lumber, hardware" />
+  <title>Iligan2L Construction Supply</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+
+  <style>
+    :root {
+      --primary-color: black;
+      --secondary-color: #E67E22;
+      --accent-color: #000000;
+      --light-color: orange; 
+      --dark-color: #50432c;
+      --success-color: #2ECC71;
+      --danger-color: #E74C3C;
+      --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+      --threads-bg: #101010;
+      --threads-card-bg: #101010;
+      --threads-text: #FFFFFF;
+      --threads-secondary-text: #999999;
+      --threads-border: #333333;
+      --threads-hover: rgba(255, 255, 255, 0.1);
+      --threads-success: #2ECC71;
+      --threads-danger: #E74C3C;
+      --threads-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+      --threads-transition: all 0.2s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--threads-bg);
+      color: var(--threads-text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Header & Navigation */
+    header {
+      background-color: var(--threads-bg);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      border-bottom: 1px solid var(--threads-border);
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      transition: var(--threads-transition);
+    }
+
+    .logo:hover {
+      opacity: 0.8;
+    }
+
+    .brand h1 {
+      color: var(--threads-text);
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: var(--threads-text);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: var(--threads-transition);
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+    }
+
+    .nav-links a:hover {
+      background-color: var(--threads-hover);
+    }
+
+    .nav-links a.cta {
+      background-color: var(--threads-text);
+      color: var(--threads-bg);
+      padding: 0.5rem 1.25rem;
+      border-radius: 30px;
+      font-weight: 600;
+      border: none;
+      box-shadow: var(--threads-box-shadow);
+    }
+
+    .nav-links a.cta:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+
+    /* Hero Section */
+    .hero {
+      background-color: var(--threads-bg);
+      color: var(--threads-text);
+      padding: 4rem 0;
+      margin-bottom: 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-text {
+      flex: 1;
+      max-width: 600px;
+    }
+
+    .hero-text h2 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      line-height: 1.2;
+    }
+
+    .hero-text p {
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+      color: var(--threads-secondary-text);
+    }
+
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      background-color: var(--threads-text);
+      color: var(--threads-bg);
+      padding: 0.75rem 1.5rem;
+      border-radius: 30px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: var(--threads-transition);
+      gap: 0.5rem;
+      box-shadow: var(--threads-box-shadow);
+    }
+
+    .hero-cta:hover {
+      transform: translateY(-2px);
+      opacity: 0.9;
+    }
+
+    .hero-image {
+      flex: 1;
+      max-width: 500px;
+    }
+
+    .hero-image img {
+      width: 100%;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: var(--threads-box-shadow);
+    }
+
+    /* Categories Section */
+    .categories {
+      padding: 4rem 0;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .section-title h2 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--threads-text);
+      display: inline-block;
+      position: relative;
+    }
+
+    .category-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .category-card {
+      background-color: var(--threads-card-bg);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--threads-box-shadow);
+      transition: var(--threads-transition);
+      border: 1px solid var(--threads-border);
+    }
+
+    .category-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .category-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+
+    .category-content {
+      padding: 1.5rem;
+    }
+
+    .category-content h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+      color: var(--threads-text);
+      font-weight: 600;
+    }
+
+    .category-content p {
+      color: var(--threads-secondary-text);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      font-weight: 400;
+    }
+
+    .category-content a {
+      color: var(--threads-text);
+      font-weight: 500;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: var(--threads-transition);
+      font-size: 0.9rem;
+    }
+
+    .category-content a:hover {
+      opacity: 0.8;
+    }
+
+    /* Products Section */
+    .products {
+      padding: 4rem 0;
+      background-color: var(--threads-bg);
+    }
+
+    .product-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .product-card {
+      background-color: var(--threads-card-bg);
+      border-radius: 12px;
+      box-shadow: var(--threads-box-shadow);
+      overflow: hidden;
+      transition: var(--threads-transition);
+      position: relative;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--threads-border);
+    }
+
+    .product-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .product-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: var(--threads-success);
+      color: var(--threads-bg);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      z-index: 1;
+    }
+
+    .product-image {
+      position: relative;
+      overflow: hidden;
+      height: 200px;
+    }
+
+    .product-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: var(--threads-transition);
+    }
+
+    .product-card:hover img {
+      transform: scale(1.05);
+    }
+
+    .product-details {
+      padding: 1.5rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .product-category {
+      font-size: 0.8rem;
+      color: var(--threads-secondary-text);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+
+    .product-card h3 {
+      color: var(--threads-text);
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .product-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .product-price {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--threads-text);
+      margin-bottom: 0.75rem;
+    }
+
+    .product-description {
+      font-size: 0.9rem;
+      color: var(--threads-secondary-text);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+      flex-grow: 1;
+      font-weight: 400;
+    }
+
+    .product-stock {
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      color: var(--threads-secondary-text);
+    }
+
+    .in-stock {
+      color: var(--threads-success);
+      font-weight: 500;
+    }
+
+    .out-of-stock {
+      color: var(--threads-danger);
+      font-weight: 500;
+    }
+
+    .product-quantity {
+      font-size: 0.85rem;
+      color: var(--threads-secondary-text);
+      margin-bottom: 1rem;
+      font-weight: 400;
+    }
+
+    .product-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-top: auto;
+    }
+
+    .product-actions a {
+      text-align: center;
+      padding: 0.75rem 0;
+      border-radius: 30px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: var(--threads-transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-cart {
+      background-color: transparent;
+      color: var(--threads-text);
+      border: 1px solid var(--threads-border);
+      font-weight: 500;
+    }
+
+    .btn-cart:hover {
+      background-color: var(--threads-hover);
+    }
+
+    .btn-buy {
+      background-color: var(--threads-text);
+      color: var(--threads-bg);
+      border: none;
+      font-weight: 600;
+      box-shadow: var(--threads-box-shadow);
+    }
+
+    .btn-buy:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+
+    .btn-details {
+      background-color: transparent;
+      color: var(--threads-secondary-text);
+      border: 1px solid var(--threads-border);
+      width: 100%;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+
+    .btn-details:hover {
+      background-color: var(--threads-hover);
+      color: var(--threads-text);
+    }
+
+    /* Category Quick Filters */
+    .category-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 25px;
+      justify-content: center;
+    }
+
+    .category-filter {
+      padding: 8px 16px;
+      background-color: transparent;
+      border: 1px solid var(--threads-border);
+      border-radius: 30px;
+      color: var(--threads-text);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 400;
+      transition: var(--threads-transition);
+    }
+
+    .category-filter:hover {
+      background-color: var(--threads-hover);
+    }
+
+    .category-filter.active {
+      background-color: var(--threads-text);
+      color: var(--threads-bg);
+      border-color: var(--threads-text);
+      font-weight: 500;
+    }
+
+    /* Filter and Search */
+    .filter-container {
+      margin-bottom: 2rem;
+      background-color: var(--threads-card-bg);
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid var(--threads-border);
+    }
+
+    .filter-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .search-group {
+      flex: 1;
+      min-width: 250px;
+      position: relative;
+      display: flex;
+    }
+
+    .search-group input[type="text"] {
+      flex: 1;
+      padding: 12px 15px;
+      font-size: 14px;
+      border: 1px solid var(--threads-border);
+      border-radius: 30px 0 0 30px;
+      font-family: 'Poppins', sans-serif;
+      background-color: rgba(255, 255, 255, 0.05);
+      color: var(--threads-text);
+    }
+
+    .search-group button {
+      background-color: var(--threads-text);
+      color: var(--threads-bg);
+      border: none;
+      padding: 0 15px;
+      border-radius: 0 30px 30px 0;
+      cursor: pointer;
+    }
+
+    .filter-select {
+      padding: 12px 15px;
+      border: 1px solid var(--threads-border);
+      border-radius: 30px;
+      background-color: rgba(255, 255, 255, 0.05);
+      color: var(--threads-text);
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      min-width: 150px;
+      cursor: pointer;
+    }
+
+    .clear-filters {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--threads-secondary-text);
+      text-decoration: none;
+      font-size: 14px;
+      transition: var(--threads-transition);
+    }
+
+    .clear-filters:hover {
+      color: var(--threads-text);
+    }
+
+    /* Footer */
+    footer {
+      background-color: var(--threads-card-bg);
+      color: var(--threads-text);
+      padding: 3rem 0 1rem;
+      margin-top: 3rem;
+      border-top: 1px solid var(--threads-border);
+    }
+
+    .footer-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+    }
+
+    .footer-col h3 {
+      font-size: 1.2rem;
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+      position: relative;
+      display: inline-block;
+    }
+
+    .footer-col p {
+      color: var(--threads-secondary-text);
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .social-links a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.05);
+      color: var(--threads-text);
+      transition: var(--threads-transition);
+    }
+
+    .social-links a:hover {
+      background-color: var(--threads-text);
+      color: var(--threads-bg);
+      transform: translateY(-2px);
+    }
+
+    .footer-links {
+      list-style: none;
+    }
+
+    .footer-links li {
+      margin-bottom: 0.75rem;
+    }
+
+    .footer-links a {
+      color: var(--threads-secondary-text);
+      text-decoration: none;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: var(--threads-transition);
+    }
+
+    .footer-links a:hover {
+      color: var(--threads-text);
+      transform: translateX(3px);
+    }
+
+    .copyright {
+      text-align: center;
+      padding-top: 2rem;
+      margin-top: 2rem;
+      border-top: 1px solid var(--threads-border);
+      color: var(--threads-secondary-text);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <nav class="navbar">
+        <div class="brand">
+          <img src="{% static 'images/placeholder.jpg' %}" alt="Iligan2L Logo" class="logo">
+          <h1>Iligan2L Construction Supply</h1>
+        </div>
+        <div class="nav-links">
+          <a href="{% url 'home' %}"><i class="fas fa-home"></i> Home</a>
+          <a href="{% url 'about' %}"><i class="fas fa-info-circle"></i> About</a>
+          <a href="{% url 'contact' %}"><i class="fas fa-envelope"></i> Contact</a>
+          <a href="{% url 'login' %}" class="cta"><i class="fas fa-sign-in-alt"></i> Login</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-text" data-aos="fade-right">
+          <h2>Quality Construction Materials for Your Projects</h2>
+          <p>From cement to tools, we provide everything you need to build your dreams. Trusted by professionals and homeowners alike.</p>
+          <a href="{% url 'register' %}" class="hero-cta"><i class="fas fa-user-plus"></i> Register Now</a>
+        </div>
+        <div class="hero-image" data-aos="fade-left">
+          <img src="{% static 'images/placeholder.jpg' %}" alt="Construction Materials">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories Section -->
+  <section class="categories">
+    <div class="container">
+      <div class="section-title" data-aos="fade-up">
+        <h2>Featured Categories</h2>
+      </div>
+      <div class="category-cards">
+        <div class="category-card" data-aos="fade-up" data-aos-delay="100">
+          <img src="{% static 'images/cement.jpg' %}" alt="Cement">
+          <div class="category-content">
+            <h3>Cement</h3>
+            <p>High-quality cement for all your construction needs</p>
+            <a href="{% url 'home' %}?category=cement">View Products <i class="fas fa-arrow-right"></i></a>
+          </div>
+        </div>
+        <div class="category-card" data-aos="fade-up" data-aos-delay="200">
+          <img src="{% static 'images/nails.jpg' %}" alt="Nails">
+          <div class="category-content">
+            <h3>Nails & Fasteners</h3>
+            <p>Various sizes and types for different applications</p>
+            <a href="{% url 'home' %}?category=nails">View Products <i class="fas fa-arrow-right"></i></a>
+          </div>
+        </div>
+        <div class="category-card" data-aos="fade-up" data-aos-delay="300">
+          <img src="{% static 'images/hammer.jpg' %}" alt="Tools">
+          <div class="category-content">
+            <h3>Tools</h3>
+            <p>Professional-grade tools for every job</p>
+            <a href="{% url 'home' %}?category=tools">View Products <i class="fas fa-arrow-right"></i></a>
+          </div>
+        </div>
+        <div class="category-card" data-aos="fade-up" data-aos-delay="400">
+          <img src="{% static 'images/lumber.jpg' %}" alt="Lumber">
+          <div class="category-content">
+            <h3>Lumber</h3>
+            <p>Quality wood for construction and furniture</p>
+            <a href="{% url 'home' %}?category=lumber">View Products <i class="fas fa-arrow-right"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Products Section -->
+  <section class="products">
+    <div class="container">
+      <div class="section-title" data-aos="fade-up">
+        <h2>Our Products</h2>
+      </div>
+      
+      <!-- Category Quick Filters -->
+      <div class="category-filters" data-aos="fade-up">
+        <a href="javascript:void(0)" data-category="" class="category-filter {% if not current_category %}active{% endif %}">All Products</a>
+        <a href="javascript:void(0)" data-category="cement" class="category-filter {% if current_category == 'cement' %}active{% endif %}">Cement</a>
+        <a href="javascript:void(0)" data-category="nails" class="category-filter {% if current_category == 'nails' %}active{% endif %}">Nails & Fasteners</a>
+        <a href="javascript:void(0)" data-category="lumber" class="category-filter {% if current_category == 'lumber' %}active{% endif %}">Lumber</a>
+        <a href="javascript:void(0)" data-category="tools" class="category-filter {% if current_category == 'tools' %}active{% endif %}">Tools</a>
+      </div>
+      
+      <!-- Filter and Search Bar -->
+      <div class="filter-container" data-aos="fade-up">
+        <form id="product-filter-form" class="filter-form">
+          <div class="search-group">
+            <input type="text" id="search-input" name="search" placeholder="Search products..." value="{{ search_term }}">
+            <button type="button" id="search-button"><i class="fas fa-search"></i></button>
+          </div>
+          
+          <div class="filter-group">
+            <select id="category-select" name="category">
+              <option value="">All Categories</option>
+              {% for cat in categories %}
+                <option value="{{ cat }}" {% if current_category == cat %}selected{% endif %}>{{ cat|title }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          
+          <div class="filter-group">
+            <select id="sort-select" name="sort">
+              <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name (A-Z)</option>
+              <option value="price_low" {% if sort_by == 'price_low' %}selected{% endif %}>Price (Low to High)</option>
+              <option value="price_high" {% if sort_by == 'price_high' %}selected{% endif %}>Price (High to Low)</option>
+              <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Newest First</option>
+            </select>
+          </div>
+          
+          {% if search_term or current_category %}
+            <a href="javascript:void(0)" id="clear-filters" class="clear-filters"><i class="fas fa-times"></i> Clear Filters</a>
+          {% endif %}
+        </form>
+      </div>
+      <div class="product-container">
+        {% for product in products %}
+        <div class="product-card" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:"100" }}">
+          {% if product.in_stock %}
+            <div class="product-badge" style="background-color: var(--threads-success);">In Stock</div>
+          {% else %}
+            <div class="product-badge" style="background-color: var(--threads-danger);">Out of Stock</div>
+          {% endif %}
+          <div class="product-image">
+            {% if product.image %}
+              <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            {% else %}
+              <img src="{% static 'images/placeholder.jpg' %}" alt="{{ product.name }}">
+            {% endif %}
+          </div>
+          <div class="product-details">
+            <div class="product-category">{{ product.category }}</div>
+            <h3>{{ product.name }}</h3>
+            <div class="product-meta">
+              <div class="product-price">₱{{ product.price }}</div>
+              <div class="product-stock">
+                {% if product.in_stock %}
+                  <i class="fas fa-check-circle in-stock"></i> <span class="in-stock">Available</span>
+                {% else %}
+                  <i class="fas fa-times-circle out-of-stock"></i> <span class="out-of-stock">Unavailable</span>
+                {% endif %}
+              </div>
+            </div>
+            <div class="product-quantity">Quantity: {{ product.stock_quantity }}</div>
+            <div class="product-actions">
+              <a href="{% url 'login' %}?next={% url 'product_detail' product.id %}" class="btn-details" title="Login to view details"><i class="fas fa-info-circle"></i> View Details</a>
+              <a href="{% url 'login' %}" class="btn-cart" title="Login to add to cart"><i class="fas fa-shopping-cart"></i> Add to Cart</a>
+              <a href="{% url 'login' %}" class="btn-buy" title="Login to buy"><i class="fas fa-bolt"></i> Buy Now</a>
+            </div>
+          </div>
+        </div>
+        {% empty %}
+        <div class="product-card" data-aos="fade-up">
+          <div class="product-image">
+            <img src="{% static 'images/placeholder.jpg' %}" alt="No Products">
+          </div>
+          <div class="product-details">
+            <h3>No Products Available</h3>
+            <p>Please check back later for our product listings.</p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-container">
+        <div class="footer-col">
+          <h3>About Us</h3>
+          <p>Iligan2L Construction Supply is your trusted partner for quality construction materials and tools. We've been serving the community since 2010.</p>
+          <div class="social-links">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h3>Quick Links</h3>
+          <ul class="footer-links">
+            <li><a href="{% url 'home' %}"><i class="fas fa-chevron-right"></i> Home</a></li>
+            <li><a href="{% url 'about' %}"><i class="fas fa-chevron-right"></i> About Us</a></li>
+            <li><a href="{% url 'contact' %}"><i class="fas fa-chevron-right"></i> Contact Us</a></li>
+            <li><a href="{% url 'login' %}"><i class="fas fa-chevron-right"></i> Login</a></li>
+            <li><a href="{% url 'register' %}"><i class="fas fa-chevron-right"></i> Register</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Categories</h3>
+          <ul class="footer-links">
+            <li><a href="{% url 'home' %}?category=cement"><i class="fas fa-chevron-right"></i> Cement</a></li>
+            <li><a href="{% url 'home' %}?category=nails"><i class="fas fa-chevron-right"></i> Nails & Fasteners</a></li>
+            <li><a href="{% url 'home' %}?category=lumber"><i class="fas fa-chevron-right"></i> Lumber</a></li>
+            <li><a href="{% url 'home' %}?category=tools"><i class="fas fa-chevron-right"></i> Tools</a></li>
+            <li><a href="{% url 'home' %}"><i class="fas fa-chevron-right"></i> All Products</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h3>Contact Us</h3>
+          <ul class="footer-links">
+            <li><a href="#"><i class="fas fa-map-marker-alt"></i> 123 Main Street, Iligan City</a></li>
+            <li><a href="tel:+639123456789"><i class="fas fa-phone"></i> +63 912 345 6789</a></li>
+            <li><a href="mailto:info@iligan2l.com"><i class="fas fa-envelope"></i> info@iligan2l.com</a></li>
+            <li><a href="#"><i class="fas fa-clock"></i> Mon-Sat: 8:00 AM - 6:00 PM</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="copyright">
+        <p>&copy; 2025 Iligan2L Construction Supply. All Rights Reserved.</p>
+      </div>
+    </div>
+  </footer>
+  
+  <!-- AOS Animation Script -->
+  <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    AOS.init({
+      duration: 800,
+      once: true
+    });
+    
+    // AJAX Product Filtering
+    $(document).ready(function() {
+      // Category filter click handler
+      $('.category-filter').on('click', function(e) {
+        e.preventDefault();
+        const category = $(this).data('category');
+        
+        // Update active class
+        $('.category-filter').removeClass('active');
+        $(this).addClass('active');
+        
+        // Update category select dropdown to match
+        $('#category-select').val(category);
+        
+        // Filter products
+        filterProducts();
+      });
+      
+      // Search button click handler
+      $('#search-button').on('click', function() {
+        filterProducts();
+      });
+      
+      // Search input enter key handler
+      $('#search-input').on('keypress', function(e) {
+        if (e.which === 13) {
+          e.preventDefault();
+          filterProducts();
+        }
+      });
+      
+      // Category select change handler
+      $('#category-select').on('change', function() {
+        // Update category filter buttons to match
+        const category = $(this).val();
+        $('.category-filter').removeClass('active');
+        $(`.category-filter[data-category="${category}"]`).addClass('active');
+        
+        filterProducts();
+      });
+      
+      // Sort select change handler
+      $('#sort-select').on('change', function() {
+        filterProducts();
+      });
+      
+      // Clear filters handler
+      $('#clear-filters').on('click', function(e) {
+        e.preventDefault();
+        
+        // Reset all filters
+        $('#search-input').val('');
+        $('#category-select').val('');
+        $('#sort-select').val('name');
+        $('.category-filter').removeClass('active');
+        $('.category-filter').first().addClass('active');
+        
+        filterProducts();
+      });
+      
+      // Function to filter products via AJAX
+      function filterProducts() {
+        const search = $('#search-input').val();
+        const category = $('#category-select').val();
+        const sort = $('#sort-select').val();
+        
+        // Show loading indicator
+        $('.product-container').html('<div class="loading">Loading products...</div>');
+        
+        // AJAX request
+        $.ajax({
+          url: '{% url "home" %}',
+          type: 'GET',
+          data: {
+            search: search,
+            category: category,
+            sort: sort,
+            ajax: true
+          },
+          success: function(response) {
+            // Extract product container HTML from response
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = response;
+            const newProducts = $(tempDiv).find('.product-container').html();
+            
+            // Update product container
+            $('.product-container').html(newProducts);
+            
+            // Reinitialize AOS for new content
+            AOS.refresh();
+            
+            // Update URL without reloading page
+            let url = window.location.pathname;
+            let params = [];
+            
+            if (search) params.push(`search=${encodeURIComponent(search)}`);
+            if (category) params.push(`category=${encodeURIComponent(category)}`);
+            if (sort && sort !== 'name') params.push(`sort=${encodeURIComponent(sort)}`);
+            
+            if (params.length > 0) {
+              url += '?' + params.join('&');
+            }
+            
+            window.history.pushState({ path: url }, '', url);
+            
+            // Show/hide clear filters button
+            if (search || category) {
+              if ($('#clear-filters').length === 0) {
+                $('.filter-form').append('<a href="javascript:void(0)" id="clear-filters" class="clear-filters"><i class="fas fa-times"></i> Clear Filters</a>');
+                $('#clear-filters').on('click', function(e) {
+                  e.preventDefault();
+                  $('#search-input').val('');
+                  $('#category-select').val('');
+                  $('#sort-select').val('name');
+                  $('.category-filter').removeClass('active');
+                  $('.category-filter').first().addClass('active');
+                  filterProducts();
+                });
+              }
+            } else {
+              $('#clear-filters').remove();
+            }
+          },
+          error: function() {
+            $('.product-container').html('<div class="error">Error loading products. Please try again.</div>');
+          }
+        });
+      }
+    });
+  </script>
+
+</body>
+</html>

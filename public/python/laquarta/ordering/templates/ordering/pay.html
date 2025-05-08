@@ -1,0 +1,52 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="icon" href="/static/images/logos.png" type="image/png">
+    <title>Payment</title>
+    <link rel="stylesheet" href="{% static 'css/pay.css' %}">
+    <style>
+        .important-note {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background-color: #ff3b30;
+            color: white;
+            font-weight: bold;
+            padding: 10px 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            max-width: 300px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="important-note">
+        NOTE: SEND GCASH RECEIPT. NO SEND NO ORDER TRANSACTION.
+    </div>
+    
+    <div class="container">
+        {% if order %}
+            <h2>Pay for Order: {{ order.item.name }}</h2>
+            <table class="price-table">
+            <tr>
+                <td class="price-display"><span class="currency">₱</span>{{ order.total_price }}</td>
+            </tr>
+        </table>
+        {% endif %}
+        {% if reservation %}
+            <h2>Pay for Reservation: {{ reservation.id }}</h2>
+            <!-- Display reservation price -->
+             <td>₱{{ reservation.price }}</td>
+        {% endif %}
+        <h4>Scan GCash QR Code</h4>
+        <img src="{% static 'images/22.jpg' %}" width="250" alt="GCash QR Code">
+        <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Submit Payment</button>
+</form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,133 @@
+{% extends 'store/base.html' %}
+{% load static %}
+
+{% block title %}Store Settings - Lourgie Sari-Sari Store{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h2 style="color: #87ceeb;">Store Settings</h2>
+    </div>
+    
+    <div class="settings-container">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="settings-section">
+                <h3>Delivery Settings</h3>
+                <div class="form-group">
+                    <label for="delivery_fee">Delivery Fee (PHP)</label>
+                    <input type="number" id="delivery_fee" name="delivery_fee" value="{{ settings.delivery_fee }}" step="0.01" min="0" required>
+                </div>
+            </div>
+            
+            <div class="settings-section">
+                <h3>GCash Settings</h3>
+                <div class="form-group">
+                    <label for="gcash_number">GCash Number</label>
+                    <input type="text" id="gcash_number" name="gcash_number" value="{{ settings.gcash_number }}" placeholder="e.g., 09123456789">
+                </div>
+                
+                <div class="form-group">
+                    <label for="gcash_name">GCash Account Name</label>
+                    <input type="text" id="gcash_name" name="gcash_name" value="{{ settings.gcash_name }}" placeholder="e.g., Juan Dela Cruz">
+                </div>
+                
+                <div class="form-group">
+                    <label for="gcash_qr_code">GCash QR Code</label>
+                    <div class="qr-upload">
+                        {% if settings.gcash_qr_code %}
+                        <div class="current-qr">
+                            <img src="{{ settings.gcash_qr_code.url }}" alt="Current GCash QR Code">
+                            <p>Current QR Code</p>
+                        </div>
+                        {% endif %}
+                        <input type="file" id="gcash_qr_code" name="gcash_qr_code" accept="image/*">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn">Save Settings</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .settings-container {
+        max-width: 600px;
+    }
+    
+    .settings-section {
+        margin-bottom: 30px;
+    }
+    
+    .settings-section h3 {
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        color: #3498db;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    
+    .form-group input[type="text"],
+    .form-group input[type="number"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    
+    .qr-upload {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+    
+    .current-qr {
+        text-align: center;
+    }
+    
+    .current-qr img {
+        max-width: 150px;
+        max-height: 150px;
+        border: 1px solid #ddd;
+        padding: 10px;
+        border-radius: 4px;
+    }
+    
+    .current-qr p {
+        margin-top: 5px;
+        font-size: 14px;
+        color: #7f8c8d;
+    }
+    
+    .form-actions {
+        margin-top: 30px;
+    }
+    
+    .btn {
+        padding: 10px 20px;
+        background-color: #27ae60;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    
+    .btn:hover {
+        background-color: #219a52;
+    }
+</style>
+{% endblock %}

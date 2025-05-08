@@ -1,0 +1,264 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>Iligan2L Construction Supply - Admin Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <style>
+        :root {
+            --primary-color: black;
+            --secondary-color: #E67E22;
+            --accent-color: #000000;
+            --light-color: #ECF0F1;
+            --dark-color: #000000;
+            --success-color: #2ECC71;
+            --danger-color: #E74C3C;
+            --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+            --threads-bg: #101010;
+            --threads-card-bg: #101010;
+            --threads-text: #FFFFFF;
+            --threads-secondary-text: #999999;
+            --threads-border: #333333;
+            --threads-hover: rgba(255, 255, 255, 0.1);
+            --threads-success: #2ECC71;
+            --threads-danger: #E74C3C;
+            --threads-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            --threads-transition: all 0.2s ease;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--threads-bg);
+            color: var(--threads-text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .navbar {
+            background-color: var(--threads-bg);
+            color: var(--threads-text);
+            padding: 1.5rem;
+            text-align: center;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            border-bottom: 1px solid var(--threads-border);
+            z-index: 1000;
+        }
+        
+        .navbar h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .admin-form {
+            width: 90%;
+            max-width: 400px;
+            margin: 80px auto 20px;
+            padding: 2rem;
+            background-color: var(--threads-card-bg);
+            border-radius: 15px;
+            border: 1px solid var(--threads-border);
+            box-shadow: var(--threads-box-shadow);
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .logo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--threads-box-shadow);
+        }
+        
+        .admin-form h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--threads-text);
+        }
+        
+        .form-group {
+            margin-bottom: 1.2rem;
+            text-align: left;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--threads-text);
+            font-size: 0.9rem;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--threads-border);
+            border-radius: 5px;
+            background: rgba(0,0,0,0.3);
+            color: var(--threads-text);
+            font-size: 0.95rem;
+            transition: var(--threads-transition);
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--threads-text);
+            background: rgba(0,0,0,0.5);
+        }
+        
+        button {
+            width: 100%;
+            padding: 0.9rem 1.5rem;
+            background-color: var(--threads-text);
+            color: var(--threads-bg);
+            border-radius: 30px;
+            border: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--threads-transition);
+            margin-top: 1rem;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: var(--threads-box-shadow);
+        }
+        
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .home-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+            color: var(--threads-secondary-text);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: var(--threads-transition);
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            border: 1px solid var(--threads-border);
+        }
+        
+        .home-link:hover {
+            color: var(--threads-text);
+            background-color: var(--threads-hover);
+        }
+        
+        .messages {
+            width: 90%;
+            max-width: 400px;
+            margin-top: 1rem;
+        }
+        
+        .messages p {
+            color: var(--threads-danger);
+            background-color: rgba(231, 76, 60, 0.1);
+            padding: 0.75rem;
+            border-radius: 5px;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 480px) {
+            .admin-form {
+                padding: 1.5rem;
+                margin-top: 70px;
+            }
+            
+            .logo {
+                width: 80px;
+                height: 80px;
+                margin-bottom: 1rem;
+            }
+            
+            .admin-form h2 {
+                font-size: 1.3rem;
+                margin-bottom: 1rem;
+            }
+            
+            button {
+                padding: 0.8rem 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>Iligan2L Construction Supply</h1>
+    </div>
+    
+    <div class="messages" data-aos="fade-down" data-aos-delay="100">
+        {% if messages %}
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    </div>
+    
+    <form method="post" class="admin-form">
+        <img src="{% static 'images/placeholder.jpg' %}" alt="Iligan2L Logo" class="logo" data-aos="zoom-in" data-aos-delay="200">
+        <h2 data-aos="fade-up" data-aos-delay="300">Admin Login</h2>
+        {% csrf_token %}
+        
+        <div class="form-group" data-aos="fade-up" data-aos-delay="400">
+            <label for="id_username">Username</label>
+            <input type="text" name="username" id="id_username" required>
+        </div>
+        
+        <div class="form-group" data-aos="fade-up" data-aos-delay="500">
+            <label for="id_password">Password</label>
+            <input type="password" name="password" id="id_password" required>
+        </div>
+        
+        <button type="submit" data-aos="fade-up" data-aos-delay="600">
+            <i class="fas fa-sign-in-alt"></i> Login
+        </button>
+    </form>
+    
+    <a href="{% url 'landing_page' %}" class="home-link" data-aos="fade-up" data-aos-delay="700">
+        <i class="fas fa-arrow-left"></i> Back to Home
+    </a>
+    
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+        AOS.init({once: true});
+    </script>
+</body>
+</html>

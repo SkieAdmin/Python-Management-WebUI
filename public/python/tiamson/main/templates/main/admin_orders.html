@@ -1,0 +1,52 @@
+{% extends 'main/admin_base.html' %}
+
+{% block content %}
+  <h1 style="font-size: 1.75rem; font-weight: 600; color: #2d3748; margin-bottom: 1rem;">Orders</h1>
+
+  <div style="background: #fff; padding: 1.5rem; border-radius: 0.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>User</th>
+          <th>Product</th>
+          <th>Qty</th>
+          <th>Status</th>
+          <th>Receipt</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for o in orders %}
+          <tr>
+            <td>{{ o.id }}</td>
+            <td>{{ o.user.email }}</td>
+            <td>{{ o.product.name }}</td>
+            <td>{{ o.quantity }}</td>
+            <td>{{ o.status }}</td>
+            <td>
+              {% if o.receipt %}
+                <a href="{{ o.receipt.url }}" target="_blank" style="color: #3182ce; font-weight: 500;">
+                  View Receipt
+                </a>
+              {% else %}
+                <span style="color: #a0aec0; font-style: italic;">No receipt</span>
+              {% endif %}
+            </td>
+            <td>
+              <a href="{% url 'admin_order_detail' o.id %}" style=" color: #3b82f6; font-weight: 500;">
+                Edit
+              </a>
+              <a href="{% url 'admin_order_delete' o.id %}" style="color: #e53e3e; font-weight: 500;">
+                Delete
+              </a>
+              <a href="{% url 'admin_order_invoice' o.id %}" style="color: #10b981; font-weight: 500;">
+                Invoice
+              </a>              
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

@@ -1,0 +1,478 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout{% endblock %}
+
+{% block extra_css %}
+<style>
+    .checkout-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+    
+    .checkout-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .checkout-title {
+        margin: 0;
+        color: var(--primary-color);
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .checkout-steps {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .checkout-step {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-dark);
+        opacity: 0.6;
+    }
+    
+    .checkout-step.active {
+        color: var(--primary-color);
+        opacity: 1;
+        font-weight: 600;
+    }
+    
+    .checkout-step-divider {
+        width: 20px;
+        height: 1px;
+        background-color: var(--border);
+    }
+    
+    .checkout-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2rem;
+    }
+    
+    .checkout-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .checkout-card-header {
+        margin-bottom: 1.5rem;
+        position: relative;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .checkout-card-title {
+        margin: 0;
+        color: var(--primary-color);
+        font-size: 1.5rem;
+        font-weight: 700;
+        font-family: 'Playfair Display', serif;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .checkout-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1.5rem;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .checkout-table th {
+        text-align: left;
+        padding: 1rem;
+        background-color: #f5f5f5;
+        border-bottom: 2px solid var(--border);
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+    
+    .checkout-table td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+        vertical-align: middle;
+    }
+    
+    .checkout-table tr:last-child td {
+        border-bottom: none;
+    }
+    
+    .checkout-table tbody tr {
+        transition: all 0.2s ease;
+    }
+    
+    .checkout-table tbody tr:hover {
+        background-color: #f9f9f9;
+    }
+    
+    .checkout-item-name {
+        font-weight: 600;
+        color: var(--text-dark);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .checkout-item-price {
+        color: var(--text-dark);
+    }
+    
+    .checkout-item-quantity {
+        font-weight: 600;
+        background-color: #f5f5f5;
+        padding: 0.3rem 0.7rem;
+        border-radius: 50px;
+        display: inline-block;
+        text-align: center;
+        min-width: 2.5rem;
+    }
+    
+    .checkout-item-subtotal {
+        font-weight: 600;
+        color: #2e7d32;
+    }
+    
+    .checkout-total-row {
+        font-weight: 700;
+        background-color: #f9f9f9;
+    }
+    
+    .checkout-total-row td {
+        border-top: 2px solid var(--border);
+        padding: 1.2rem 1rem;
+    }
+    
+    .checkout-total-label {
+        text-align: right;
+        color: var(--text-dark);
+    }
+    
+    .checkout-total-amount {
+        font-weight: 700;
+        color: var(--primary-color);
+        font-size: 1.1rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+    
+    textarea.form-control {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        min-height: 100px;
+        resize: vertical;
+    }
+    
+    select.form-control {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 16px;
+        padding-right: 2.5rem;
+    }
+    
+    input.form-control {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+        outline: none;
+    }
+    
+    .checkout-actions {
+        margin-top: 2rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .btn-back {
+        background-color: white;
+        color: var(--text-dark);
+        border: 1px solid var(--border);
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+    
+    .btn-back:hover {
+        background-color: #f5f5f5;
+        transform: translateY(-2px);
+    }
+    
+    .btn-place-order {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-place-order:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+    }
+    
+    .checkout-info {
+        background-color: #e3f2fd;
+        border-radius: 8px;
+        padding: 1.2rem;
+        margin-top: 1.5rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .checkout-info-icon {
+        color: #1976d2;
+        font-size: 1.2rem;
+        margin-top: 0.2rem;
+    }
+    
+    .checkout-info-content {
+        flex: 1;
+    }
+    
+    .checkout-info-title {
+        font-weight: 600;
+        color: #1976d2;
+        margin-bottom: 0.5rem;
+    }
+    
+    .checkout-info-text {
+        color: var(--text-dark);
+        margin: 0;
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+    
+    .empty-checkout {
+        text-align: center;
+        padding: 3rem 2rem;
+    }
+    
+    .empty-checkout-icon {
+        font-size: 4rem;
+        color: #e0e0e0;
+        margin-bottom: 1.5rem;
+    }
+    
+    .empty-checkout-message {
+        font-size: 1.2rem;
+        color: var(--text-dark);
+        margin-bottom: 2rem;
+    }
+    
+    .btn-browse {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        margin: 0 auto;
+    }
+    
+    .btn-browse:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+    }
+    
+    @media (max-width: 768px) {
+        .checkout-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .checkout-steps {
+            display: none;
+        }
+        
+        .checkout-card {
+            padding: 1.5rem;
+        }
+        
+        .checkout-table {
+            display: block;
+            overflow-x: auto;
+        }
+        
+        .checkout-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="checkout-container">
+    <div class="checkout-header">
+        <h1 class="checkout-title">
+            <i class="fas fa-credit-card"></i> Checkout
+        </h1>
+        <div class="checkout-steps">
+            <div class="checkout-step">
+                <i class="fas fa-shopping-cart"></i> Cart
+            </div>
+            <div class="checkout-step-divider"></div>
+            <div class="checkout-step active">
+                <i class="fas fa-clipboard-check"></i> Checkout
+            </div>
+            <div class="checkout-step-divider"></div>
+            <div class="checkout-step">
+                <i class="fas fa-check-circle"></i> Confirmation
+            </div>
+        </div>
+    </div>
+    
+    {% if cart_items %}
+        <div class="checkout-grid">
+            <div class="checkout-card">
+                <div class="checkout-card-header">
+                    <h2 class="checkout-card-title">
+                        <i class="fas fa-receipt"></i> Order Summary
+                    </h2>
+                </div>
+                <table class="checkout-table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cart_item in cart_items %}
+                            <tr>
+                                <td>
+                                    <div class="checkout-item-name">
+                                        <i class="fas fa-pizza-slice"></i>
+                                        {{ cart_item.item.name }}
+                                    </div>
+                                </td>
+                                <td class="checkout-item-price">${{ cart_item.item.price }}</td>
+                                <td><span class="checkout-item-quantity">{{ cart_item.quantity }}</span></td>
+                                <td class="checkout-item-subtotal">${{ cart_item.subtotal }}</td>
+                            </tr>
+                        {% endfor %}
+                        <tr class="checkout-total-row">
+                            <td colspan="3" class="checkout-total-label">Total:</td>
+                            <td class="checkout-total-amount">${{ total }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="checkout-card">
+                <div class="checkout-card-header">
+                    <h2 class="checkout-card-title">
+                        <i class="fas fa-clipboard-list"></i> Complete Order
+                    </h2>
+                </div>
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="{{ form.notes.id_for_label }}">
+                            <i class="fas fa-comment-alt"></i> Special Instructions
+                        </label>
+                        {{ form.notes }}
+                    </div>
+                    
+                    <div class="checkout-info">
+                        <div class="checkout-info-icon">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <div class="checkout-info-content">
+                            <div class="checkout-info-title">Order Information</div>
+                            <p class="checkout-info-text">Your order will be prepared as soon as you place it. You can add any special instructions or dietary requirements in the box above.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="checkout-actions">
+                        <a href="{% url 'view_cart' %}" class="btn-back">
+                            <i class="fas fa-arrow-left"></i> Back to Cart
+                        </a>
+                        <button type="submit" class="btn-place-order">
+                            <i class="fas fa-check-circle"></i> Place Order
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% else %}
+        <div class="checkout-card empty-checkout">
+            <div class="empty-checkout-icon">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+            <p class="empty-checkout-message">Your cart is empty</p>
+            <p>You cannot proceed to checkout with an empty cart.</p>
+            <a href="{% url 'menu' %}" class="btn-browse">
+                <i class="fas fa-pizza-slice"></i> Browse Our Menu
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

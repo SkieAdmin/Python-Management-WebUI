@@ -1,0 +1,477 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>Iligan2L Construction Supply - Register</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    
+    <style>
+        :root {
+            --primary-color: black;
+            --secondary-color: #E67E22;
+            --accent-color: #000000;
+            --light-color: #ECF0F1;
+            --dark-color: #000000;
+            --success-color: #2ECC71;
+            --danger-color: #E74C3C;
+            --box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+            --threads-bg: #101010;
+            --threads-card-bg: #101010;
+            --threads-text: #FFFFFF;
+            --threads-secondary-text: #999999;
+            --threads-border: #333333;
+            --threads-hover: rgba(255, 255, 255, 0.1);
+            --threads-success: #2ECC71;
+            --threads-danger: #E74C3C;
+            --threads-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            --threads-transition: all 0.2s ease;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--threads-bg);
+            color: var(--threads-text);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Registration Layout */
+        .register-layout {
+            display: flex;
+            width: 90%;
+            max-width: 900px;
+            min-height: 600px;
+            background-color: var(--threads-card-bg);
+            border-radius: 15px;
+            border: 1px solid var(--threads-border);
+            box-shadow: var(--threads-box-shadow);
+            overflow: hidden;
+            margin: 2rem auto;
+            opacity: 1;
+            transform: translateY(0);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .logo-column {
+            flex: 1;
+            background: rgba(255,255,255,0.03);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            border-right: 1px solid var(--threads-border);
+        }
+        
+        .logo-content {
+            text-align: center;
+        }
+        
+        .logo-content img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--threads-box-shadow);
+            transition: var(--threads-transition);
+        }
+        
+        .logo-content img:hover {
+            transform: scale(1.05);
+        }
+        
+        .logo-content h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--threads-text);
+        }
+        
+        .logo-content p {
+            color: var(--threads-secondary-text);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-column {
+            flex: 1.5;
+            background: transparent;
+            padding: 2rem;
+        }
+        
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--threads-border);
+            padding-bottom: 10px;
+        }
+        
+        .auth-tab {
+            flex: 1;
+            text-align: center;
+            padding: 8px 0;
+            color: var(--threads-secondary-text);
+            text-decoration: none;
+            font-weight: 600;
+            position: relative;
+            transition: var(--threads-transition);
+        }
+        
+        .auth-tab.active {
+            color: var(--threads-text);
+        }
+        
+        .auth-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--threads-text);
+        }
+        
+        .register-container {
+            width: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        
+        .register-container h2 {
+            color: var(--threads-text);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-group {
+            flex: 1;
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--threads-text);
+            font-size: 0.9rem;
+        }
+        
+        .form-control, input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--threads-border);
+            border-radius: 5px;
+            background: rgba(0,0,0,0.3);
+            color: var(--threads-text);
+            font-size: 0.95rem;
+            transition: var(--threads-transition);
+            font-family: 'Poppins', sans-serif;
+            display: block;
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .form-control:focus, input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--threads-text);
+            background: rgba(0,0,0,0.5);
+        }
+        
+        .help-text {
+            font-size: 0.8rem;
+            color: var(--threads-secondary-text);
+            margin-top: 0.25rem;
+            display: block;
+        }
+        
+        .help-text .note {
+            color: var(--threads-danger);
+            font-weight: 500;
+            font-size: medium;
+        }
+        
+        .errorlist {
+            color: var(--threads-danger);
+            list-style-type: none;
+            padding: 0;
+            margin: 0.5rem 0;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .messages {
+            margin-bottom: 1rem;
+        }
+        
+        .messages p {
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .messages p.success {
+            background-color: rgba(46, 204, 113, 0.1);
+            color: var(--threads-success);
+            border: 1px solid rgba(46, 204, 113, 0.3);
+        }
+        
+        .messages p.error {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: var(--threads-danger);
+            border: 1px solid rgba(231, 76, 60, 0.3);
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.9rem 1.5rem;
+            background-color: var(--threads-text);
+            color: var(--threads-bg);
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--threads-transition);
+            border: none;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            box-shadow: var(--threads-box-shadow);
+            margin-top: 10px;
+            font-size: 0.95rem;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--threads-secondary-text);
+            border: 1px solid var(--threads-border);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--threads-hover);
+            color: var(--threads-text);
+        }
+        
+        .login-link {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+        
+        .login-link p {
+            color: var(--threads-secondary-text);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        
+        @media (max-width: 992px) {
+            .register-layout { max-width: 800px; }
+        }
+        
+        @media (max-width: 768px) {
+            .register-layout { 
+                flex-direction: column-reverse;
+                width: 95%;
+            }
+            
+            .logo-column {
+                border-right: none;
+                border-top: 1px solid var(--threads-border);
+                padding: 1.5rem;
+            }
+            
+            .form-column {
+                padding: 1.5rem;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .logo-content img {
+                width: 100px;
+                height: 100px;
+                margin-bottom: 1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .register-layout { 
+                width: 100%;
+                margin: 10px auto;
+                border-radius: 10px;
+            }
+            
+            .form-column, .logo-column {
+                padding: 1rem;
+            }
+            
+            .register-container h2 {
+                font-size: 1.3rem;
+                margin-bottom: 1rem;
+            }
+            
+            .btn {
+                padding: 0.8rem 1.2rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="register-section">
+        <div class="register-layout">
+            <div class="logo-column">
+                <div class="logo-content">
+                    <img src="{% static 'images/placeholder.jpg' %}" alt="Iligan2L Logo" data-aos="zoom-in" data-aos-delay="100">
+                    <h1 data-aos="fade-up" data-aos-delay="200">Iligan2L</h1>
+                    <p data-aos="fade-up" data-aos-delay="300">Construction Supply</p>
+                    <a href="{% url 'home' %}" class="btn btn-secondary" data-aos="fade-up" data-aos-delay="400">
+                        <i class="fas fa-home"></i> Back to Home
+                    </a>
+                </div>
+            </div>
+            <div class="form-column">
+                <div class="register-container">
+                    <div class="auth-tabs" data-aos="fade-down" data-aos-delay="100" data-aos-duration="800">
+                        <a href="{% url 'login' %}" class="auth-tab login-redirect">Login</a>
+                        <a href="{% url 'register' %}" class="auth-tab active">Register</a>
+                    </div>
+                    <h2 data-aos="fade-down" data-aos-delay="200" data-aos-duration="800">Customer Registration</h2>
+                    <div class="messages">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <p class="{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</p>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="form-row">
+                            <div class="form-group" data-aos="fade-up" data-aos-delay="200">
+                                <label for="id_username">Username</label>
+                                <input type="text" name="username" id="id_username" class="form-control" required maxlength="150">
+                                <span class="help-text"><span class="note">Note:</span> Required. 150 characters or fewer.</span>
+                                {{ form.username.errors }}
+                            </div>
+                            <div class="form-group" data-aos="fade-up" data-aos-delay="300">
+                                <label for="id_email">Email</label>
+                                <input type="email" name="email" id="id_email" class="form-control" required>
+                                {{ form.email.errors }}
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group" data-aos="fade-up" data-aos-delay="400">
+                                <label for="id_password1">Password</label>
+                                <input type="password" name="password1" id="id_password1" class="form-control" required>
+                                {{ form.password1.errors }}
+                            </div>
+                            <div class="form-group" data-aos="fade-up" data-aos-delay="500">
+                                <label for="id_password2">Confirm Password</label>
+                                <input type="password" name="password2" id="id_password2" class="form-control" required>
+                                {{ form.password2.errors }}
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-block" data-aos="fade-up" data-aos-delay="600">REGISTER</button>
+                        <div class="login-link" data-aos="fade-up" data-aos-delay="700">
+                            <p>Already have an account?</p>
+                            <a href="{% url 'login' %}" class="btn btn-secondary btn-block login-redirect">
+                                Login Now <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+        AOS.init({once: true});
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ensure form fields are visible
+            document.querySelectorAll('.form-group input').forEach(input => {
+                input.style.display = 'block';
+                input.style.opacity = '1';
+                input.style.visibility = 'visible';
+            });
+            
+            const loginLink = document.querySelector('.login-redirect');
+            if (loginLink) {
+                loginLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const href = this.getAttribute('href');
+                    document.body.style.overflow = 'hidden';
+                    document.querySelector('.register-layout').style.animation = 'fadeOutUp 0.5s forwards';
+                    
+                    // Create keyframe for fadeOutUp if it doesn't exist
+                    if (!document.querySelector('#fadeOutUp')) {
+                      const style = document.createElement('style');
+                      style.id = 'fadeOutUp';
+                      style.innerHTML = `
+                        @keyframes fadeOutUp {
+                          to {
+                            opacity: 0;
+                            transform: translateY(-20px);
+                          }
+                        }
+                      `;
+                      document.head.appendChild(style);
+                    }
+                    
+                    setTimeout(function() { window.location.href = href; }, 500);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

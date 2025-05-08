@@ -1,0 +1,272 @@
+{% extends 'pos/base.html' %}
+
+{% load static %}
+
+{% block title %}Add New Product{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'pos/css/products.css' %}">
+<style>
+:root {
+  --bg-color: #1e1816;
+  --card-bg: #493628;
+  --text-color: #E4E0E1;
+  --accent-color: #D6C0B3;
+  --border-color: #AB886D;
+  --hover-bg: #5d4434;
+  --primary-color: #AB886D;
+  --secondary-color: #D6C0B3;
+  --danger-color: #D9534F;
+  --input-bg: #2e221a;
+  --input-border: #84654d;
+  --input-focus-border: #AB886D;
+}
+
+body {
+  background: var(--bg-color);
+  color: var(--text-color);
+}
+.page-title {
+color: #AB886D;
+
+}
+.product-form-card {
+  background-color: var(--card-bg);
+  border-radius: 0.7em;
+  box-shadow: 0 2px 22px rgba(50, 25, 5, 0.14);
+  padding: 2rem 2rem 1.2rem 2rem;
+  margin: 2rem auto 1.5rem auto;
+  color: var(--text-color);
+  border: 1.5px solid var(--border-color);
+  max-width: 540px;
+}
+
+.form-group {
+  margin-bottom: 1.35rem;
+}
+.form-group label {
+  display: block;
+  margin-bottom: 0.38em;
+  font-weight: 600;
+  color: var(--accent-color);
+  letter-spacing: 0.02em;
+  font-size: 1.08em;
+}
+
+.form-control,
+input[type="text"], input[type="number"], select, textarea {
+  width: 100%;
+  font-size: 1.08em;
+  color: var(--text-color);
+  background: var(--input-bg);
+  border: 1.3px solid var(--input-border);
+  border-radius: 0.33em;
+  padding: 0.62em 0.75em;
+  margin-top: .07em;
+  transition: background 0.19s, border-color 0.14s, box-shadow 0.14s;
+  box-shadow: 0 2px 7px rgba(70,40,15,0.06);
+  box-sizing: border-box;
+  appearance: none;
+}
+.form-control:focus,
+input[type="text"]:focus, input[type="number"]:focus, textarea:focus, select:focus {
+  outline: none;
+  background: var(--hover-bg);
+  border-color: var(--input-focus-border);
+}
+
+select.form-control, select {
+  height: 2.9em;
+}
+textarea.form-control, textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.form-error {
+  color: var(--danger-color);
+  font-size: 0.97rem;
+  margin-top: 0.35rem;
+}
+
+.inventory-section {
+  background-color: #35271d;
+  border-radius: 0.5rem;
+  padding: 1rem 1.2rem;
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+  border: 1.3px solid var(--border-color);
+}
+
+.inventory-section h3 {
+  font-size: 1.125rem;
+  color: var(--accent-color);
+  margin-bottom: 1.08rem;
+  font-weight: 600;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1.1em;
+  justify-content: flex-end;
+  margin-top: 1.4rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.btn, .btn-primary, .btn-secondary, .btn-outline-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.62em 1.4em;
+  border-radius: 0.35em;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  font-size: 1.04em;
+  transition: background 0.14s, color 0.12s, border 0.12s;
+  cursor: pointer;
+  box-shadow: 0 2px 7px rgba(124,80,22,0.06);
+}
+
+.btn-primary {
+  background: var(--primary-color);
+  color: var(--bg-color);
+  border: 1.2px solid var(--primary-color);
+}
+.btn-primary:hover, .btn-primary:focus {
+  background: var(--hover-bg);
+  color: var(--accent-color);
+  border-color: var(--hover-bg);
+}
+
+.btn-secondary, .btn-outline-secondary {
+  background: transparent;
+  color: var(--accent-color);
+  border: 1.1px solid var(--accent-color);
+}
+.btn-secondary:hover, .btn-secondary:focus, .btn-outline-secondary:hover, .btn-outline-secondary:focus {
+  background: var(--hover-bg);
+  color: var(--secondary-color);
+  border-color: var(--secondary-color);
+}
+
+.alert {
+  padding: 0.87em 1.07em;
+  border-radius: 0.45em;
+  margin-bottom: 1em;
+  font-size: 1.02em;
+}
+.alert-success { background: #244d2b; color: #cde7c1; }
+.alert-error   { background: var(--danger-color); color: #fff; }
+.alert-warning { background: #704519; color: #ffe3b3; }
+
+@media (max-width: 600px) {
+  .product-form-card {
+    padding: 1em 0.4em 0.8em 0.5em;
+    max-width: 99vw;
+  }
+  .form-actions {
+    flex-direction: column;
+    gap: 0.55em;
+    align-items: stretch;
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <h1 class="page-title">Add New Product</h1>
+    <div class="actions">
+        <a href="{% url 'product_list' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Products
+        </a>
+    </div>
+</div>
+<div class="content-body">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    <div class="product-form-card">
+      <form method="post" action="{% url 'add_product' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_name">Product Name</label>
+                {{ form.name }}
+                {% if form.name.errors %}
+                <div class="form-error">
+                    {% for error in form.name.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+              <label for="id_image">Product Image</label>
+              {{ form.image }}
+              {% if form.image.errors %}
+                  <div class="form-error">
+                      {% for error in form.image.errors %}
+                          {{ error }}
+                      {% endfor %}
+                  </div>
+              {% endif %}
+            </div>
+            <div class="form-group">
+                <label for="id_category">Category</label>
+                {{ form.category }}
+                {% if form.category.errors %}
+                <div class="form-error">
+                    {% for error in form.category.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <label for="id_price">Price (₱)</label>
+                {{ form.price }}
+                {% if form.price.errors %}
+                <div class="form-error">
+                    {% for error in form.price.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <label for="id_description">Description</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                <div class="form-error">
+                    {% for error in form.description.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            <div class="inventory-section">
+                <h3><i class="fas fa-boxes"></i> Initial Inventory</h3>
+                <div class="form-group">
+                    <label for="initial_stock">Initial Stock</label>
+                    <input type="number" name="initial_stock" id="initial_stock" class="form-control" value="0" min="0">
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add Product
+                </button>
+                <button type="reset" class="btn btn-outline-secondary">
+                    <i class="fas fa-undo"></i> Reset
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<a href="{% url 'dashboard_manager' %}" class="btn btn-secondary" style="margin: 2rem 0 2rem 0;">
+    <i class="fas fa-arrow-left"></i> Back to Dashboard
+</a>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Supply Status - Lourgie Sari-Sari Store{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2 style="color: #87ceeb; margin-bottom: 1rem;">Supply Status</h2>
+    
+    <div style="margin-bottom: 1rem;">
+        <label for="statusFilter">Filter by Status:</label>
+        <select id="statusFilter" onchange="filterSupplies(this.value)">
+            <option value="all">All</option>
+            <option value="PENDING">Pending</option>
+            <option value="IN_TRANSIT">In Transit</option>
+            <option value="DELIVERED">Delivered</option>
+            <option value="CANCELLED">Cancelled</option>
+        </select>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Expected Arrival</th>
+                <th>Actual Arrival</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for supply in supplies %}
+            <tr class="supply-row" data-status="{{ supply.status }}">
+                <td>{{ supply.product.name }}</td>
+                <td>{{ supply.quantity }}</td>
+                <td>{{ supply.expected_arrival|date:"M d, Y H:i" }}</td>
+                <td>
+                    {% if supply.actual_arrival %}
+                        {{ supply.actual_arrival|date:"M d, Y H:i" }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>
+                    {% if supply.status == 'PENDING' %}
+                        <span style="color: #f0ad4e;">⌛ Pending</span>
+                    {% elif supply.status == 'IN_TRANSIT' %}
+                        <span style="color: #5bc0de;">🚚 In Transit</span>
+                    {% elif supply.status == 'DELIVERED' %}
+                        <span style="color: #5cb85c;">✓ Delivered</span>
+                    {% else %}
+                        <span style="color: #d9534f;">✗ Cancelled</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if supply.status == 'PENDING' %}
+                        <button class="btn" style="background-color: #5bc0de;" onclick="updateStatus('{{ supply.id }}', 'IN_TRANSIT')">Start Delivery</button>
+                        <button class="btn" style="background-color: #d9534f;" onclick="updateStatus('{{ supply.id }}', 'CANCELLED')">Cancel</button>
+                    {% elif supply.status == 'IN_TRANSIT' %}
+                        <button class="btn" style="background-color: #5cb85c;" onclick="markDelivered('{{ supply.id }}')">Mark Delivered</button>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">No supply records found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function filterSupplies(status) {
+    const rows = document.querySelectorAll('.supply-row');
+    rows.forEach(row => {
+        if (status === 'all' || row.dataset.status === status) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+function updateStatus(supplyId, status) {
+    if (confirm(`Are you sure you want to mark this supply as ${status.toLowerCase()}?`)) {
+        // We'll implement this in the next step
+        alert('Status update functionality coming soon!');
+    }
+}
+
+function markDelivered(supplyId) {
+    if (confirm('Are you sure you want to mark this supply as delivered?')) {
+        // We'll implement this in the next step
+        alert('Delivery confirmation functionality coming soon!');
+    }
+}
+</script>
+{% endblock %}
